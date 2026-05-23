@@ -1,0 +1,11 @@
+# Minimal .gitignore — full canonical version lands in Task F4.
+bin/
+obj/
+*.user
+.vs/
+.idea/
+TestResults/
+*.trx
+*.coverage
+build-output*.txt
+errors*.txt
