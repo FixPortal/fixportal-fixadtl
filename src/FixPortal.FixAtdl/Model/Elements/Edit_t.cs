@@ -245,7 +245,7 @@ namespace Atdl4net.Model.Elements
         /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
         public void Evaluate(FixFieldValueProvider additionalValues)
         {
-            _log.Debug(m => m("Evaluating Edit_t {0}; current state is {1}", ToString(), _currentState.ToString().ToLower()));
+            _log.LogDebug("Evaluating Edit_t {Arg0}; current state is {Arg1}", ToString(), _currentState.ToString().ToLower());
 
             if (Operator != null)
             {
@@ -277,7 +277,7 @@ namespace Atdl4net.Model.Elements
             else
                 throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.MissingOperatorsOnEdit);
 
-            _log.Debug(m => m("Evaluation of Edit_t {0} yielded state of {1}", ToString(), _currentState.ToString().ToLower()));
+            _log.LogDebug("Evaluation of Edit_t {Arg0} yielded state of {Arg1}", ToString(), _currentState.ToString().ToLower());
         }
 
         #endregion IEdit_t Members
@@ -290,15 +290,15 @@ namespace Atdl4net.Model.Elements
 
             bool result = checkingForExist ? !empty : empty;
 
-            _log.Debug(m => m("Evaluated whether Field {0} {1} a value; result is {2} (value was '{3}')", Field,
-                checkingForExist ? "has" : "does not have", result.ToString().ToLower(), empty ? "N/A" : value));
+            _log.LogDebug("Evaluated whether Field {Arg0} {Arg1} a value; result is {Arg2} (value was '{Arg3}')", Field,
+                checkingForExist ? "has" : "does not have", result.ToString().ToLower(), empty ? "N/A" : value);
 
             return result;
         }
 
         private bool EvaluateEquality(object lhs, object rhs)
         {
-            _log.Debug(m => m("Comparing values operand1={0}, operand2={1} for equality with operator {2}", lhs, rhs, Operator));
+            _log.LogDebug("Comparing values operand1={Arg0}, operand2={Arg1} for equality with operator {Arg2}", lhs, rhs, Operator);
 
             CheckForUnsupportedComparisons(lhs, rhs);
 
@@ -319,20 +319,20 @@ namespace Atdl4net.Model.Elements
 
             bool finalResult = Operator == Operator_t.Equal ? equal : !equal;
 
-            _log.Debug(m => m("Result of equality comparison = {0}", finalResult.ToString().ToLower()));
+            _log.LogDebug("Result of equality comparison = {Arg0}", finalResult.ToString().ToLower());
 
             return finalResult;
         }
 
         private bool EvaluateInequalityComparison(IComparable lhs, IComparable rhs)
         {
-            _log.Debug(m => m("Comparing values lhs='{0}', rhs='{1}' for inequality with operator {2}", lhs, rhs, Operator));
+            _log.LogDebug("Comparing values lhs='{Arg0}', rhs='{Arg1}' for inequality with operator {Arg2}", lhs, rhs, Operator);
 
             // It's not clear what the right thing is to do with a null LHS and an inequality operator
             // so we return false anyway
             if (lhs == null)
             {
-                _log.Debug("Left hand side of inequality comparison is null so returning false");
+                _log.LogDebug("Left hand side of inequality comparison is null so returning false");
 
                 return false;
             }
@@ -360,8 +360,8 @@ namespace Atdl4net.Model.Elements
                     break;
             }
 
-            _log.Debug(m => m("Compared values '{0}' and '{1}' as part of Edit_t evaluation; result was {2}",
-                lhs, rhs, finalResult.ToString().ToLower()));
+            _log.LogDebug("Compared values '{Arg0}' and '{Arg1}' as part of Edit_t evaluation; result was {Arg2}",
+                lhs, rhs, finalResult.ToString().ToLower());
 
             return finalResult;
         }
@@ -438,8 +438,8 @@ namespace Atdl4net.Model.Elements
             else
                 result = null;
 
-            _log.Debug(m => m("Looked up FIX field {0} for comparison; field was {1}, value={2}",
-                fixField, gotValue ? "found" : "not found", gotValue ? result : "N/A"));
+            _log.LogDebug("Looked up FIX field {Arg0} for comparison; field was {Arg1}, value={Arg2}",
+                fixField, gotValue ? "found" : "not found", gotValue ? result : "N/A");
 
             return result;
         }
