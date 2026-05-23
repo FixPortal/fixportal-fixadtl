@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Strategies xmlns="http://www.fixprotocol.org/FIXatdl-1-1/Core"
+            xmlns:lay="http://www.fixprotocol.org/FIXatdl-1-1/Layout"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Strategy wireValue="MISSING_NAME" uiRep="Missing Name" providerID="DEMO">
+    <StrategyLayout>
+      <lay:StrategyPanel title="Empty" orientation="VERTICAL">
+      </lay:StrategyPanel>
+    </StrategyLayout>
+  </Strategy>
+</Strategies>
