@@ -11,7 +11,8 @@ using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Validation
@@ -19,7 +20,8 @@ namespace Atdl4net.Validation
     // TODO: Implement IDisposable
     public abstract class EditEvaluator<T> : IResolvable<Strategy_t, T> where T : class, IValueProvider
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Validation");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private readonly ILogger _log = NullLogger.Instance;
 
         private Edit_t<T> _edit;
         private EditRef_t<T> _editRef;
@@ -83,7 +85,7 @@ namespace Atdl4net.Validation
         /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
         public void Evaluate(FixFieldValueProvider additionalValues)
         {
-            _log.Debug(m => m("EditEvaluator evaluating state of Edit_t/EditRef_t; current state is {0}", CurrentState.ToString().ToLower()));
+            _log.LogDebug("EditEvaluator evaluating state of Edit_t/EditRef_t; current state is {CurrentState}", CurrentState.ToString().ToLower());
 
             if (_edit != null)
                 _edit.Evaluate(additionalValues);
@@ -92,7 +94,7 @@ namespace Atdl4net.Validation
             else
                 throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.NeitherEditNorEditRefSetOnObject, this.GetType().Name);
 
-            _log.Debug(m => m("EditEvaluator evaluated to state {0}", CurrentState.ToString().ToLower()));
+            _log.LogDebug("EditEvaluator evaluated to state {CurrentState}", CurrentState.ToString().ToLower());
         }
 
         /// <summary>
@@ -100,7 +102,7 @@ namespace Atdl4net.Validation
         /// </summary>
         public void Evaluate()
         {
-            _log.Debug(m => m("EditEvaluator evaluating state of Edit_t/EditRef_t; current state is {0}", CurrentState.ToString().ToLower()));
+            _log.LogDebug("EditEvaluator evaluating state of Edit_t/EditRef_t; current state is {CurrentState}", CurrentState.ToString().ToLower());
 
             if (_edit != null)
                 _edit.Evaluate();
@@ -109,7 +111,7 @@ namespace Atdl4net.Validation
             else
                 throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.NeitherEditNorEditRefSetOnObject, this.GetType().Name);
 
-            _log.Debug(m => m("EditEvaluator evaluated to state {0}", CurrentState.ToString().ToLower()));
+            _log.LogDebug("EditEvaluator evaluated to state {CurrentState}", CurrentState.ToString().ToLower());
         }
 
         #region IResolvable<Strategy_t> Members

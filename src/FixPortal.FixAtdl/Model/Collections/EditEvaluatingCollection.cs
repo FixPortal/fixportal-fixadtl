@@ -14,7 +14,8 @@ using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Enumerations;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Atdl4net.Model.Collections
 {
@@ -26,7 +27,8 @@ namespace Atdl4net.Model.Collections
     /// <typeparam name="T"></typeparam>
     public class EditEvaluatingCollection<T> : Collection<IEdit<T>>, IResolvable<Strategy_t, T>
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Collections");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private readonly ILogger _log = NullLogger.Instance;
 
         private bool _currentState;
         private readonly HashSet<string> _sources = new HashSet<string>();
@@ -57,7 +59,7 @@ namespace Atdl4net.Model.Collections
             foreach (string source in item.Sources)
                 _sources.Add(source);
 
-            _log.Debug(m=>m("Edit_t {0} added to EditEvaluatingCollection", item.ToString()));
+            _log.LogDebug("Edit_t {Edit} added to EditEvaluatingCollection", item.ToString());
         }
 
         /// <summary>
@@ -67,7 +69,7 @@ namespace Atdl4net.Model.Collections
         /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
         public void Evaluate(FixFieldValueProvider additionalValues)
         {
-            _log.Debug(m=>m("Evaluating EditEvaluatingCollection with {0} elements; current state = {1}", this.Count, _currentState.ToString().ToLower()));
+            _log.LogDebug("Evaluating EditEvaluatingCollection with {Count} elements; current state = {CurrentState}", this.Count, _currentState.ToString().ToLower());
 
             if (LogicOperator == null)
                 throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.MissingLogicalOperatorOnSetOfEdits);
@@ -110,7 +112,7 @@ namespace Atdl4net.Model.Collections
                         break;
                 }
 
-                _log.Debug(m => m("EditEvaluatingCollection state is now {0}", newState.ToString().ToLower()));
+                _log.LogDebug("EditEvaluatingCollection state is now {NewState}", newState.ToString().ToLower());
             }
 
             _currentState = newState;

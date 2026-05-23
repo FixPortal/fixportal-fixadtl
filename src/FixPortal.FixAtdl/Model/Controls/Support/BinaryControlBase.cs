@@ -11,7 +11,8 @@ using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Atdl4net.Model.Controls.Support
 {
@@ -20,7 +21,8 @@ namespace Atdl4net.Model.Controls.Support
     /// </summary>
     public abstract class BinaryControlBase : InitializableControl<bool?>
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private static readonly ILogger _log = NullLogger.Instance;
 
         /// <summary>
         /// The state value for this control.
@@ -58,7 +60,7 @@ namespace Atdl4net.Model.Controls.Support
             }
             catch (InvalidFieldValueException ex)
             {
-                _log.ErrorFormat("Unable to set control {0} from FIX field value '{1}'; reason: {2}", Id, value, ex.Message);
+                _log.LogError(ex, "Unable to set control {Arg0} from FIX field value '{Arg1}'; reason: {Arg2}", Id, value, ex.Message);
 
                 return false;
             }
@@ -119,7 +121,7 @@ namespace Atdl4net.Model.Controls.Support
             else
                 _value = value.ToBoolean();
 
-            _log.Debug(m => m("Binary control {0} value is now {1}", _value));
+            _log.LogDebug("Binary control value is now {Value}", _value);
         }
 
         /// <summary>
@@ -133,7 +135,7 @@ namespace Atdl4net.Model.Controls.Support
             bool isString = newValue is string;
             bool isBool = newValue is bool;
 
-            _log.Debug(m => m("Setting binary control {0} using value {1} (of type {2})", Id, newValue, newValue != null ? newValue.GetType().Name : "N/A"));
+            _log.LogDebug("Setting binary control {Arg0} using value {Arg1} (of type {Arg2})", Id, newValue, newValue != null ? newValue.GetType().Name : "N/A");
 
             // Strictly this is a bit of a hack as the right thing to do when implementing CheckBoxes and RadioButtons is
             // to enforce the use of boolean inputs.  However as atdl4j supports setting of these controls' state via
@@ -162,7 +164,7 @@ namespace Atdl4net.Model.Controls.Support
                 throw ThrowHelper.New<InternalErrorException>(this, InternalErrors.UnexpectedArgumentType,
                     newValue.GetType().FullName, "System.String, System.Boolean");
 
-            _log.Debug(m => m("Binary control value is now {0}", _value != null ? _value.ToString().ToLower() : "null"));
+            _log.LogDebug("Binary control value is now {Value}", _value != null ? _value.ToString().ToLower() : "null");
         }
 
         /// <summary>

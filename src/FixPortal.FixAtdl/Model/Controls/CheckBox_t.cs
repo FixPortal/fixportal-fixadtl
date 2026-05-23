@@ -6,7 +6,8 @@
 
 using System;
 using Atdl4net.Model.Controls.Support;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Atdl4net.Model.Controls
 {
@@ -15,7 +16,8 @@ namespace Atdl4net.Model.Controls
     /// </summary>
     public class CheckBox_t : BinaryControlBase
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private static readonly ILogger _log = NullLogger.Instance;
 
         /// <summary>
         /// Initializes a new instance of <see cref="CheckBox_t"/> using the supplied ID.
@@ -24,7 +26,7 @@ namespace Atdl4net.Model.Controls
         public CheckBox_t(string id)
             : base(id)
         {
-            _log.Debug(m => m("New CheckBox_t created as control {0}", id));
+            _log.LogDebug("New CheckBox_t created as control {Arg0}", id);
         }
     }
 }

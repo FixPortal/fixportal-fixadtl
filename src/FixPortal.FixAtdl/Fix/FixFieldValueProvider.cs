@@ -11,7 +11,8 @@ using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Types;
 using Atdl4net.Wpf.ViewModel;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Atdl4net.Fix
 {
@@ -20,7 +21,8 @@ namespace Atdl4net.Fix
     /// </summary>
     public class FixFieldValueProvider
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Fix");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private readonly ILogger _log = NullLogger.Instance;
         private static readonly FixFieldValueProvider _emptyProvider = new FixFieldValueProvider(null, null);
 
         private readonly IInitialFixValueProvider _initialValueProvider;
@@ -76,16 +78,16 @@ namespace Atdl4net.Fix
                 {
                     string wireValue = result;
 
-                    _log.Debug(m => m("Attempting to find EnumID for FIX field {0} using parameter {1} with wire value '{2}'",
-                        fixField, targetParameterName, wireValue));
+                    _log.LogDebug("Attempting to find EnumID for FIX field {FixField} using parameter {ParameterName} with wire value '{WireValue}'",
+                        fixField, targetParameterName, wireValue);
 
                     retrieved = parameter.EnumPairs.TryParseWireValue(wireValue, out result);
                 }
                 else if (parameter is Parameter_t<Percentage_t>)
                     ProcessPercentageValue(parameter as Parameter_t<Percentage_t>, ref result);
 
-                _log.Debug(m => m("FIX enumerated value lookup for field {0} returning {1}; value = '{2}'", fixField,
-                    retrieved.ToString().ToLower(), retrieved ? result : "N/A"));
+                _log.LogDebug("FIX enumerated value lookup for field {FixField} returning {Retrieved}; value = '{Value}'", fixField,
+                    retrieved.ToString().ToLower(), retrieved ? result : "N/A");
             }
 
             value = result;
@@ -110,8 +112,8 @@ namespace Atdl4net.Fix
             {
                 retrieved = _initialValueProvider != null && _initialValueProvider.InputFixValues.TryGetValue(fixField, out result);
 
-                _log.Debug(m => m("FIX value lookup for field {0} returning {1}; value = '{2}'", fixField,
-                    retrieved.ToString().ToLower(), retrieved ? result : "N/A"));
+                _log.LogDebug("FIX value lookup for field {FixField} returning {Retrieved}; value = '{Value}'", fixField,
+                    retrieved.ToString().ToLower(), retrieved ? result : "N/A");
             }
 
             value = retrieved ? result : null;

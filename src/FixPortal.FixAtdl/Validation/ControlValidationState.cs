@@ -10,7 +10,8 @@ using System.Linq;
 using System.Text;
 using Atdl4net.Fix;
 using Atdl4net.Wpf.ViewModel;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Atdl4net.Validation
 {
@@ -19,7 +20,8 @@ namespace Atdl4net.Validation
     /// </summary>
     public class ControlValidationState
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Validation");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private readonly ILogger _log = NullLogger.Instance;
 
         private ValidationResult _controlValidationResult;
         private ValidationResult _parameterValidationResult;
@@ -94,7 +96,7 @@ namespace Atdl4net.Validation
         /// <remarks>See <see cref="CurrentState"/> for an explanation of why we don't cache the state locally within the class.</remarks>
         public void Evaluate(FixFieldValueProvider additionalValues)
         {
-            _log.Debug(m => m("Evaluating ValidationState for control {0}, CurrentState = {1}", _controlId, CurrentState.ToString().ToLower()));
+            _log.LogDebug("Evaluating ValidationState for control {ControlId}, CurrentState = {CurrentState}", _controlId, CurrentState.ToString().ToLower());
 
             bool state = (_controlValidationResult == null || _controlValidationResult.IsValid);
 
@@ -106,7 +108,7 @@ namespace Atdl4net.Validation
             foreach (StrategyEditViewModel strategyEdit in _strategyEdits)
                 state &= strategyEdit.Evaluate(additionalValues);
 
-            _log.Debug(m => m("Evaluated ValidationState for control {0}, CurrentState = {1}", _controlId, state.ToString().ToLower()));
+            _log.LogDebug("Evaluated ValidationState for control {ControlId}, CurrentState = {CurrentState}", _controlId, state.ToString().ToLower());
         }
 
         /// <summary>
@@ -147,7 +149,7 @@ namespace Atdl4net.Validation
                         sb.AppendLine();
                 }
 
-                _log.Debug(m => m("ValidationState for control {0} = '{1}'", _controlId, sb.ToString()));
+                _log.LogDebug("ValidationState for control {ControlId} = '{ValidationState}'", _controlId, sb.ToString());
 
                 return sb.ToString();
             }

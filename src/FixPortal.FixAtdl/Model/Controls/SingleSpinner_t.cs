@@ -7,7 +7,8 @@
 using System;
 using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Enumerations;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Atdl4net.Model.Controls
 {
@@ -16,7 +17,8 @@ namespace Atdl4net.Model.Controls
     /// </summary>
     public class SingleSpinner_t : NumericControlBase
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private static readonly ILogger _log = NullLogger.Instance;
 
         /// <summary>
         /// Initializes a new instance of <see cref="SingleSpinner_t"/> using the supplied ID.
@@ -25,7 +27,7 @@ namespace Atdl4net.Model.Controls
         public SingleSpinner_t(string id)
             : base(id)
         {
-            _log.Debug(m => m("New SingleSpinner_t created as control {0}", id));
+            _log.LogDebug("New SingleSpinner_t created as control {Arg0}", id);
         }
 
         /// <summary>Limits the granularity of a spinner control. Useful in spinner objects to enforce odd-lot and sub-penny

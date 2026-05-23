@@ -8,13 +8,15 @@ using System.Collections.ObjectModel;
 using Atdl4net.Fix;
 using Atdl4net.Model.Elements;
 using Atdl4net.Utility;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Atdl4net.Model.Collections
 {
     public class StateRuleCollection : Collection<StateRule_t>
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Collections");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private readonly ILogger _log = NullLogger.Instance;
 
         private readonly Control_t _owner;
 
@@ -29,13 +31,13 @@ namespace Atdl4net.Model.Collections
 
             base.Add(item);
 
-            _log.Debug(m=>m("StateRule_t {0} added to StateRules for control Id {1}", item.ToString(), _owner.Id));
+            _log.LogDebug("StateRule_t {StateRule} added to StateRules for control Id {ControlId}", item.ToString(), _owner.Id);
         }
 
         public void EvaluateAll()
         {
             if (this.Items.Count > 0)
-                _log.Debug(m => m("Evaluating all {0} StateRule_t instances for control Id {1}", Items.Count,  _owner.Id));
+                _log.LogDebug("Evaluating all {Count} StateRule_t instances for control Id {ControlId}", Items.Count, _owner.Id);
 
             foreach (StateRule_t rule in this.Items)
                 rule.Evaluate();

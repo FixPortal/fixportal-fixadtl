@@ -9,7 +9,8 @@ using System.Linq;
 using Atdl4net.Fix;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Enumerations;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Atdl4net.Model.Controls.Support
 {
@@ -22,7 +23,8 @@ namespace Atdl4net.Model.Controls.Support
     /// control uses EnumState to store its state.</typeparam>
     public abstract class InitializableControl<T> : Control_t
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private static readonly ILogger _log = NullLogger.Instance;
 
         /// <summary>
         /// Initializes a new <see cref="InitializableControl"/> instance with the specified identifier as id.
@@ -53,7 +55,7 @@ namespace Atdl4net.Model.Controls.Support
             // If UseFixField, then attempt to initialize with FIX field...
             if (InitPolicy == InitPolicy_t.UseFixField)
             {
-                _log.Debug(m => m("Attempting to initialize control {0} from FIX field...", Id));
+                _log.LogDebug("Attempting to initialize control {Arg0} from FIX field...", Id);
 
                 if (!string.IsNullOrEmpty(InitFixField))
                 {
@@ -63,19 +65,19 @@ namespace Atdl4net.Model.Controls.Support
                     {
                         if (LoadDefaultFromFixValue(value))
                         {
-                            _log.Debug(m => m("Control {0} successfully initialized with value '{1}' from FIX field {2}", Id, value, InitFixField));
+                            _log.LogDebug("Control {Arg0} successfully initialized with value '{Arg1}' from FIX field {Arg2}", Id, value, InitFixField);
 
                             return;
                         }
                     }
                     else
-                        _log.WarnFormat("Unable to initialize control {0} with FIX field {1} as no valid value was found", Id, InitFixField);
+                        _log.LogWarning("Unable to initialize control {Arg0} with FIX field {Arg1} as no valid value was found", Id, InitFixField);
                 }
                 else
-                    _log.WarnFormat("Unable to initialize control {0} with initPolicy = UseFixField as no valid initFixField was supplied", Id);
+                    _log.LogWarning("Unable to initialize control {Arg0} with initPolicy = UseFixField as no valid initFixField was supplied", Id);
             }
 
-            _log.Debug(m => m("Initializing control {0} with InitValue '{1}'...", Id, InitValue != null ? InitValue.ToString() : "null"));
+            _log.LogDebug("Initializing control {Arg0} with InitValue '{Arg1}'...", Id, InitValue != null ? InitValue.ToString() : "null");
 
             // Unable to initialize with FIX field so let's try using InitValue.  If InitValue is null, then control value will
             // be set to default/empty value.

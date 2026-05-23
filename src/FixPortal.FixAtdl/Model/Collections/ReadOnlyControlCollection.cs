@@ -18,14 +18,16 @@ using Atdl4net.Model.Enumerations;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
 using Atdl4net.Validation;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Collections
 {
     public class ReadOnlyControlCollection : IParentable<Strategy_t>, IEnumerable<Control_t>, ISimpleDictionary<Control_t>
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Collections");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private readonly ILogger _log = NullLogger.Instance;
 
         private Strategy_t _owner;
         private readonly Dictionary<string, Control_t> _controls = new Dictionary<string, Control_t>();
@@ -177,7 +179,7 @@ namespace Atdl4net.Model.Collections
                 // We only want to update the control value if the parameter has a value
                 if (parameterValue != null)
                 {
-                    _log.Debug(m => m("Updating control {0} value from parameter {1}", control.Id, parameter.Name));
+                    _log.LogDebug("Updating control {ControlId} value from parameter {ParameterName}", control.Id, parameter.Name);
 
                     control.SetValueFromParameter(parameter);
 

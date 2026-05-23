@@ -10,7 +10,8 @@ using System.Text;
 using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Model.Collections;
 using Atdl4net.Resources;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Controls.Support
@@ -27,7 +28,8 @@ namespace Atdl4net.Model.Controls.Support
     {
         private const string ExceptionContext = "EnumState";
 
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Types");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private static readonly ILogger _log = NullLogger.Instance;
 
         private readonly BitArray _enumStates;
         private readonly string[] _enumIds;
@@ -83,7 +85,7 @@ namespace Atdl4net.Model.Controls.Support
             if (_enumIds.Length != source._enumIds.Length)
                 throw ThrowHelper.New<ArgumentException>(this, "Unable to update this EnumState from supplied EnumState as the number of EnumIDs was not consistent");
 
-            _log.Debug(m => m("Updating EnumState from {0} to {1}", this.ToString(), source.ToString()));
+            _log.LogDebug("Updating EnumState from {Arg0} to {Arg1}", this.ToString(), source.ToString());
 
             int enumCount = _enumIds.Length;
 
@@ -168,7 +170,7 @@ namespace Atdl4net.Model.Controls.Support
                     {
                         _enumStates[n] = value;
 
-                        _log.Debug(m => m("EnumState state now {0}", this.ToString()));
+                        _log.LogDebug("EnumState state now {State}", this.ToString());
 
                         return;
                     }
@@ -265,7 +267,7 @@ namespace Atdl4net.Model.Controls.Support
         /// values whereas this method parses the string for EnumIDs.</remarks>
         public void LoadInitValue(string initValues, bool allowNonEnumValue)
         {
-            _log.DebugFormat("Loading EnumState with InitValue '{0}'", initValues);
+            _log.LogDebug("Loading EnumState with InitValue '{InitValue}'", initValues);
 
             string[] enumIds = initValues.Split(new char[] { ';', ' ', ',' });
 
@@ -286,7 +288,7 @@ namespace Atdl4net.Model.Controls.Support
                     this[enumId] = true;
             }
 
-            _log.Debug(m => m("EnumState is now {0}", ToString()));
+            _log.LogDebug("EnumState is now {State}", ToString());
         }
 
         /// <summary>
@@ -297,7 +299,7 @@ namespace Atdl4net.Model.Controls.Support
         /// then null is returned.</returns>
         public string ToWireValue(EnumPairCollection enumPairs)
         {
-            _log.Debug(m => m("Converting EnumState to WireValue; current state is {0}", ToString()));
+            _log.LogDebug("Converting EnumState to WireValue; current state is {State}", ToString());
 
             if (enumPairs.Count != _enumStates.Count)
                 throw ThrowHelper.New<InvalidOperationException>(ExceptionContext, ErrorMessages.InconsistentEnumPairsListItemsError);
@@ -332,7 +334,7 @@ namespace Atdl4net.Model.Controls.Support
                 }
             }
 
-            _log.Debug(m => m("EnumState as WireValue is {0}", sb.ToString()));
+            _log.LogDebug("EnumState as WireValue is {WireValue}", sb.ToString());
 
             return hasAtLeastOneValue ? sb.ToString() : null;
         }
@@ -345,7 +347,7 @@ namespace Atdl4net.Model.Controls.Support
         /// <returns></returns>
         public static EnumState FromWireValue(EnumPairCollection enumPairs, string multiValueString)
         {
-            _log.DebugFormat("Converting WireValue '{0}' to EnumState", multiValueString);
+            _log.LogDebug("Converting WireValue '{WireValue}' to EnumState", multiValueString);
 
             string[] inputValues = multiValueString.Split(new char[] { ';', ' ', ',' });
 
@@ -361,7 +363,7 @@ namespace Atdl4net.Model.Controls.Support
                 result[enumId] = true;
             }
 
-            _log.Debug(m => m("Converting EnumState from WireValue; state is {0}", result.ToString()));
+            _log.LogDebug("Converting EnumState from WireValue; state is {State}", result.ToString());
 
             return result;
         }

@@ -16,7 +16,8 @@ using Atdl4net.Model.Enumerations;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
 using Atdl4net.Validation;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Elements
@@ -65,7 +66,8 @@ namespace Atdl4net.Model.Elements
     public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, IValueProvider
     {
         // Use Atdl4net.Validation namespace rather than Atdl4net.Model.Elements for debugging purposes
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Validation");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private static readonly ILogger _log = NullLogger.Instance;
         private static readonly bool isPartOfStrategyEdit = typeof(T) == typeof(IParameter);
 
         private bool _currentState;

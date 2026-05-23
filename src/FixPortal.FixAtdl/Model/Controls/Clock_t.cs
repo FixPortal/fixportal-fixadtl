@@ -13,7 +13,8 @@ using Atdl4net.Model.Controls.Support;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Atdl4net.Model.Controls
 {
@@ -22,7 +23,8 @@ namespace Atdl4net.Model.Controls
     /// </summary>
     public class Clock_t : InitializableControl<DateTime?>
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private static readonly ILogger _log = NullLogger.Instance;
 
         private DateTime? _value;
 
@@ -33,7 +35,7 @@ namespace Atdl4net.Model.Controls
         public Clock_t(string id)
             : base(id)
         {
-            _log.Debug(m => m("New Clock_t created as control {0}", id));
+            _log.LogDebug("New Clock_t created as control {Arg0}", id);
         }
 
         // TODO: Implement LocalMktTz as a type.
@@ -94,7 +96,7 @@ namespace Atdl4net.Model.Controls
 
             _value = value.ToDateTime();
 
-            _log.Debug(m => m("Clock_t control {0} value is now {1}", _value));
+            _log.LogDebug("Clock_t control value is now {Value}", _value);
         }
 
         /// <summary>

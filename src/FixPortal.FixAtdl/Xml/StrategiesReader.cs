@@ -12,7 +12,8 @@ using Atdl4net.Resources;
 using Atdl4net.Xml.Serialization;
 using System.IO;
 using System.Xml.Linq;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 #if !NET_40
 using System.Xml;
@@ -22,26 +23,27 @@ namespace Atdl4net.Xml
 {
     public class StrategiesReader: INotifyStrategyLoaded
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Xml.Serialization");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private readonly ILogger _log = NullLogger.Instance;
 
         public event System.EventHandler<StrategyLoadedEventArgs> StrategyLoaded;
 
         public Strategies_t Load(string path)
         {
-            _log.DebugFormat("Attempting to load strategies from file '{0}'.", path);
+            _log.LogDebug("Attempting to load strategies from file '{Path}'.", path);
 
             XDocument document = XDocument.Load(path, LoadOptions.SetLineInfo | LoadOptions.PreserveWhitespace);
 
             Strategies_t strategies = LoadStrategies(document);
 
-            _log.DebugFormat("{0} strategies loaded from file '{1}'.", strategies.Count, path);
+            _log.LogDebug("{Count} strategies loaded from file '{Path}'.", strategies.Count, path);
 
             return strategies;
         }
 
         public Strategies_t Load(Stream stream)
         {
-            _log.Debug("Attempting to load strategies from stream.");
+            _log.LogDebug("Attempting to load strategies from stream.");
 
             XDocument document;
 #if NET_40
@@ -54,7 +56,7 @@ namespace Atdl4net.Xml
 #endif
             Strategies_t strategies = LoadStrategies(document);
 
-            _log.DebugFormat("{0} strategies loaded from stream.", strategies.Count);
+            _log.LogDebug("{Count} strategies loaded from stream.", strategies.Count);
 
             return strategies;
         }

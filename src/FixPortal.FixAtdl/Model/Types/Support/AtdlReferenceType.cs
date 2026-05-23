@@ -12,7 +12,8 @@ using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Enumerations;
 using Atdl4net.Resources;
 using Atdl4net.Validation;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Types.Support
@@ -30,7 +31,8 @@ namespace Atdl4net.Model.Types.Support
     /// other uses T.)</remarks>
     public abstract class AtdlReferenceType<T> : IParameterType where T : class
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Types.Support");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private static readonly ILogger _log = NullLogger.Instance;
 
         /// <summary>
         /// Storage for the value of this parameter, as type T?.
@@ -84,29 +86,29 @@ namespace Atdl4net.Model.Types.Support
             }
             catch (InvalidFieldValueException ex)
             {
-                _log.Error(m => m("Invalid value of type {0} for parameter {1}; exception text: {2}",
-                    hostParameter.Type, hostParameter.Name, ex.Message));
+                _log.LogError(ex, "Invalid value of type {Arg0} for parameter {Arg1}; exception text: {Arg2}",
+                    hostParameter.Type, hostParameter.Name, ex.Message);
 
                 return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.DataConversionFailure, HumanReadableTypeName);
             }
             catch (FormatException ex)
             {
-                _log.Error(m => m("Unable to convert value '{0}' to type {1} for parameter {2}; exception text: {3}",
-                    value, hostParameter.Type, hostParameter.Name, ex.Message));
+                _log.LogError(ex, "Unable to convert value '{Arg0}' to type {Arg1} for parameter {Arg2}; exception text: {Arg3}",
+                    value, hostParameter.Type, hostParameter.Name, ex.Message);
 
                 return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.DataConversionFailure, HumanReadableTypeName);
             }
             catch (InvalidCastException ex)
             {
-                _log.Error(m => m("Unable to convert value '{0}' to type {1} for parameter {2}; exception text: {3}",
-                    value, hostParameter.Type, hostParameter.Name, ex.Message));
+                _log.LogError(ex, "Unable to convert value '{Arg0}' to type {Arg1} for parameter {Arg2}; exception text: {Arg3}",
+                    value, hostParameter.Type, hostParameter.Name, ex.Message);
 
                 return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.DataConversionFailure, HumanReadableTypeName);
             }
             catch (ArgumentException ex)
             {
-                _log.Error(m => m("Unable to convert value '{0}' to type {1} for parameter {2}; exception text: {3}",
-                    value, hostParameter.Type, hostParameter.Name, ex.Message));
+                _log.LogError(ex, "Unable to convert value '{Arg0}' to type {Arg1} for parameter {Arg2}; exception text: {Arg3}",
+                    value, hostParameter.Type, hostParameter.Name, ex.Message);
 
                 return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.DataConversionFailure, HumanReadableTypeName);
             }
@@ -167,7 +169,7 @@ namespace Atdl4net.Model.Types.Support
 
             string wireValue = ConvertToWireValueFormat(value);
 
-            _log.Debug(m => m("Wire value for parameter {0} = '{1}'", hostParameter.Name, wireValue));
+            _log.LogDebug("Wire value for parameter {Arg0} = '{Arg1}'", hostParameter.Name, wireValue);
 
             return wireValue;
         }

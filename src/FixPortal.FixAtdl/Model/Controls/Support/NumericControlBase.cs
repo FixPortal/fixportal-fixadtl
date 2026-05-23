@@ -12,7 +12,8 @@ using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Atdl4net.Model.Controls.Support
 {
@@ -22,7 +23,8 @@ namespace Atdl4net.Model.Controls.Support
     /// <remarks>Note that decimal.MaxValue is used to represent an invalid value.</remarks>
     public class NumericControlBase : InitializableControl<decimal?>
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private static readonly ILogger _log = NullLogger.Instance;
 
         private const decimal InvalidValue = decimal.MaxValue;
 
@@ -57,7 +59,7 @@ namespace Atdl4net.Model.Controls.Support
             }
             catch (FormatException)
             {
-                _log.ErrorFormat("Unable to set control {0} to value '{0}' as the value could not be converted to a valid number", Id, value);
+                _log.LogError("Unable to set control {Arg0} to value '{Arg1}' as the value could not be converted to a valid number", Id, value);
 
                 return false;
             }
@@ -116,7 +118,7 @@ namespace Atdl4net.Model.Controls.Support
                 throw ThrowHelper.New<InternalErrorException>(this, InternalErrors.UnexpectedArgumentType,
                     newValue.GetType().FullName, "System.String, System.Decimal");
 
-            _log.Debug(m=>m("Control value is now {0}", _value != null ? _value.ToString() : "null"));
+            _log.LogDebug("Control value is now {Value}", _value != null ? _value.ToString() : "null");
         }
 
         /// <summary>
@@ -137,7 +139,7 @@ namespace Atdl4net.Model.Controls.Support
 
             _value = value.ToDecimal();
 
-            _log.Debug(m => m("Numeric control {0} value is now {1}", Id, _value));
+            _log.LogDebug("Numeric control {Arg0} value is now {Arg1}", Id, _value);
         }
 
         /// <summary>

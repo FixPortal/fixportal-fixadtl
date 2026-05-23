@@ -14,7 +14,8 @@ using Atdl4net.Model.Enumerations;
 using Atdl4net.Resources;
 using Atdl4net.Utility;
 using Atdl4net.Validation;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Atdl4net.Model.Elements
 {
@@ -24,7 +25,8 @@ namespace Atdl4net.Model.Elements
     public class EditRef_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, IValueProvider
     {
         // Use Atdl4net.Validation namespace rather than Atdl4net.Model.Elements for debugging purposes
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Validation");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private static readonly ILogger _log = NullLogger.Instance;
 
         private Edit_t<T> _referencedEdit;
 
@@ -120,7 +122,7 @@ namespace Atdl4net.Model.Elements
             {
                 _referencedEdit = strategy.Edits.Clone<T>(Id);
 
-                _log.Debug(m=>m("EditRef Id {0} linked to new Edit_t resolved from Strategy '{1}'", Id, strategy.Name));
+                _log.LogDebug("EditRef Id {Arg0} linked to new Edit_t resolved from Strategy '{Arg1}'", Id, strategy.Name);
             }
             else
             {
@@ -130,7 +132,7 @@ namespace Atdl4net.Model.Elements
                 {
                     _referencedEdit = strategies.Edits.Clone<T>(Id);
 
-                    _log.Debug(m => m("EditRef Id {0} linked to new Edit_t resolved resolved from Strategies level", Id));
+                    _log.LogDebug("EditRef Id {Arg0} linked to new Edit_t resolved resolved from Strategies level", Id);
                 }
                 else
                     throw ThrowHelper.New<ReferencedObjectNotFoundException>(this, ErrorMessages.EditRefResolutionFailure, Id);

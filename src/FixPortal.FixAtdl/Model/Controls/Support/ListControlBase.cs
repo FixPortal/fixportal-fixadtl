@@ -11,7 +11,8 @@ using Atdl4net.Model.Collections;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Atdl4net.Model.Controls.Support
 {
@@ -31,7 +32,8 @@ namespace Atdl4net.Model.Controls.Support
     /// </remarks>
     public abstract class ListControlBase : InitializableControl<string>
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Controls");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private static readonly ILogger _log = NullLogger.Instance;
 
         /// <summary>
         /// EnumState for this control which provides storage of the state of each ListItem.
@@ -149,7 +151,7 @@ namespace Atdl4net.Model.Controls.Support
 
             _value = value.ToEnumState(parameter.EnumPairs);
 
-            _log.Debug(m => m("List control {0} value is now {1}", Id, _value.ToString()));
+            _log.LogDebug("List control {Arg0} value is now {Arg1}", Id, _value.ToString());
         }
 
         /// <summary>

@@ -9,7 +9,8 @@ using Atdl4net.Fix;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Elements.Support;
 using Atdl4net.Utility;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Atdl4net.Model.Collections
 {
@@ -18,7 +19,8 @@ namespace Atdl4net.Model.Collections
     /// </summary>
     public class StrategyEditCollection : Collection<StrategyEdit_t>
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Collections");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private readonly ILogger _log = NullLogger.Instance;
 
         /// <summary>
         /// Validates all the <see cref="StrategyEdit_t">StrategyEdit</see>s in this collection.
@@ -48,7 +50,7 @@ namespace Atdl4net.Model.Collections
 
         protected override void InsertItem(int index, StrategyEdit_t item)
         {
-            _log.Debug(m => m("StrategyEdit added"));
+            _log.LogDebug("StrategyEdit added");
 
             base.InsertItem(index, item);
         }

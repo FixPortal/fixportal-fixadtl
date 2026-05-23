@@ -6,7 +6,8 @@
 
 using System;
 using System.Reflection;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Atdl4net.Diagnostics
 {
@@ -15,7 +16,8 @@ namespace Atdl4net.Diagnostics
     /// </summary>
     public static class ThrowHelper
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Diagnostics");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private static readonly ILogger _log = NullLogger.Instance;
 
         /// <summary>
         /// Creates an exception of the specified type and initializes it using the values supplied.
@@ -28,7 +30,7 @@ namespace Atdl4net.Diagnostics
         {
             T ex = CreateException<T>(source, message, null);
 
-            _log.Error("Exception created by ThrowHelper", ex);
+            _log.LogError(ex, "Exception created by ThrowHelper");
 
             return ex;
         }
@@ -45,7 +47,7 @@ namespace Atdl4net.Diagnostics
         {
             T ex = CreateException<T>(source, message, innerException, null);
 
-            _log.Error("Exception created by ThrowHelper", ex);
+            _log.LogError(ex, "Exception created by ThrowHelper");
 
             return ex;
         }
@@ -62,7 +64,7 @@ namespace Atdl4net.Diagnostics
         {
             T ex = CreateException<T>(source, string.Format(format, args), null);
 
-            _log.Error("Exception created by ThrowHelper", ex);
+            _log.LogError(ex, "Exception created by ThrowHelper");
 
             return ex;
         }
@@ -80,7 +82,7 @@ namespace Atdl4net.Diagnostics
         {
             T ex = CreateException<T>(source, string.Format(format, args), innerException, null);
 
-            _log.Error("Exception created by ThrowHelper", ex);
+            _log.LogError(ex, "Exception created by ThrowHelper");
 
             return ex;
         }
@@ -97,7 +99,7 @@ namespace Atdl4net.Diagnostics
         {
             T ex = CreateException<T>(source, message, info);
 
-            _log.Error("Exception created by ThrowHelper", ex);
+            _log.LogError(ex, "Exception created by ThrowHelper");
 
             return ex;
         }
@@ -115,7 +117,7 @@ namespace Atdl4net.Diagnostics
         {
             T ex = CreateException<T>(source, message, innerException, info);
 
-            _log.Error("Exception created by ThrowHelper", ex);
+            _log.LogError(ex, "Exception created by ThrowHelper");
 
             return ex;
         }
@@ -133,7 +135,7 @@ namespace Atdl4net.Diagnostics
         {
             T ex = CreateException<T>(source, string.Format(format, args), info);
 
-            _log.Error("Exception created by ThrowHelper", ex);
+            _log.LogError(ex, "Exception created by ThrowHelper");
 
             return ex;
         }
@@ -152,7 +154,7 @@ namespace Atdl4net.Diagnostics
         {
             T ex = CreateException<T>(source, string.Format(format, args), innerException, info);
 
-            _log.Error("Exception created by ThrowHelper", ex);
+            _log.LogError(ex, "Exception created by ThrowHelper");
 
             return ex;
         }
@@ -170,7 +172,7 @@ namespace Atdl4net.Diagnostics
         {
             Exception newException = Rethrow(source, ex, string.Format(format, args), new object());
 
-            _log.Error("Exception rethrown by ThrowHelper", newException);
+            _log.LogError(newException, "Exception rethrown by ThrowHelper");
 
             return newException;
         }
@@ -188,7 +190,7 @@ namespace Atdl4net.Diagnostics
         {
             Exception newException = Rethrow(source, ex, null, format, arg);
 
-            _log.Error("Exception rethrown by ThrowHelper", newException);
+            _log.LogError(newException, "Exception rethrown by ThrowHelper");
 
             return newException;
         }

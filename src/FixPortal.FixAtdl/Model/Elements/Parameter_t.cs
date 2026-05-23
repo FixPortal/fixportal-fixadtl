@@ -14,7 +14,8 @@ using Atdl4net.Model.Enumerations;
 using Atdl4net.Model.Types.Support;
 using Atdl4net.Resources;
 using Atdl4net.Validation;
-using Common.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using ThrowHelper = Atdl4net.Diagnostics.ThrowHelper;
 
 namespace Atdl4net.Model.Elements
@@ -26,7 +27,8 @@ namespace Atdl4net.Model.Elements
     /// <example>To create a parameter with underlying type Amt_t, use <c>new Parameter_t&lt;Amt_t&gt;</c>.</example>
     public class Parameter_t<T> : IParameter where T : IParameterType, new()
     {
-        private static readonly ILog _log = LogManager.GetLogger("Atdl4net.Model.Elements");
+        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+        private static readonly ILogger _log = NullLogger.Instance;
 
         private readonly EnumPairCollection _enumPairs = new EnumPairCollection();
 
@@ -41,7 +43,7 @@ namespace Atdl4net.Model.Elements
         /// <param name="name">Name of this parameter.  See <see cref="Parameter{T}.Name"/> for constraints on parameter names.</param>
         public Parameter_t(string name)
         {
-            _log.DebugFormat("New Parameter_t<{0}> created, Name='{1}'.", typeof(T).Name, name);
+            _log.LogDebug("New Parameter_t<{Arg0}> created, Name='{Arg1}'.", typeof(T).Name, name);
 
             Name = name;
             Type = typeof(T).Name;
@@ -66,7 +68,7 @@ namespace Atdl4net.Model.Elements
         /// </summary>
         public void Reset()
         {
-            _log.DebugFormat("Parameter_t<{0}> {1} reset.", typeof(T).Name, Name);
+            _log.LogDebug("Parameter_t<{Arg0}> {Arg1} reset.", typeof(T).Name, Name);
 
             _value.Reset();
         }
