@@ -8,14 +8,8 @@ using System;
 
 namespace Atdl4net.Xml.Serialization;
 
-public class ClassDeserializedEventArgs : EventArgs
+public class ClassDeserializedEventArgs(Type createdType, object extraInfo) : EventArgs
 {
-    public Type ClassType { get; private set; }
-    public object ExtraInfo { get; private set; }
-
-    public ClassDeserializedEventArgs(Type createdType, object extraInfo)
-    {
-        ClassType = createdType;
-        ExtraInfo = extraInfo;
-    }
+    public Type ClassType { get; private set; } = createdType;
+    public object ExtraInfo { get; private set; } = extraInfo;
 }
