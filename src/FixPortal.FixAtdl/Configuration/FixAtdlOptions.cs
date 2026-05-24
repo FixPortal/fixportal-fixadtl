@@ -1,4 +1,4 @@
-// FP Enhancement: 2026-05-23 — replaced upstream WPF-coupled Atdl4netConfiguration with placeholder POCO; real knobs added when consumers identify them.
+// FP Enhancement: 2026-05-24 — FixAtdlOptions POCO replaces System.Configuration glue.
 
 namespace FixPortal.FixAtdl.Configuration;
 
