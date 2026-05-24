@@ -58,7 +58,6 @@ public class ValueConverter
                 return new FixTag(Convert.ToInt32(value, CultureInfo.InvariantCulture));
 
             default:
-                // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
                 if (targetType.FullName!.StartsWith("Atdl4net.Model.Controls.InitValue"))
                     return value;
                 else

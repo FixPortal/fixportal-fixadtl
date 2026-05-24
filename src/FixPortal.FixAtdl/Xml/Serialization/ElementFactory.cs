@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Steve Wilkinson (author)
+#region Copyright (c) 2010-2011, Steve Wilkinson (author)
 //
 //   This software is released under the MIT License..
 //
@@ -53,7 +53,7 @@ public class ElementFactory : INotifyClassDeserialized
 
         GetConstructorParameters(definition, sourceElement, parentObject, out constructorParameterTypes, out constructorParameterValues);
 
-        object newObject = CreateRawObject(definition.TargetType!, constructorParameterTypes, constructorParameterValues); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+        object newObject = CreateRawObject(definition.TargetType!, constructorParameterTypes, constructorParameterValues);
 
         if (definition.CacheElementValueInstruction != null)
             _elementValueCache[definition.CacheElementValueInstruction.CacheKey] = newObject;
@@ -62,7 +62,7 @@ public class ElementFactory : INotifyClassDeserialized
 
         try
         {
-            ProcessAttributes(definition.TargetType!, definition.Attributes!, attributes, newObject); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            ProcessAttributes(definition.TargetType!, definition.Attributes!, attributes, newObject);
         }
         catch (Atdl4netException ex)
         {
@@ -98,7 +98,7 @@ public class ElementFactory : INotifyClassDeserialized
 
         GetConstructorParameters(genericTypeDefinition, sourceElement, parentObject, out constructorParameterTypes, out constructorParameterValues);
 
-        // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+       
         string innerTypeName = ReadAttribute(sourceElement.Attributes(), genericTypeDefinition.AttributeForInnerType, typeof(string)) as string;
 
         if (string.IsNullOrEmpty(innerTypeName))
@@ -108,23 +108,23 @@ public class ElementFactory : INotifyClassDeserialized
         Type innerType;
 
         if (string.IsNullOrEmpty(genericTypeDefinition.InnerTypeNamespace))
-            innerType = Type.GetType(innerTypeName)!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            innerType = Type.GetType(innerTypeName)!;
         else
         {
-            innerType = Type.GetType(string.Format("{0}.{1}", genericTypeDefinition.InnerTypeNamespace, innerTypeName))!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            innerType = Type.GetType(string.Format("{0}.{1}", genericTypeDefinition.InnerTypeNamespace, innerTypeName))!;
         }
 
         if (innerType == null)
             throw ThrowHelper.New<InvalidFieldValueException>(this, new ExceptionInfo(sourceElement), ErrorMessages.UnrecognisedTypeError, innerTypeName,
                 genericTypeDefinition.AttributeForInnerType.LocalName, genericTypeDefinition.ElementName!.LocalName);
 
-        object newObject = CreateRawObject(genericTypeDefinition.TargetType!, [innerType], constructorParameterTypes, constructorParameterValues); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+        object newObject = CreateRawObject(genericTypeDefinition.TargetType!, [innerType], constructorParameterTypes, constructorParameterValues);
 
         IEnumerable<XAttribute> attributes = sourceElement.Attributes();
 
         try
         {
-            ProcessAttributes(newObject.GetType(), genericTypeDefinition.Attributes!, attributes, newObject); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            ProcessAttributes(newObject.GetType(), genericTypeDefinition.Attributes!, attributes, newObject);
             ProcessAttributes(newObject.GetType(), genericTypeDefinition.InnerTypeToAttributesMap[innerType], attributes, newObject);
         }
         catch (MissingMandatoryValueException ex)
@@ -149,7 +149,7 @@ public class ElementFactory : INotifyClassDeserialized
 
         GetConstructorParameters(multiTypeDefinition, sourceElement, parentObject, out constructorParameterTypes, out constructorParameterValues);
 
-        // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+       
         string typeName = ReadAttribute(sourceElement.Attributes(), multiTypeDefinition.AttributeForType, typeof(string)) as string;
 
         if (string.IsNullOrEmpty(typeName))
@@ -163,10 +163,10 @@ public class ElementFactory : INotifyClassDeserialized
         Type targetType;
 
         if (string.IsNullOrEmpty(multiTypeDefinition.TypeNamespace))
-            targetType = Type.GetType(typeName)!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            targetType = Type.GetType(typeName)!;
         else
         {
-            targetType = Type.GetType(string.Format("{0}.{1}", multiTypeDefinition.TypeNamespace, typeName))!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            targetType = Type.GetType(string.Format("{0}.{1}", multiTypeDefinition.TypeNamespace, typeName))!;
         }
 
         if (targetType == null)
@@ -179,7 +179,7 @@ public class ElementFactory : INotifyClassDeserialized
 
         try
         {
-            ProcessAttributes(newObject.GetType(), multiTypeDefinition.Attributes!, attributes, newObject); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            ProcessAttributes(newObject.GetType(), multiTypeDefinition.Attributes!, attributes, newObject);
             ProcessAttributes(newObject.GetType(), multiTypeDefinition.TypeToAttributesMap[targetType], attributes, newObject);
         }
         catch (Atdl4netException ex)
@@ -204,7 +204,7 @@ public class ElementFactory : INotifyClassDeserialized
         ConstructorInfo classConstructor = specificType.GetConstructor(argTypes);
 
         if (classConstructor == null)
-            throw ThrowHelper.New<InternalErrorException>(ExceptionContext, InternalErrors.NoConstructorFoundForSpecifiedArgumentTypes, outerType.FullName!); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            throw ThrowHelper.New<InternalErrorException>(ExceptionContext, InternalErrors.NoConstructorFoundForSpecifiedArgumentTypes, outerType.FullName!);
 
         return classConstructor.Invoke(args);
     }
@@ -216,7 +216,7 @@ public class ElementFactory : INotifyClassDeserialized
         ConstructorInfo classConstructor = targetType.GetConstructor(argTypes);
 
         if (classConstructor == null)
-            throw ThrowHelper.New<InternalErrorException>(ExceptionContext, InternalErrors.NoConstructorFoundForSpecifiedArgumentTypes, targetType.FullName!); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            throw ThrowHelper.New<InternalErrorException>(ExceptionContext, InternalErrors.NoConstructorFoundForSpecifiedArgumentTypes, targetType.FullName!);
 
         return classConstructor.Invoke(args);
     }
@@ -240,7 +240,7 @@ public class ElementFactory : INotifyClassDeserialized
                         break;
 
                     case SourceType.ParentObject:
-                        constructorParameterValues[n] = parentObject!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                        constructorParameterValues[n] = parentObject!;
                         break;
 
                     case SourceType.NamedPredecessor:
@@ -291,7 +291,7 @@ public class ElementFactory : INotifyClassDeserialized
                 if (names.Length != 2)
                     throw ThrowHelper.New<InternalErrorException>(this, InternalErrors.InvalidPropertyIndirection, attrDefn.Property);
 
-                // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+               
                 PropertyInfo outerProperty = targetType.GetProperty(names[0])!;
 
                 if (outerProperty == null)
@@ -311,7 +311,7 @@ public class ElementFactory : INotifyClassDeserialized
             }
             else
             {
-                PropertyInfo property = targetType.GetProperty(attrDefn.Property)!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                PropertyInfo property = targetType.GetProperty(attrDefn.Property)!;
 
                 if (property == null)
                     throw ThrowHelper.New<InvalidPropertyOnObjectException>(this, ErrorMessages.PropertyNotFoundOnObject, attrDefn.Property, targetType.Name);
@@ -328,7 +328,7 @@ public class ElementFactory : INotifyClassDeserialized
         // We have to reflect the target type as we can't rely on the Definition to contain it (e.g. MultiTypeElementDefinition).
         Type targetType = target.GetType();
 
-        // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+       
         foreach (ChildElementDefinition childDefinition in definition.ChildElements!)
         {
             bool isRecursiveDefinition = childDefinition.ElementDefinition is RecursiveTypeElementDefinition;
@@ -355,17 +355,17 @@ public class ElementFactory : INotifyClassDeserialized
                 object childObject;
 
                 if (targetDefinition is GenericTypeElementDefinition)
-                    childObject = CreateObject((GenericTypeElementDefinition)targetDefinition, childElement, target); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                    childObject = CreateObject((GenericTypeElementDefinition)targetDefinition, childElement, target);
                 else if (targetDefinition is MultiTypeElementDefinition)
-                    childObject = CreateObject((MultiTypeElementDefinition)targetDefinition, childElement, target); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                    childObject = CreateObject((MultiTypeElementDefinition)targetDefinition, childElement, target);
                 else
                     childObject = CreateObject(targetDefinition, childElement, target);
 
-                PropertyInfo property = targetType.GetProperty(childDefinition.ContainerProperty)!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                PropertyInfo property = targetType.GetProperty(childDefinition.ContainerProperty)!;
 
                 if (property == null)
                     throw ThrowHelper.New<InternalErrorException>(this, InternalErrors.PropertyNotFoundOnObjectInternal,
-                        childDefinition.ContainerProperty, targetType.FullName!); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                        childDefinition.ContainerProperty, targetType.FullName!);
                 try
                 {
                     // For the case of MultiTypeElementDefinition we must use the reflected type
@@ -374,12 +374,12 @@ public class ElementFactory : INotifyClassDeserialized
                 catch (Atdl4netException ex)
                 {
                     throw ThrowHelper.Rethrow(this, ex, new ExceptionInfo(childElement), ErrorMessages.GeneralElementProcessingError,
-                        definition.ElementName!.LocalName); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                        definition.ElementName!.LocalName);
                 }
                 catch (ArgumentException ex)
                 {
                     throw ThrowHelper.New<Atdl4netException>(this, ex, new ExceptionInfo(childElement), ErrorMessages.GeneralElementProcessingError,
-                        definition.ElementName!.LocalName, ex.Message); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                        definition.ElementName!.LocalName, ex.Message);
                 }
             }
         }
@@ -402,16 +402,16 @@ public class ElementFactory : INotifyClassDeserialized
                 return;
             }
             else
-                containerMethod = Enum.GetName(typeof(StandardContainerMethod), childDefinition.ContainerMethod)!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                containerMethod = Enum.GetName(typeof(StandardContainerMethod), childDefinition.ContainerMethod)!;
         }
         else
             containerMethod = childDefinition.ContainerMethod as string;
 
-        MethodInfo targetMethod = property.PropertyType.GetMethod(containerMethod!, [targetType])!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+        MethodInfo targetMethod = property.PropertyType.GetMethod(containerMethod!, [targetType])!;
 
         if (targetMethod == null)
             throw ThrowHelper.New<InternalErrorException>(this, InternalErrors.ContainerMethodNotFoundOnObject,
-                containerMethod, targetType.FullName!); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                containerMethod, targetType.FullName!);
         try
         {
             targetMethod.Invoke(property.GetValue(target, null), [childObject]);
@@ -494,7 +494,7 @@ public class ElementFactory : INotifyClassDeserialized
         catch (ArgumentException ex)
         {
             throw ThrowHelper.New<InternalErrorException>(ExceptionContext, ex, InternalErrors.UnableToSetPropertyValueOnObject,
-                property.Name, value, target.GetType().FullName!); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                property.Name, value, target.GetType().FullName!);
         }
     }
 

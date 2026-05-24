@@ -19,7 +19,7 @@ public class MultiTypeElementDefinition : ElementDefinition
     public MultiTypeElementDefinition(XName elementName, XName attributeForType, string typeNamespace, 
         ConstructorParameter[] constructorParameters, ElementAttribute[] commonAttributes,
         Dictionary<Type, ElementAttribute[]> attributeDictionary, ChildElementDefinition[] children)
-        : base(elementName, (Type?)null, constructorParameters, commonAttributes, children, null) // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+        : base(elementName, (Type?)null, constructorParameters, commonAttributes, children, null)
     {
         AttributeForType = attributeForType;
         TypeNamespace = typeNamespace;
