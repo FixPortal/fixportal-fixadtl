@@ -66,7 +66,7 @@ public class Data_t : AtdlReferenceType<char[]>, IControlConvertible
     /// <returns>Value converted from a string.</returns>
     protected override char[] ConvertFromWireValueFormat(string value)
     {
-        return value != null ? value.ToCharArray() : null;
+        return value != null ? value.ToCharArray() : null!;
     }
 
     /// <summary>
@@ -76,7 +76,7 @@ public class Data_t : AtdlReferenceType<char[]>, IControlConvertible
     /// <returns>If input value is not null, returns value converted to a string; null otherwise.</returns>
     protected override string ConvertToWireValueFormat(char[] value)
     {
-        return value != null ? new string(value) : null;
+        return value != null ? new string(value) : null!;
     }
 
     /// <summary>
@@ -87,9 +87,9 @@ public class Data_t : AtdlReferenceType<char[]>, IControlConvertible
     /// <returns>If input value is not null, returns value converted to T?; null otherwise.</returns>
     protected override char[] ConvertToNativeType(IParameter hostParameter, IParameterConvertible value)
     {
-        string result = value != null ? value.ToString(hostParameter) : null;
+        string? result = value != null ? value.ToString(hostParameter) : null;
 
-        return result != null ? result.ToCharArray() : null;
+        return result != null ? result.ToCharArray() : null!;
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public class Data_t : AtdlReferenceType<char[]>, IControlConvertible
     /// <returns>A string value equivalent to the value of this instance.  May be null.</returns>
     public string? ToString(IFormatProvider? provider)
     {
-        char[] value = ConstValue ?? _value;
+        char[]? value = ConstValue ?? _value;
 
         return value != null ? new string(value) : null;
     }

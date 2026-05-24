@@ -18,14 +18,14 @@ public class StrategyPanel_t : IParentable<StrategyPanel_t>, IDisposable, IStrat
     private readonly Strategy_t _owningStrategy;
     private StrategyPanel_t? _owningStrategyPanel;
     private readonly StrategyPanelCollection _strategyPanels;
-    private ControlCollection _controls;
+    private ControlCollection _controls = null!;
 
     public Border_t? Border { get; set; }
     public bool? Collapsed { get; set; }
     public bool? Collapsible { get; set; }
-    public string Color { get; set; }
+    public string Color { get; set; } = null!;
     public Orientation_t? Orientation { get; set; }
-    public string Title { get; set; }
+    public string Title { get; set; } = null!;
 
     // Single parameter constructor needed for root StrategyPanel_t.
     public StrategyPanel_t(Strategy_t owner) : this(owner, null) { }
@@ -94,7 +94,7 @@ public class StrategyPanel_t : IParentable<StrategyPanel_t>, IDisposable, IStrat
 
     StrategyPanel_t IParentable<StrategyPanel_t>.Parent
     {
-        get { return _owningStrategyPanel; }
+        get { return _owningStrategyPanel!; }
         set { _owningStrategyPanel = value; }
     }
 

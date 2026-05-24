@@ -30,7 +30,7 @@ public class ValidationResult
     }
 
     private readonly ResultType _validityType;
-    private readonly string _errorText;
+    private readonly string _errorText = null!;
 
     private static readonly ValidationResult _validResult = new();
 

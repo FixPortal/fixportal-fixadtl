@@ -42,12 +42,12 @@ public class Strategy_t : IParentable<Strategies_t>
     /// <summary>
     /// Gets/sets a description for this Strategy.
     /// </summary>
-    public Description_t Description { get; set; }
+    public Description_t Description { get; set; } = null!;
 
     /// <summary>
     /// Gets/sets the URL of a disclosure document supplied by the algorithm provider.
     /// </summary>
-    public string DisclosureDoc { get; set; }
+    public string DisclosureDoc { get; set; } = null!;
 
     /// <summary>
     /// Gets the collection of Edits for this strategy.  Edits at this level are available to be used in either the
@@ -59,12 +59,12 @@ public class Strategy_t : IParentable<Strategies_t>
     /// Gets/sets the FIX message to use when transmitting the order that this Strategy relates to. Values are taken from FIX tag 35 and
     /// may be one of "D" (NewOrder-Single), "E" (NewOrder-List), "AB" (NewOrder-Multileg), or "s" (NewOrder-Cross).
     /// </summary>
-    public string FixMsgType { get; set; }
+    public string FixMsgType { get; set; } = null!;
 
     /// <summary>
     /// Gets/sets the file path or URL of an image file or logo for this particular strategy.
     /// </summary>
-    public string ImageLocation { get; set; }
+    public string ImageLocation { get; set; } = null!;
 
     /// <summary>
     /// This element defines the markets/exchanges (by ISO 10383 MIC Code) to which the strategy is applicable. If no 
@@ -85,7 +85,7 @@ public class Strategy_t : IParentable<Strategies_t>
     /// <summary>
     /// Gets/sets the unique identifier of a Strategy. Strategy names must be unique per provider.
     /// </summary>
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     /// <summary>
     /// Gets/sets the tag which contains the sequence number of a particular order of a basket.
@@ -100,12 +100,12 @@ public class Strategy_t : IParentable<Strategies_t>
     /// <summary>
     /// Gets/sets a string that identifies the firm providing the algorithm.
     /// </summary>
-    public string ProviderId { get; set; }
+    public string ProviderId { get; set; } = null!;
 
     /// <summary>
     /// Gets/sets a string that provides a further level of firm identification.
     /// </summary>
-    public string ProviderSubId { get; set; }
+    public string ProviderSubId { get; set; } = null!;
 
     /// <summary>
     /// Gets the Regions that this Strategy pertains to.
@@ -119,7 +119,7 @@ public class Strategy_t : IParentable<Strategies_t>
     /// New Order Multileg message.  Parameters not contained within a RepeatingGroup element have their values 
     /// populated in the main body of a message.
     /// </summary>
-    public RepeatingGroup_t RepeatingGroup { get; set; }
+    public RepeatingGroup_t RepeatingGroup { get; set; } = null!;
 
     /// <summary>
     /// Gets the list of security types (by SecurityType (tag 167)) for which this Strategy is valid. The absence 
@@ -133,7 +133,7 @@ public class Strategy_t : IParentable<Strategies_t>
     /// string, an ampersand "ClOrdID=" and the specific ClOrdID-string. Trader hits this full URL to communicate 
     /// regarding the order or draft.  See additional documentation.
     /// </summary>
-    public string SentOrderLink { get; set; }
+    public string SentOrderLink { get; set; } = null!;
 
     /// <summary>
     /// Gets the collection of <see cref="StrategyEdit_t">StrategyEdits</see> for validating the output of this Strategy.
@@ -144,7 +144,7 @@ public class Strategy_t : IParentable<Strategies_t>
     /// Gets/sets the StrategyLayout for this Strategy, which itself contains the root StrategyPanel for displaying
     /// the Strategy.
     /// </summary>
-    public StrategyLayout_t StrategyLayout { get; set; }
+    public StrategyLayout_t StrategyLayout { get; set; } = null!;
 
     /// <summary>
     /// Gets/sets a field that denotes number of repeating legs; used when msgType is AB.
@@ -161,18 +161,18 @@ public class Strategy_t : IParentable<Strategies_t>
     /// Gets/sets the name of the strategy as rendered in the user interface (UI). If not provided then the "name" attribute should 
     /// be used. (This is the value rendered on the UI when the user is presented with a choice of algorithms.)
     /// </summary>
-    public string UiRep { get; set; }
+    public string UiRep { get; set; } = null!;
 
     /// <summary>
     /// Gets/sets information to facilitate version control
     /// </summary>
-    public string Version { get; set; }
+    public string Version { get; set; } = null!;
 
     /// <summary>
     /// Gets/sets the value used to identify the algorithm. The tag referred to by <see cref="Strategies_t.StrategyIdentifierTag"/>
     /// at the Strategies level within the FIXatdl file will be set to this value.
     /// </summary>
-    public string WireValue { get; set; }
+    public string WireValue { get; set; } = null!;
 
     /// <summary>
     /// Loads the initial control values, either from the control's initValue attribute, or using the
@@ -254,7 +254,7 @@ public class Strategy_t : IParentable<Strategies_t>
 
     #region IParentable<Strategies_t> Members
 
-    public Strategies_t Parent { get; set; }
+    public Strategies_t Parent { get; set; } = null!;
 
     #endregion
 }

@@ -99,7 +99,7 @@ public class ElementFactory : INotifyClassDeserialized
         GetConstructorParameters(genericTypeDefinition, sourceElement, parentObject, out constructorParameterTypes, out constructorParameterValues);
 
        
-        string innerTypeName = ReadAttribute(sourceElement.Attributes(), genericTypeDefinition.AttributeForInnerType, typeof(string)) as string;
+        string? innerTypeName = ReadAttribute(sourceElement.Attributes(), genericTypeDefinition.AttributeForInnerType, typeof(string)) as string;
 
         if (string.IsNullOrEmpty(innerTypeName))
             throw ThrowHelper.New<MissingMandatoryValueException>(this, new ExceptionInfo(sourceElement), ErrorMessages.MissingMandatoryAttribute,
@@ -150,7 +150,7 @@ public class ElementFactory : INotifyClassDeserialized
         GetConstructorParameters(multiTypeDefinition, sourceElement, parentObject, out constructorParameterTypes, out constructorParameterValues);
 
        
-        string typeName = ReadAttribute(sourceElement.Attributes(), multiTypeDefinition.AttributeForType, typeof(string)) as string;
+        string? typeName = ReadAttribute(sourceElement.Attributes(), multiTypeDefinition.AttributeForType, typeof(string)) as string;
 
         if (string.IsNullOrEmpty(typeName))
             throw ThrowHelper.New<MissingMandatoryValueException>(this, new ExceptionInfo(sourceElement), ErrorMessages.MissingMandatoryAttribute,
@@ -201,7 +201,7 @@ public class ElementFactory : INotifyClassDeserialized
 
         Type specificType = outerType.MakeGenericType(innerTypes);
 
-        ConstructorInfo classConstructor = specificType.GetConstructor(argTypes);
+        ConstructorInfo? classConstructor = specificType.GetConstructor(argTypes);
 
         if (classConstructor == null)
             throw ThrowHelper.New<InternalErrorException>(ExceptionContext, InternalErrors.NoConstructorFoundForSpecifiedArgumentTypes, outerType.FullName!);
@@ -213,7 +213,7 @@ public class ElementFactory : INotifyClassDeserialized
     {
         _log.LogDebug("CreateObject(Type, Type[], params object[]) called; Type={TargetType}.", targetType.FullName);
 
-        ConstructorInfo classConstructor = targetType.GetConstructor(argTypes);
+        ConstructorInfo? classConstructor = targetType.GetConstructor(argTypes);
 
         if (classConstructor == null)
             throw ThrowHelper.New<InternalErrorException>(ExceptionContext, InternalErrors.NoConstructorFoundForSpecifiedArgumentTypes, targetType.FullName!);
@@ -245,7 +245,7 @@ public class ElementFactory : INotifyClassDeserialized
 
                     case SourceType.NamedPredecessor:
                         {
-                            object value;
+                            object? value;
 
                             if (_elementValueCache.TryGetValue(elementDefinition.ConstructorParameters[n].Source, out value))
                                 constructorParameterValues[n] = value;
@@ -269,7 +269,7 @@ public class ElementFactory : INotifyClassDeserialized
 
         foreach (ElementAttribute attrDefn in attributeDefinitions)
         {
-            object value = null;
+            object? value = null;
 
             if (attrDefn.Type.IsEnum && attrDefn.EnumValues != null)
                 value = ReadAttribute(attributes, attrDefn.XmlName, attrDefn.Type, attrDefn.EnumValues);
@@ -340,7 +340,7 @@ public class ElementFactory : INotifyClassDeserialized
 
             if (hasContainerElement)
             {
-                XElement containerElement = (from e in sourceElement.Elements(childDefinition.ContainerElementName) select e).FirstOrDefault();
+                XElement? containerElement = (from e in sourceElement.Elements(childDefinition.ContainerElementName) select e).FirstOrDefault();
 
                 if (containerElement == null)
                     return;
@@ -405,7 +405,7 @@ public class ElementFactory : INotifyClassDeserialized
                 containerMethod = Enum.GetName(typeof(StandardContainerMethod), childDefinition.ContainerMethod)!;
         }
         else
-            containerMethod = childDefinition.ContainerMethod as string;
+            containerMethod = (childDefinition.ContainerMethod as string)!;
 
         MethodInfo targetMethod = property.PropertyType.GetMethod(containerMethod!, [targetType])!;
 
@@ -430,10 +430,10 @@ public class ElementFactory : INotifyClassDeserialized
     {
         _log.LogDebug("ReadAttribute(IEnumerable<XAttribute>, XName, Type) called; Attribute name='{AttributeName}'", attributeName);
 
-        XAttribute attribute = attributes.FirstOrDefault(a => a.Name == attributeName);
+        XAttribute? attribute = attributes.FirstOrDefault(a => a.Name == attributeName);
 
         if (attribute == null)
-            return null;
+            return null!;
 
         // NB Most simple enums are dealt with in the other overload of ReadAttribute.
         if (type.IsEnum)
@@ -465,10 +465,10 @@ public class ElementFactory : INotifyClassDeserialized
     {
         _log.LogDebug("ReadAttribute(IEnumerable<XAttribute>, XName, Type, Dictionary<string, Enum>) called; Attribute name='{AttributeName}'", attributeName);
 
-        XAttribute attribute = attributes.FirstOrDefault(a => a.Name == attributeName);
+        XAttribute? attribute = attributes.FirstOrDefault(a => a.Name == attributeName);
 
         if (attribute == null)
-            return null;
+            return null!;
 
         if (!enumValues.ContainsKey(attribute.Value))
             throw ThrowHelper.New<InvalidFieldValueException>(ExceptionContext, ErrorMessages.InvalidValueEnumParseFailure, attribute.Value, enumType.Name);
@@ -502,13 +502,13 @@ public class ElementFactory : INotifyClassDeserialized
 
     private void NotifyClassDeserialized(Type classType, object extraInfo)
     {
-        EventHandler<ClassDeserializedEventArgs> classDeserialized = ClassDeserialized;
+        EventHandler<ClassDeserializedEventArgs>? classDeserialized = ClassDeserialized;
 
         if (classDeserialized!=null)
             classDeserialized(this, new ClassDeserializedEventArgs(classType, extraInfo));
     }
 
-    public event EventHandler<ClassDeserializedEventArgs> ClassDeserialized;
+    public event EventHandler<ClassDeserializedEventArgs>? ClassDeserialized;
 
     #endregion
 }

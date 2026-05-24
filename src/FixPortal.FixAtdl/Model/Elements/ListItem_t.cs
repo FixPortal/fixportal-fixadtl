@@ -12,8 +12,8 @@ namespace Atdl4net.Model.Elements;
 
 public class ListItem_t : IComparable
 {
-    public string EnumId { get; set; }
-    public string UiRep { get; set; }
+    public string EnumId { get; set; } = null!;
+    public string UiRep { get; set; } = null!;
     public bool IsSelected { get; set; }
 
     public int CompareTo(object? obj)

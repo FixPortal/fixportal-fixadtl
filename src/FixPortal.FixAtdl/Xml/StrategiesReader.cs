@@ -29,7 +29,7 @@ public class StrategiesReader
     // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
     private readonly ILogger _log = NullLogger.Instance;
 
-    public event System.EventHandler<StrategyLoadedEventArgs> StrategyLoaded;
+    public event System.EventHandler<StrategyLoadedEventArgs>? StrategyLoaded;
 
     public Strategies_t Load(string path)
     {
@@ -66,7 +66,7 @@ public class StrategiesReader
 
     private Strategies_t LoadStrategies(XDocument document)
     {
-        XElement element = document.Element(AtdlNamespaces.core + "Strategies");
+        XElement? element = document.Element(AtdlNamespaces.core + "Strategies");
 
         if (element == null)
             throw ThrowHelper.New<Atdl4netException>(this, ErrorMessages.StrategiesLoadFailure);

@@ -30,5 +30,5 @@ public class StrategyEdit_t : EditEvaluator<IParameter>
     /// <summary>
     /// Gets/sets the error message to display when the boolean expression defined by StrategyEdit/Edit evaluates to False.
     /// </summary>
-    public string ErrorMessage { get; set; }
+    public string ErrorMessage { get; set; } = null!;
 }

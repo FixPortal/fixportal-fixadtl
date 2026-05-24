@@ -22,7 +22,7 @@ namespace Atdl4net.Model.Elements;
 /// </summary>
 public abstract class Control_t : IParentable<StrategyPanel_t>, IValueProvider, IParameterConvertible
 {
-    private StrategyPanel_t _owner;
+    private StrategyPanel_t _owner = null!;
     private readonly StateRuleCollection _stateRules;
 
     /// <summary>
@@ -53,7 +53,7 @@ public abstract class Control_t : IParentable<StrategyPanel_t>, IValueProvider, 
 
     /// <summary>Indicates the initialization value is to be taken from this standard FIX field. Format: "FIX_" + FIXFieldName. 
     /// E.g. "FIX_OrderQty".  Required when initPolicy=”UseFixField”.</summary>
-    public string InitFixField { get; set; }
+    public string InitFixField { get; set; } = null!;
 
     /// <summary>Describes how to initialize the control.  If the value of this attribute is undefined or equal to "UseValue" and
     ///  initValue is defined then initialize with initValue.  If the value is equal to "UseFixField" then attempt to initialize 
@@ -63,16 +63,16 @@ public abstract class Control_t : IParentable<StrategyPanel_t>, IValueProvider, 
     public InitPolicy_t? InitPolicy { get; set; }
 
     /// <summary>A title for this control which may be displayed.</summary>
-    public string Label { get; set; }
+    public string Label { get; set; } = null!;
 
-    /// <summary>The name of the parameter for which this control gives the visual representation. A parameter with this name 
+    /// <summary>The name of the parameter for which this control gives the visual representation. A parameter with this name
     /// must be defined within the same strategy as this control.</summary>
     /// <remarks>The <see cref="ReferencedParameter"/> property provides access to the parameter instance itself, whilst
     /// this property provides access to the name of the parameter.</remarks>
-    public string ParameterRef { get; set; }
+    public string ParameterRef { get; set; } = null!;
 
     /// <summary>Tool tip text for rendered GUI objects rendered for the parameter.</summary>
-    public string ToolTip { get; set; }
+    public string ToolTip { get; set; } = null!;
 
     #endregion
 

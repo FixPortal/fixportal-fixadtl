@@ -39,10 +39,10 @@ public abstract class BinaryControlBase : InitializableControl<bool?>
     }
 
     /// <summary>Output EnumID if checked/selected.  Applicable when xsi:type is CheckBox_t or RadioButton_t.</summary>
-    public string CheckedEnumRef { get; set; }
+    public string CheckedEnumRef { get; set; } = null!;
 
     /// <summary>Output EnumID if unchecked/not selected.  Applicable when xsi:type is CheckBox_t or RadioButton_t.</summary>
-    public string UncheckedEnumRef { get; set; }
+    public string UncheckedEnumRef { get; set; } = null!;
 
     #region InitializableControl<T> Overrides
 
@@ -89,7 +89,7 @@ public abstract class BinaryControlBase : InitializableControl<bool?>
     /// <returns>One of three states, true, false or null (meaning do not send this value over FIX).</returns>
     public override object GetCurrentValue()
     {
-        return _value;
+        return _value!;
     }
 
     /// <summary>
@@ -142,7 +142,7 @@ public abstract class BinaryControlBase : InitializableControl<bool?>
         // EnumIDs in the InitValue, guess we better do the same...
         if (isString)
         {
-            string value = newValue as string;
+            string? value = newValue as string;
 
             if (value == Atdl.NullValue)
                 _value = null;
@@ -254,10 +254,10 @@ public abstract class BinaryControlBase : InitializableControl<bool?>
             string value = (bool)_value ? enumPairs.GetWireValueFromEnumId(CheckedEnumRef) : enumPairs.GetWireValueFromEnumId(UncheckedEnumRef);
 
             // It is possible for '{NULL}' to be provided as one of the enum wire values, so we have to act accordingly
-            return value != Atdl.NullValue ? value : null;
+            return value != Atdl.NullValue ? value : null!;
         }
         else
-            return _value != null ? _value.Value.ToString().ToLower() : null;
+            return _value != null ? _value.Value.ToString().ToLower() : null!;
     }
 
     /// <summary>

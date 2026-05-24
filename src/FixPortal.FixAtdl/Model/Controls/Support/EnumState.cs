@@ -197,7 +197,7 @@ public class EnumState : IComparable
     /// <summary>
     /// Gets/sets the non-enum value; the non-enum value is only used by the EditableDropDownList_t type.
     /// </summary>
-    public string NonEnumValue
+    public string? NonEnumValue
     {
         get { return _nonEnumValue; }
 
@@ -307,7 +307,7 @@ public class EnumState : IComparable
         // Override the values in the states collection if a non-enum value is supplied.  This is used to handle 
         // the unique case of the EditableDropDownList_t control.
         if (NonEnumValue != null)
-            return NonEnumValue.Length > 0 ? NonEnumValue : null;
+            return NonEnumValue.Length > 0 ? NonEnumValue : null!;
 
         bool hasAtLeastOneValue = false;
         StringBuilder sb = new();
@@ -336,7 +336,7 @@ public class EnumState : IComparable
 
         _log.LogDebug("EnumState as WireValue is {WireValue}", sb.ToString());
 
-        return hasAtLeastOneValue ? sb.ToString() : null;
+        return hasAtLeastOneValue ? sb.ToString() : null!;
     }
 
     /// <summary>
@@ -355,7 +355,7 @@ public class EnumState : IComparable
 
         foreach (string inputValue in inputValues)
         {
-            string enumId;
+            string? enumId;
 
             if (!enumPairs.TryParseWireValue(inputValue, out enumId))
                 throw ThrowHelper.New<ArgumentException>(ExceptionContext, ErrorMessages.UnrecognisedEnumIdValue, inputValue);

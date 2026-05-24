@@ -11,7 +11,7 @@ namespace Atdl4net.Model.Elements;
 
 public class Region_t
 {
-    private CountryCollection _countries;
+    private CountryCollection _countries = null!;
 
     public Region Name { get; set; }
     public Inclusion_t Inclusion { get; set; }

@@ -20,7 +20,7 @@ public class ElementAttribute
     public XName XmlName { get; private set; }
     public string Property { get; private set; }
     public Type Type { get; private set; }
-    public Dictionary<string, Enum> EnumValues { get; private set; }
+    public Dictionary<string, Enum> EnumValues { get; private set; } = null!;
     public Required Required { get; private set; }
 
     public ElementAttribute(string xmlName, string property, Type type, Required required)

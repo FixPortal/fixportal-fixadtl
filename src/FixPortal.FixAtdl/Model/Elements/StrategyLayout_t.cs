@@ -16,5 +16,5 @@ public class StrategyLayout_t : IStrategyPanel
     /// <summary>
     /// Gets/sets the root StrategyPanel.
     /// </summary>
-    public StrategyPanel_t StrategyPanel { get; set; }
+    public StrategyPanel_t StrategyPanel { get; set; } = null!;
 }

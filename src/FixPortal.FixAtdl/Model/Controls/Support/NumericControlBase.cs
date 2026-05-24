@@ -84,7 +84,7 @@ public class NumericControlBase : InitializableControl<decimal?>
     /// <returns>Either a valid decimal value or null (meaning do not send this value over FIX).</returns>
     public override object GetCurrentValue()
     {
-        return _value != InvalidValue ? _value : null;
+        return (_value != InvalidValue ? _value : null)!;
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ public class NumericControlBase : InitializableControl<decimal?>
 
         if (isString)
         {
-            string value = newValue as string;
+            string? value = newValue as string;
 
             if (value == Atdl.NullValue)
                 _value = null;
@@ -202,7 +202,7 @@ public class NumericControlBase : InitializableControl<decimal?>
     /// <returns>A string value equivalent to the value of this instance.  May be null.</returns>
     public override string ToString(IParameter targetParameter)
     {
-        return _value != null ? ((decimal)_value).ToString(CultureInfo.InvariantCulture) : null;
+        return _value != null ? ((decimal)_value).ToString(CultureInfo.InvariantCulture) : null!;
     }
 
     /// <summary>

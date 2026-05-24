@@ -47,7 +47,7 @@ public class FixFieldValueProvider
     /// <summary>
     /// Gets the parameters for this value provider.
     /// </summary>
-    public ParameterCollection Parameters { get { return _parameters; } }
+    public ParameterCollection? Parameters { get { return _parameters; } }
 
     /// <summary>
     /// Gets the FIX values collection for this value provider.
@@ -65,9 +65,9 @@ public class FixFieldValueProvider
     /// <returns>true if the field could be retrieved; false otherwise.</returns>
     public bool TryGetValue(string fixField, string targetParameterName, out string value)
     {
-        string result = null;
+        string? result = null;
 
-        bool retrieved = TryGetValue(fixField, out result);
+        bool retrieved = TryGetValue(fixField, out result!);
 
         if (retrieved && !string.IsNullOrEmpty(targetParameterName) && _parameters!.Contains(targetParameterName))
         {
@@ -105,7 +105,7 @@ public class FixFieldValueProvider
     public bool TryGetValue(string fixField, out string value)
     {
         bool retrieved = false;
-        string result = null;
+        string? result = null;
 
         if (_initialValueProvider != null && _initialValueProvider.InputFixValues != null)
         {

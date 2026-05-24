@@ -61,7 +61,7 @@ public abstract class UTCDateTimeTypeBase : DateTimeTypeBase
         string format = GetDateTimeFormatStrings()[0];
         DateTime? adjustedValue = GetAdjustedValue(value);
 
-        return adjustedValue != null ? ((DateTime)adjustedValue).ToString(format) : null;
+        return adjustedValue != null ? ((DateTime)adjustedValue).ToString(format) : null!;
     }
 
     #endregion

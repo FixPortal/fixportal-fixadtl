@@ -10,7 +10,7 @@ namespace Atdl4net.Model.Elements;
 
 public class SecurityType_t
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     public Inclusion_t Inclusion { get; set; }
 }

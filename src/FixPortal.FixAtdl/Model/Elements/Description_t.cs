@@ -14,7 +14,7 @@ public class Description_t
     /// <summary>
     /// Gets/sets the content of the Description.
     /// </summary>
-    public string Content { get; set; }
+    public string Content { get; set; } = null!;
 
     /// <summary>
     /// Implicit cast operator that enables an arbitrary string to be assigned to the Description.

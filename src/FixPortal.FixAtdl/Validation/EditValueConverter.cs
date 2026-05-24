@@ -38,7 +38,7 @@ public static class EditValueConverter
         if (typeInstanceToMatch == null)
             return value;
 
-        string type = typeInstanceToMatch.GetType().FullName;
+        string? type = typeInstanceToMatch.GetType().FullName;
 
         switch (type)
         {

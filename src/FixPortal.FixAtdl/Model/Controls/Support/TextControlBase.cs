@@ -80,7 +80,7 @@ public abstract class TextControlBase : InitializableControl<string>
     {
         if (newValue is string)
         {
-            string value = newValue as string;
+            string? value = newValue as string;
 
             if (value == Atdl.NullValue)
                 _value = null;
@@ -123,7 +123,7 @@ public abstract class TextControlBase : InitializableControl<string>
     /// <returns>This control's value (as a string) or null (meaning do not send this value over FIX).</returns>
     public override object GetCurrentValue()
     {
-        return _value;
+        return _value!;
     }
 
     /// <summary>
@@ -202,7 +202,7 @@ public abstract class TextControlBase : InitializableControl<string>
     /// <returns>A string value equivalent to the value of this instance.  May be null.</returns>
     public override string ToString(IParameter targetParameter)
     {
-        return _value;
+        return _value!;
     }
 
     /// <summary>

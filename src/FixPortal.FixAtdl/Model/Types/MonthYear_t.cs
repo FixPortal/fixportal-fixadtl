@@ -80,7 +80,7 @@ public class MonthYear_t : AtdlValueType<MonthYear>, IControlConvertible
     /// <returns>If input value is not null, returns value converted to a string; null otherwise.</returns>
     protected override string ConvertToWireValueFormat(MonthYear? value)
     {
-        return value != null ? value.ToString() : null;
+        return value != null ? value.ToString()! : null!;
     }
 
     /// <summary>

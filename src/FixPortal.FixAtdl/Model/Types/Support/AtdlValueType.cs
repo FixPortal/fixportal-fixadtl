@@ -63,7 +63,7 @@ public abstract class AtdlValueType<T> : IParameterType where T : struct
     {
         // This base type doesn't know how to convert to control value types, but derived types must
         // implement IControlConvertible.
-        return this as IControlConvertible;
+        return (this as IControlConvertible)!;
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ public abstract class AtdlValueType<T> : IParameterType where T : struct
     /// </summary>
     /// <param name="hostParameter"><see cref="IParameter"/> that hosts the value.</param>
     /// <param name="value">Control value that implements <see cref="IParameterConvertible"/>.</param>
-    /// <remarks>An <see cref="IParameterConvertible"/> is passed in enabling the control value to be converted into any 
+    /// <remarks>An <see cref="IParameterConvertible"/> is passed in enabling the control value to be converted into any
     /// desired type, provided that the value supports conversion to that type.</remarks>
     public ValidationResult SetValueFromControl(IParameter hostParameter, IParameterConvertible value)
     {
@@ -181,7 +181,7 @@ public abstract class AtdlValueType<T> : IParameterType where T : struct
     /// <returns>Native parameter value.</returns>
     public virtual object GetNativeValue(bool applyWireValueFormat)
     {
-        return ConstValue != null ? ConstValue : _value;
+        return ConstValue != null ? ConstValue : _value!;
     }
 
     /// <summary>

@@ -32,7 +32,7 @@ public class UTCTimestamp_t : UTCDateTimeTypeBase
     /// or ocean, and Location is the name of a specific location within that region. E.g. Americas/Chicago.
     /// Applicable when xsi:type is UTCTimestamp_t.</summary>
     /// <value>The local market timezone.</value>
-    public string LocalMktTz { get; set; }
+    public string LocalMktTz { get; set; } = null!;
 
     private static readonly string[] _formatStrings = [FixDateTimeFormat.FixDateTime, FixDateTimeFormat.FixDateTimeMs];
 

@@ -56,7 +56,7 @@ public class Country_t : EnumTypeBase<IsoCountryCode>
     /// <returns>If input value is not null, returns value converted to a string; null otherwise.</returns>
     protected override string ConvertToWireValueFormat(IsoCountryCode? value)
     {
-        return value != null ? Enum.GetName(typeof(IsoCountryCode), value) : null;
+        return value != null ? Enum.GetName(typeof(IsoCountryCode), value)! : null!;
     }
 
     /// <summary>

@@ -29,14 +29,14 @@ public class Strategies_t : IEnumerable<Strategy_t>
     /// <summary>Indicates whether a new strategy can be chosen during a Cancel/Replace.</summary>
     public bool? ChangeStrategyOnCxlRpl { get; set; }
 
-    public Description_t Description { get; set; }
+    public Description_t Description { get; set; } = null!;
 
     /// <summary>The tag within the FIX order message to be populated with a boolean ('Y'/'N') indicating
     /// whether the order is a draft.</summary>
     public FixTag? DraftFlagIdentifierTag { get; set; }
 
     /// <summary>Filepath or URL of an image file or logo of the algo providing firm.</summary>
-    public string ImageLocation { get; set; }
+    public string ImageLocation { get; set; } = null!;
 
     /// <summary>The tag within the FIX order message to be populated with a value identifying the chosen strategy.
     /// E.g. if strategyIdentifierTag is 5001 and the chosen strategy is identified by the value 'VWAP' then the 

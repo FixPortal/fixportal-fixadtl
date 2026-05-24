@@ -24,5 +24,5 @@ public class Market_t
     /// <summary>
     /// String representing a market or exchange - ISO 10383 Market Identifier Code (MIC).
     /// </summary>
-    public string MICCode { get; set; }
+    public string MICCode { get; set; } = null!;
 }

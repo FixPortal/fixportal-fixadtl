@@ -82,12 +82,12 @@ public class ReadOnlyControlCollection : IParentable<Strategy_t>, IEnumerable<Co
     {
         get
         {
-            Control_t value;
+            Control_t? value;
 
             if (_controls.TryGetValue(controlId, out value))
                 return value;
             else
-                return null;
+                return null!;
         }
     }
 
@@ -102,7 +102,7 @@ public class ReadOnlyControlCollection : IParentable<Strategy_t>, IEnumerable<Co
     /// and initValue is not defined, then do not initialize.</remarks>
     public void LoadDefaults(FixFieldValueProvider controlInitValueProvider)
     {
-        Control_t control = null;
+        Control_t? control = null;
 
         try
         {

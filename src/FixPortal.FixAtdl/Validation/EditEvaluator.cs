@@ -23,8 +23,8 @@ public abstract class EditEvaluator<T> : IResolvable<Strategy_t, T> where T : cl
     // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
     private readonly ILogger _log = NullLogger.Instance;
 
-    private Edit_t<T> _edit;
-    private EditRef_t<T> _editRef;
+    private Edit_t<T> _edit = null!;
+    private EditRef_t<T> _editRef = null!;
 
     public HashSet<string> Sources
     {

@@ -14,8 +14,8 @@ namespace Atdl4net.Model.Elements;
 public class EnumPair_t
 {
     /// <summary>A unique identifier of an enumPair element per parameter.</summary>
-    public string EnumId { get; set; }
+    public string EnumId { get; set; } = null!;
 
     /// <summary>The corresponding value that is used to populate the FIX message.</summary>
-    public string WireValue { get; set; }
+    public string WireValue { get; set; } = null!;
 }

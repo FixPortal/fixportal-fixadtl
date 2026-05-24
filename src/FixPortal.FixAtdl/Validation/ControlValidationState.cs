@@ -23,8 +23,8 @@ public class ControlValidationState
     // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
     private readonly ILogger _log = NullLogger.Instance;
 
-    private ValidationResult _controlValidationResult;
-    private ValidationResult _parameterValidationResult;
+    private ValidationResult _controlValidationResult = null!;
+    private ValidationResult _parameterValidationResult = null!;
     private readonly string _controlId;
     private readonly List<StrategyEdit_t> _strategyEdits = [];
 

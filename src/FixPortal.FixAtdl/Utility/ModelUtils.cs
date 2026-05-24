@@ -28,7 +28,7 @@ public static class ModelUtils
         Type targetParamType = target.GetType();
         string searchString = string.Format("{0}:{1}", visitorType.FullName, targetParamType.FullName);
 
-        MethodInfo methodInfo = null;
+        MethodInfo? methodInfo = null;
 
         lock (_methodInfoCache)
         {
@@ -51,7 +51,7 @@ public static class ModelUtils
     }
 
     // TODO: Move this somewhere better.
-    public static System.Type GetTypeFromName(string typeName)
+    public static System.Type? GetTypeFromName(string typeName)
     {
         return _types.FirstOrDefault(t => t.Name == typeName);
     }

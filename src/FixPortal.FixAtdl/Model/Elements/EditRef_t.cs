@@ -28,7 +28,7 @@ public class EditRef_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class
     // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
     private static readonly ILogger _log = NullLogger.Instance;
 
-    private Edit_t<T> _referencedEdit;
+    private Edit_t<T> _referencedEdit = null!;
 
     public EditRef_t(string id)
     {

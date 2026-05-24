@@ -41,7 +41,7 @@ public class Clock_t : InitializableControl<DateTime?>
     // TODO: Implement LocalMktTz as a type.
     /// <summary>The timezone in which initValue is represented in.  Required when initValue is supplied. Applicable when 
     /// xsi:type is Clock_t.</summary>
-    public string LocalMktTz { get; set; }
+    public string LocalMktTz { get; set; } = null!;
 
     /// <summary>Defines the treatment of initValue time. 0: use initValue; 1: use current time if initValue time has passed.
     /// The default value is 0.</summary>
@@ -112,7 +112,7 @@ public class Clock_t : InitializableControl<DateTime?>
 
         if (isString)
         {
-            string value = newValue as string;
+            string? value = newValue as string;
 
             if (value == Atdl.NullValue)
                 _value = null;
@@ -198,7 +198,7 @@ public class Clock_t : InitializableControl<DateTime?>
     /// <returns>A string value equivalent to the value of this instance in the format YYYYMMDD-HH:MM:SS.  May be null.</returns>
     public override string ToString(IParameter targetParameter)
     {
-        return _value != null ? ((DateTime)_value).ToString(FixDateTimeFormat.FixDateTime) : null;
+        return _value != null ? ((DateTime)_value).ToString(FixDateTimeFormat.FixDateTime) : null!;
     }
 
     /// <summary>
@@ -228,7 +228,7 @@ public class Clock_t : InitializableControl<DateTime?>
     /// <returns>Either a valid DateTime or null (meaning do not send this value over FIX).</returns>
     public override object GetCurrentValue()
     {
-        return _value;
+        return _value!;
     }
 
     #endregion

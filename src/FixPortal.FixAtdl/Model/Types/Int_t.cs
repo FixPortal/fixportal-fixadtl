@@ -81,7 +81,7 @@ public class Int_t : AtdlValueType<int>, IControlConvertible
     /// <returns>If input value is not null, returns value converted to a string; null otherwise.</returns>
     protected override string ConvertToWireValueFormat(int? value)
     {
-        return value != null ? ((int)value).ToString(CultureInfo.InvariantCulture) : null;
+        return value != null ? ((int)value).ToString(CultureInfo.InvariantCulture) : null!;
     }
 
     /// <summary>

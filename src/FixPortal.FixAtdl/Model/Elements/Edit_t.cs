@@ -34,23 +34,23 @@ public class Edit_t
     /// then the name must be pre-pended with the string "FIX_", e.g. "FIX_OrderQty". Required the Operator is 
     /// not null.
     /// </summary>
-    public string Field { get; set; }
+    public string Field { get; set; } = null!;
 
     /// <summary>
-    /// Gets/sets the optional second field name for comparison. When the edit is used within a StateRule, this field 
-    /// must refer to the ID of a Control. When the edit is used within a StrategyEdit, this field must refer 
+    /// Gets/sets the optional second field name for comparison. When the edit is used within a StateRule, this field
+    /// must refer to the ID of a Control. When the edit is used within a StrategyEdit, this field must refer
     /// to either the name of a parameter or a standard FIX field name. When referring to a standard FIX tag
     /// then the name must be pre-pended with the string "FIX_", e.g. "FIX_OrderQty".
     /// </summary>
-    public string Field2 { get; set; }
+    public string Field2 { get; set; } = null!;
 
-    public string Id { get; set; }
+    public string Id { get; set; } = null!;
 
     public Operator_t? Operator { get; set; }
 
     public LogicOperator_t? LogicOperator { get; set; }
 
-    public string Value { get; set; }
+    public string Value { get; set; } = null!;
 
     public EditCollection Edits { get; private set; }
 
@@ -71,8 +71,8 @@ public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, I
     private static readonly bool isPartOfStrategyEdit = typeof(T) == typeof(IParameter);
 
     private bool _currentState;
-    private T _fieldSource;
-    private T _field2Source;
+    private T _fieldSource = null!;
+    private T _field2Source = null!;
     private readonly EditEvaluatingCollection<T> _edits;
     private readonly EditRefCollection<T> _editRefs;
 
@@ -157,17 +157,17 @@ public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, I
     /// <summary>
     /// Gets/sets the name of field to be used as left hand side of the evaluation.
     /// </summary>
-    public string Field { get; set; }
+    public string Field { get; set; } = null!;
 
     /// <summary>
     /// Gets/sets the name of second (optional) field, to be used as the right hand side of the evaluation.
     /// </summary>
-    public string Field2 { get; set; }
+    public string Field2 { get; set; } = null!;
 
     /// <summary>
     /// Gets/sets the optional ID for this Edit.
     /// </summary>
-    public string Id { get; set; }
+    public string Id { get; set; } = null!;
 
     /// <summary>
     /// Gets/sets the optional operator - used when comparing two values.
@@ -182,7 +182,7 @@ public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, I
     /// refers to the enumID of one of the control's ListItem elements.<br/>
     /// When Edit is a descendant of a StrategyEdit element, Value refers to the wireValue of the parameter 
     /// referred by Field."</remarks>
-    public string Value { get; set; }
+    public string Value { get; set; } = null!;
 
     /// <summary>
     /// Gets the current state of this Edit based on the most recent evaluation.
@@ -308,8 +308,8 @@ public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, I
             equal = rhs == null || (rhs as string) == Atdl.NullValue;
         else
         {
-            IComparable comparableLhs = lhs as IComparable;
-            IComparable comparableRhs = rhs as IComparable;
+            IComparable? comparableLhs = lhs as IComparable;
+            IComparable? comparableRhs = rhs as IComparable;
 
             if (comparableLhs != null && comparableRhs != null)
                 equal = comparableLhs.CompareTo(comparableRhs) ==0;
@@ -404,7 +404,7 @@ public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, I
             return Field2Value;
         }
 
-        return null;
+        return null!;
     }
 
     private void CheckForUnsupportedComparisons(object lhs, object rhs)
@@ -419,10 +419,10 @@ public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, I
 
     private static object GetFixFieldValue(FixFieldValueProvider additionalValues, string fixField)
     {
-        object result;
-        string value;
+        object? result;
+        string? value;
 
-        bool gotValue = additionalValues.TryGetValue(fixField, out value);
+        bool gotValue = additionalValues.TryGetValue(fixField, out value!);
 
         // If the FIX value can be converted into a number, most likely it should be treated as one
         // for comparison purposes
@@ -441,7 +441,7 @@ public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, I
         _log.LogDebug("Looked up FIX field {Arg0} for comparison; field was {Arg1}, value={Arg2}",
             fixField, gotValue ? "found" : "not found", gotValue ? result : "N/A");
 
-        return result;
+        return result!;
     }
 
     #region IResolvable<Strategy_t> Members

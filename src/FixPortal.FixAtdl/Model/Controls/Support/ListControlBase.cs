@@ -38,7 +38,7 @@ public abstract class ListControlBase : InitializableControl<string>
     /// <summary>
     /// EnumState for this control which provides storage of the state of each ListItem.
     /// </summary>
-    protected EnumState _value;
+    protected EnumState _value = null!;
 
     /// <summary>
     /// The ListItems for this control; will be empty if no ListItem sub-elements are present.

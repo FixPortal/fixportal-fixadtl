@@ -86,7 +86,7 @@ public abstract class DateTimeTypeBase : AtdlValueType<DateTime>, IControlConver
     {
         string format = GetDateTimeFormatStrings()[0];
 
-        return _value != null ? ((DateTime)_value).ToString(format) : null;
+        return _value != null ? ((DateTime)_value).ToString(format) : null!;
     }
 
     /// <summary>

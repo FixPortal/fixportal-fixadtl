@@ -83,7 +83,7 @@ public class Percentage_t : Float_t
     protected override string ConvertToWireValueFormat(decimal? value)
     {
         if (value == null)
-            return null;
+            return null!;
 
         decimal adjustedValue = (MultiplyBy100 == true) ? (decimal)RemoveTrailingZeroes(value * 100)! : (decimal)value!;
 
@@ -133,7 +133,7 @@ public class Percentage_t : Float_t
                 return adjustedValue;
         }
         else
-            return value;
+            return value!;
     }
 
     #endregion

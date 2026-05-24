@@ -55,7 +55,7 @@ public class Language_t : EnumTypeBase<IsoLanguageCode>
     /// <returns>If input value is not null, returns value converted to a string; null otherwise.</returns>
     protected override string ConvertToWireValueFormat(IsoLanguageCode? value)
     {
-        return value != null ? Enum.GetName(typeof(IsoLanguageCode), value) : null;
+        return value != null ? Enum.GetName(typeof(IsoLanguageCode), value)! : null!;
     }
 
     /// <summary>

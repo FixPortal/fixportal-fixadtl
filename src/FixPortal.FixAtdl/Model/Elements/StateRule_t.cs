@@ -13,7 +13,7 @@ namespace Atdl4net.Model.Elements;
 // TODO: Implement IDisposable
 public class StateRule_t : EditEvaluator<Control_t>, IParentable<Control_t>
 {
-    private Control_t _owner;
+    private Control_t _owner = null!;
 
     /// <summary>
     /// Enabled state for this state rule.
@@ -23,7 +23,7 @@ public class StateRule_t : EditEvaluator<Control_t>, IParentable<Control_t>
     /// <summary>
     /// Value attribute for this state rule.
     /// </summary>
-    public string Value { get; set; }
+    public string Value { get; set; } = null!;
 
     /// <summary>
     /// Visible state for this state rule.

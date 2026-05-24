@@ -92,7 +92,7 @@ public class Float_t : AtdlValueType<decimal>, IControlConvertible
     protected override string ConvertToWireValueFormat(decimal? value)
     {
         if (value == null)
-            return null;
+            return null!;
 
         if (Precision == null)
             return ((decimal)value).ToString(CultureInfo.InvariantCulture);
@@ -125,9 +125,9 @@ public class Float_t : AtdlValueType<decimal>, IControlConvertible
         decimal? value = ConstValue != null ? ConstValue : _value;
 
         if (value != null && applyWireValueFormat && Precision != null)
-            return Round(value, (int)Precision);
+            return Round(value, (int)Precision)!;
         else
-            return value;
+            return value!;
     }
 
     /// <summary>
