@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Steve Wilkinson (author)
+#region Copyright (c) 2010-2011, Steve Wilkinson (author)
 //
 //   This software is released under the MIT License..
 //
@@ -59,7 +59,7 @@ public class FixTagValuesCollection : IEnumerable<KeyValuePair<FixField, string>
         FixField field = fixField.ParseAsEnum<FixField>();
 
         bool result = _message.TryGetValue(field, out string? v);
-        value = v!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+        value = v!;
         return result;
     }
 
@@ -68,7 +68,7 @@ public class FixTagValuesCollection : IEnumerable<KeyValuePair<FixField, string>
         FixField field = tag;
 
         bool result = _message.TryGetValue(field, out string? v);
-        value = v!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+        value = v!;
         return result;
     }
 

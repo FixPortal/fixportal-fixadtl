@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Steve Wilkinson (author)
+#region Copyright (c) 2010-2011, Steve Wilkinson (author)
 //
 //   This software is released under the MIT License..
 //
@@ -234,7 +234,7 @@ public static class ThrowHelper
             case "ArgumentOutOfRangeException":
             case "ArgumentNullException":
                 {
-                    ConstructorInfo classConstructor = classType.GetConstructor([typeof(string), typeof(string)])!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C
+                    ConstructorInfo classConstructor = classType.GetConstructor([typeof(string), typeof(string)])!;
                     T exception = (T)classConstructor.Invoke(["Value", message]);
                     exception.Source = source?.ToString();
                     if (info != null)
@@ -244,7 +244,7 @@ public static class ThrowHelper
 
             default:
                 {
-                    ConstructorInfo classConstructor = classType.GetConstructor([typeof(string)])!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C
+                    ConstructorInfo classConstructor = classType.GetConstructor([typeof(string)])!;
                     T exception = (T)classConstructor.Invoke([message]);
                     exception.Source = source?.ToString();
                     if (info != null)
@@ -259,7 +259,7 @@ public static class ThrowHelper
     {
         Type classType = typeof(T);
 
-        ConstructorInfo classConstructor = classType.GetConstructor([typeof(string), typeof(Exception)])!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C
+        ConstructorInfo classConstructor = classType.GetConstructor([typeof(string), typeof(Exception)])!;
 
         T exception = (T)classConstructor.Invoke([message, innerException]);
 

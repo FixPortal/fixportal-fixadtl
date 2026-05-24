@@ -1,4 +1,4 @@
-﻿#region Copyright (c) 2010-2011, Steve Wilkinson (author)
+#region Copyright (c) 2010-2011, Steve Wilkinson (author)
 //
 //   This software is released under the MIT License..
 //
@@ -24,8 +24,8 @@ public class FixFieldValueProvider
     private readonly ILogger _log = NullLogger.Instance;
     private static readonly FixFieldValueProvider _emptyProvider = new(null, null);
 
-    private readonly IInitialFixValueProvider? _initialValueProvider; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C
-    private readonly ParameterCollection? _parameters; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C
+    private readonly IInitialFixValueProvider? _initialValueProvider;
+    private readonly ParameterCollection? _parameters;
 
     /// <summary>
     /// Initializes a new <see cref="FixFieldValueProvider"/> instance using the supplied set of input 
@@ -52,7 +52,7 @@ public class FixFieldValueProvider
     /// <summary>
     /// Gets the FIX values collection for this value provider.
     /// </summary>
-    public FixTagValuesCollection FixValues { get { return _initialValueProvider!.InputFixValues!; } } // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+    public FixTagValuesCollection FixValues { get { return _initialValueProvider!.InputFixValues!; } }
 
     /// <summary>
     /// Attempts to get the value of the specified FIX field (in FIX_ format), returning the value as a string.
@@ -69,27 +69,27 @@ public class FixFieldValueProvider
 
         bool retrieved = TryGetValue(fixField, out result);
 
-        if (retrieved && !string.IsNullOrEmpty(targetParameterName) && _parameters!.Contains(targetParameterName)) // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+        if (retrieved && !string.IsNullOrEmpty(targetParameterName) && _parameters!.Contains(targetParameterName))
         {
             IParameter parameter = _parameters[targetParameterName];
 
             if (parameter.HasEnumPairs)
             {
-                string wireValue = result!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                string wireValue = result!;
 
                 _log.LogDebug("Attempting to find EnumID for FIX field {FixField} using parameter {ParameterName} with wire value '{WireValue}'",
                     fixField, targetParameterName, wireValue);
 
-                retrieved = parameter.EnumPairs!.TryParseWireValue(wireValue, out result); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                retrieved = parameter.EnumPairs!.TryParseWireValue(wireValue, out result);
             }
             else if (parameter is Parameter_t<Percentage_t>)
-                ProcessPercentageValue((parameter as Parameter_t<Percentage_t>)!, ref result); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                ProcessPercentageValue((parameter as Parameter_t<Percentage_t>)!, ref result);
 
             _log.LogDebug("FIX enumerated value lookup for field {FixField} returning {Retrieved}; value = '{Value}'", fixField,
                 retrieved.ToString().ToLower(), retrieved ? result : "N/A");
         }
 
-        value = result!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+        value = result!;
 
         return retrieved;
     }
@@ -115,7 +115,7 @@ public class FixFieldValueProvider
                 retrieved.ToString().ToLower(), retrieved ? result : "N/A");
         }
 
-        value = retrieved ? result! : null!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+        value = retrieved ? result! : null!;
 
         return retrieved;
     }
@@ -135,3 +135,4 @@ public class FixFieldValueProvider
         }
     }
 }
+

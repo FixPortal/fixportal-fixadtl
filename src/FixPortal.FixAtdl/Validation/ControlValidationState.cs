@@ -138,7 +138,7 @@ public class ControlValidationState
 
             if (parameterIsInvalid)
             {
-                sb.Append(_parameterValidationResult!.ErrorText); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                sb.Append(_parameterValidationResult!.ErrorText);
 
                 if (count > 0)
                     sb.AppendLine();
