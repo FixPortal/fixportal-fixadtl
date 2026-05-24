@@ -1,5 +1,3 @@
-using System.IO;
-using System.Linq;
 using System.Text;
 using Atdl4net.Xml;
 
@@ -21,7 +19,6 @@ public class StrategiesParserTests
 
         var strategies = Load(xml);
 
-        strategies.Should().NotBeNull();
         strategies.Count.Should().Be(1);
         strategies.Strategies[0].Name.Should().Be("TWAP");
     }

@@ -1,12 +1,10 @@
-using System.IO;
-using System.Linq;
 using System.Text;
 using Atdl4net.Fix;
 using Atdl4net.Xml;
 
 namespace FixPortal.FixAtdl.Tests.Fix;
 
-public class FixTagValuesProviderTests
+public class ParameterCollectionOutputTests
 {
     private static Atdl4net.Model.Elements.Strategies_t Load(string xml)
     {
@@ -29,8 +27,6 @@ public class FixTagValuesProviderTests
         twap.Parameters["Participation"].WireValue = "0.1";
 
         var fixValues = twap.Parameters.GetOutputValues();
-
-        fixValues.Should().NotBeNull();
 
         // FixTagValuesCollection enumerates KeyValuePair<FixField, string>.
         // FixField is an int-backed enum; cast to int to get the tag number.

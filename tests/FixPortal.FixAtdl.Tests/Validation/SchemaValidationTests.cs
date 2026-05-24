@@ -1,5 +1,5 @@
-using System.IO;
 using System.Text;
+using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Xml;
 
 namespace FixPortal.FixAtdl.Tests.Validation;
@@ -35,6 +35,6 @@ public class SchemaValidationTests
     {
         var xml = await File.ReadAllTextAsync("Fixtures/invalid-schema.xml", TestContext.Current.CancellationToken);
         var act = () => Load(xml);
-        act.Should().Throw<Exception>();
+        act.Should().Throw<Atdl4netException>();
     }
 }

@@ -1,6 +1,5 @@
-using System.IO;
 using System.Text;
-using System.Xml;
+using Atdl4net.Diagnostics.Exceptions;
 using Atdl4net.Xml;
 
 namespace FixPortal.FixAtdl.Tests.Parsing;
@@ -18,7 +17,7 @@ public class StrategiesParserRejectionTests
     {
         var xml = await File.ReadAllTextAsync("Fixtures/malformed.xml", TestContext.Current.CancellationToken);
         var act = () => Load(xml);
-        act.Should().Throw<XmlException>();
+        act.Should().Throw<System.Xml.XmlException>();
     }
 
     [Fact]
@@ -26,6 +25,6 @@ public class StrategiesParserRejectionTests
     {
         var xml = await File.ReadAllTextAsync("Fixtures/invalid-schema.xml", TestContext.Current.CancellationToken);
         var act = () => Load(xml);
-        act.Should().Throw<Exception>();
+        act.Should().Throw<Atdl4netException>();
     }
 }
