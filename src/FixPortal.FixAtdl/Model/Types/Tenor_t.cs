@@ -120,7 +120,7 @@ public class Tenor_t : AtdlValueType<Tenor>, IControlConvertible
     /// </summary>
     /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
     /// <returns>A string value equivalent to the value of this instance.  May be null.</returns>
-    public string? ToString(IFormatProvider? provider) // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C
+    public string? ToString(IFormatProvider? provider)
     {
         Tenor? value = ConstValue ?? _value;
 
@@ -156,7 +156,7 @@ public class Tenor_t : AtdlValueType<Tenor>, IControlConvertible
         if (_value == null)
             return new EnumState(enumPairs.EnumIds);
         else
-            return EnumState.FromWireValue(enumPairs, ToString(null)!); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            return EnumState.FromWireValue(enumPairs, ToString(null)!);
     }
 
     #endregion

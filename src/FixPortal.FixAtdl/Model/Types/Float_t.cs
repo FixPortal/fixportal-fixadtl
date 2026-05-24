@@ -97,7 +97,7 @@ public class Float_t : AtdlValueType<decimal>, IControlConvertible
         if (Precision == null)
             return ((decimal)value).ToString(CultureInfo.InvariantCulture);
         else
-            return (Round(value, Precision!.Value)!.Value).ToString(CultureInfo.InvariantCulture); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            return Round(value, Precision.Value)!.Value.ToString(CultureInfo.InvariantCulture);
     }
 
     /// <summary>
@@ -168,7 +168,7 @@ public class Float_t : AtdlValueType<decimal>, IControlConvertible
     /// </summary>
     /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
     /// <returns>A string value equivalent to the value of this instance.  May be null.</returns>
-    public virtual string? ToString(IFormatProvider? provider) // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+    public virtual string? ToString(IFormatProvider? provider)
     {
         decimal? value = ConstValue ?? _value;
 

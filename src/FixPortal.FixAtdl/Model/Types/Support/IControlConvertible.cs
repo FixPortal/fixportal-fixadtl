@@ -32,7 +32,7 @@ public interface IControlConvertible
     /// </summary>
     /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
     /// <returns>A string value equivalent to the value of this instance.  May be null.</returns>
-    string? ToString(IFormatProvider? provider); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C
+    string? ToString(IFormatProvider? provider);
 
     /// <summary>
     /// Converts the value of this instance to an equivalent nullable decimal value using the specified culture-specific formatting information.

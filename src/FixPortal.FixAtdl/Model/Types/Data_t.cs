@@ -119,7 +119,7 @@ public class Data_t : AtdlReferenceType<char[]>, IControlConvertible
     /// </summary>
     /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
     /// <returns>A string value equivalent to the value of this instance.  May be null.</returns>
-    public string? ToString(IFormatProvider? provider) // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+    public string? ToString(IFormatProvider? provider)
     {
         char[] value = ConstValue ?? _value;
 

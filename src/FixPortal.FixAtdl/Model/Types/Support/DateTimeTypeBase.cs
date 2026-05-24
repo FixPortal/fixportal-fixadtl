@@ -120,11 +120,11 @@ public abstract class DateTimeTypeBase : AtdlValueType<DateTime>, IControlConver
     /// </summary>
     /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
     /// <returns>A string value equivalent to the value of this instance.  May be null.</returns>
-    public string? ToString(IFormatProvider? provider) // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+    public string? ToString(IFormatProvider? provider)
     {
         DateTime? value = ConstValue ?? _value;
 
-        return value != null ? ((DateTime)_value!).ToString(GetDateTimeFormatStrings()[0]) : null; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+        return value != null ? ((DateTime)_value!).ToString(GetDateTimeFormatStrings()[0]) : null;
     }
 
     /// <summary>

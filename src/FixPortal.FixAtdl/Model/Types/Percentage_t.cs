@@ -44,15 +44,13 @@ public class Percentage_t : Float_t
         {
             int adjustmentFactor = (MultiplyBy100 == true) ? 1 : 100;
 
-            // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
-            // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
             if (MaxValue != null && (decimal)value > MaxValue)
                 return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.MaxValueExceeded,
-                    RemoveTrailingZeroes(value * adjustmentFactor)!, RemoveTrailingZeroes(MaxValue!.Value * adjustmentFactor)!);
+                    RemoveTrailingZeroes(value * adjustmentFactor)!, RemoveTrailingZeroes(MaxValue.Value * adjustmentFactor)!);
 
             if (MinValue != null && (decimal)value < MinValue)
                 return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.MinValueExceeded,
-                    RemoveTrailingZeroes(value * adjustmentFactor)!, RemoveTrailingZeroes(MinValue!.Value * adjustmentFactor)!);
+                    RemoveTrailingZeroes(value * adjustmentFactor)!, RemoveTrailingZeroes(MinValue.Value * adjustmentFactor)!);
         }
         else if (isRequired)
             return new ValidationResult(ValidationResult.ResultType.Missing, ErrorMessages.NonOptionalParameterNotSupplied2);
@@ -71,7 +69,7 @@ public class Percentage_t : Float_t
     {
         decimal? decimalValue = base.ConvertFromWireValueFormat(value);
 
-        return (MultiplyBy100 == true) ? (decimal)decimalValue! / 100 : (decimal)decimalValue!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+        return (MultiplyBy100 == true) ? (decimal)decimalValue! / 100 : (decimal)decimalValue!;
     }
 
     /// <summary>
@@ -87,13 +85,12 @@ public class Percentage_t : Float_t
         if (value == null)
             return null;
 
-        // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
         decimal adjustedValue = (MultiplyBy100 == true) ? (decimal)RemoveTrailingZeroes(value * 100)! : (decimal)value!;
 
         if (Precision == null)
             return adjustedValue.ToString(CultureInfo.InvariantCulture);
         else
-            return (Round(adjustedValue, Precision!.Value)!.Value).ToString(CultureInfo.InvariantCulture); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            return Round(adjustedValue, Precision.Value)!.Value.ToString(CultureInfo.InvariantCulture);
     }
 
     /// <summary>
@@ -128,11 +125,10 @@ public class Percentage_t : Float_t
 
         if (value != null && applyWireValueFormat)
         {
-            // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
             decimal adjustedValue = (MultiplyBy100 == true) ? (decimal)RemoveTrailingZeroes(value * 100)! : (decimal)value!;
 
             if (Precision != null)
-                return Math.Round(adjustedValue, Precision!.Value, MidpointRounding.AwayFromZero); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                return Math.Round(adjustedValue, Precision.Value, MidpointRounding.AwayFromZero);
             else
                 return adjustedValue;
         }
@@ -164,7 +160,7 @@ public class Percentage_t : Float_t
     /// </summary>
     /// <param name="provider">An <see cref="IFormatProvider"/> interface implementation that supplies culture-specific formatting information.</param>
     /// <returns>A string value equivalent to the value of this instance.  May be null.</returns>
-    public override string? ToString(IFormatProvider? provider) // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+    public override string? ToString(IFormatProvider? provider)
     {
         decimal? value = ToDecimal();
 
