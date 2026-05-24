@@ -1,4 +1,4 @@
-#region Copyright (c) 2010-2011, Steve Wilkinson (author)
+﻿#region Copyright (c) 2010-2011, Steve Wilkinson (author)
 //
 //   This software is released under the MIT License..
 //
@@ -13,7 +13,7 @@ namespace FixPortal.FixAtdl.Diagnostics.Exceptions;
 /// 'use' attribute to 'required'.
 /// </summary>
 [Serializable]
-public class MissingMandatoryValueException : Atdl4netException
+public class MissingMandatoryValueException : FixAtdlException
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="MissingMandatoryValueException"/> class.

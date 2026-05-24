@@ -1,4 +1,4 @@
-#region Copyright (c) 2010-2011, Steve Wilkinson (author)
+﻿#region Copyright (c) 2010-2011, Steve Wilkinson (author)
 //
 //   This software is released under the MIT License..
 //
@@ -12,7 +12,7 @@ namespace FixPortal.FixAtdl.Diagnostics.Exceptions;
 /// The exception that is thrown when trying to process a strategy that is internally inconsistent, such as having ListItems but no EnumPairs.
 /// </summary>
 [Serializable]
-public class InconsistentStrategyException : Atdl4netException
+public class InconsistentStrategyException : FixAtdlException
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="DuplicateKeyException"/> class with a specified error message.

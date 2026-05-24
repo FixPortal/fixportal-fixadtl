@@ -25,7 +25,7 @@ public class StrategiesParserRejectionTests
     {
         var xml = await File.ReadAllTextAsync("Fixtures/invalid-schema.xml", TestContext.Current.CancellationToken);
         var act = () => Load(xml);
-        act.Should().Throw<Atdl4netException>();
+        act.Should().Throw<FixAtdlException>();
     }
 }
 

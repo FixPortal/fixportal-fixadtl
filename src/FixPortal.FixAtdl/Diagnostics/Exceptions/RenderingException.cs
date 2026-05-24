@@ -1,4 +1,4 @@
-#region Copyright (c) 2010-2011, Steve Wilkinson (author)
+﻿#region Copyright (c) 2010-2011, Steve Wilkinson (author)
 //
 //   This software is released under the MIT License..
 //
@@ -13,7 +13,7 @@ namespace FixPortal.FixAtdl.Diagnostics.Exceptions;
 /// underlying cause, if the Message value provides insufficient detail.
 /// </summary>
 [Serializable]
-public class RenderingException : Atdl4netException
+public class RenderingException : FixAtdlException
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="RenderingException"/> class.

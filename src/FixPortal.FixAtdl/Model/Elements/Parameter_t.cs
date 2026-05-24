@@ -166,7 +166,7 @@ public class Parameter_t<T> : IParameter where T : IParameterType, new()
 
             return result;
         }
-        catch (Atdl4netException ex)
+        catch (FixAtdlException ex)
         {
             throw ThrowHelper.Rethrow(this, ex, ErrorMessages.UnsuccessfulSetParameterOperation, Name, control.Id, ex.Message);
         }

@@ -1,4 +1,4 @@
-#region Copyright (c) 2010-2011, Steve Wilkinson (author)
+﻿#region Copyright (c) 2010-2011, Steve Wilkinson (author)
 //
 //   This software is released under the MIT License..
 //
@@ -12,7 +12,7 @@ namespace FixPortal.FixAtdl.Diagnostics.Exceptions;
 /// The exception that is thrown when attempting to set a field to an invalid value.
 /// </summary>
 [Serializable]
-public class InvalidFieldValueException : Atdl4netException
+public class InvalidFieldValueException : FixAtdlException
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="InvalidFieldValueException"/> class.

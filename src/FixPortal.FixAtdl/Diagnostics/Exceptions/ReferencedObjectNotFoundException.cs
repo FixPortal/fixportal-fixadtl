@@ -1,4 +1,4 @@
-#region Copyright (c) 2010-2011, Steve Wilkinson (author)
+﻿#region Copyright (c) 2010-2011, Steve Wilkinson (author)
 //
 //   This software is released under the MIT License..
 //
@@ -13,7 +13,7 @@ namespace FixPortal.FixAtdl.Diagnostics.Exceptions;
 /// control has a parameterRef value but there is no corresponding parameter with that name.
 /// </summary>
 [Serializable]
-public class ReferencedObjectNotFoundException : Atdl4netException
+public class ReferencedObjectNotFoundException : FixAtdlException
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ReferencedObjectNotFoundException"/> class.

@@ -64,7 +64,7 @@ public class ElementFactory : INotifyClassDeserialized
         {
             ProcessAttributes(definition.TargetType!, definition.Attributes!, attributes, newObject);
         }
-        catch (Atdl4netException ex)
+        catch (FixAtdlException ex)
         {
             throw ThrowHelper.Rethrow(this, ex, new ExceptionInfo(sourceElement), ErrorMessages.GeneralElementProcessingError, string.Empty);
         }
@@ -182,7 +182,7 @@ public class ElementFactory : INotifyClassDeserialized
             ProcessAttributes(newObject.GetType(), multiTypeDefinition.Attributes!, attributes, newObject);
             ProcessAttributes(newObject.GetType(), multiTypeDefinition.TypeToAttributesMap[targetType], attributes, newObject);
         }
-        catch (Atdl4netException ex)
+        catch (FixAtdlException ex)
         {
             throw ThrowHelper.Rethrow(this, ex, new ExceptionInfo(sourceElement), ErrorMessages.GeneralElementProcessingError, string.Empty);
         }
@@ -371,14 +371,14 @@ public class ElementFactory : INotifyClassDeserialized
                     // For the case of MultiTypeElementDefinition we must use the reflected type
                     ProcessChildProperty(childDefinition, property, targetDefinition.TargetType ?? childObject.GetType(), target, childObject);
                 }
-                catch (Atdl4netException ex)
+                catch (FixAtdlException ex)
                 {
                     throw ThrowHelper.Rethrow(this, ex, new ExceptionInfo(childElement), ErrorMessages.GeneralElementProcessingError,
                         definition.ElementName!.LocalName);
                 }
                 catch (ArgumentException ex)
                 {
-                    throw ThrowHelper.New<Atdl4netException>(this, ex, new ExceptionInfo(childElement), ErrorMessages.GeneralElementProcessingError,
+                    throw ThrowHelper.New<FixAtdlException>(this, ex, new ExceptionInfo(childElement), ErrorMessages.GeneralElementProcessingError,
                         definition.ElementName!.LocalName, ex.Message);
                 }
             }

@@ -1,4 +1,4 @@
-#region Copyright (c) 2010-2011, Steve Wilkinson (author)
+﻿#region Copyright (c) 2010-2011, Steve Wilkinson (author)
 //
 //   This software is released under the MIT License..
 //
@@ -69,7 +69,7 @@ public class StrategiesReader
         XElement? element = document.Element(AtdlNamespaces.core + "Strategies");
 
         if (element == null)
-            throw ThrowHelper.New<Atdl4netException>(this, ErrorMessages.StrategiesLoadFailure);
+            throw ThrowHelper.New<FixAtdlException>(this, ErrorMessages.StrategiesLoadFailure);
 
         ElementFactory factory = new(SchemaDefinitions.Strategies_t, typeof(Strategy_t));
 

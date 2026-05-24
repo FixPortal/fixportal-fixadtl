@@ -1,4 +1,4 @@
-#region Copyright (c) 2010-2011, Steve Wilkinson (author)
+﻿#region Copyright (c) 2010-2011, Steve Wilkinson (author)
 //
 //   This software is released under the MIT License..
 //
@@ -13,7 +13,7 @@ namespace FixPortal.FixAtdl.Diagnostics.Exceptions;
 /// StrategyEdit validation rule.
 /// </summary>
 // FP Enhancement: 2026-05-23 — removed obsolete SerializationInfo constructor (SYSLIB0051 — binary serialization removed in .NET 10).
-public class ValidationException : Atdl4netException
+public class ValidationException : FixAtdlException
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ValidationException"/> class.

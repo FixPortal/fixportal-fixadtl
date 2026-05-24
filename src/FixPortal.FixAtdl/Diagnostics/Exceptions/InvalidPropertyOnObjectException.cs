@@ -1,4 +1,4 @@
-#region Copyright (c) 2010-2011, Steve Wilkinson (author)
+﻿#region Copyright (c) 2010-2011, Steve Wilkinson (author)
 //
 //   This software is released under the MIT License..
 //
@@ -13,7 +13,7 @@ namespace FixPortal.FixAtdl.Diagnostics.Exceptions;
 /// but that object does not support that property.
 /// </summary>
 [Serializable]
-public class InvalidPropertyOnObjectException : Atdl4netException
+public class InvalidPropertyOnObjectException : FixAtdlException
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="InvalidPropertyOnObjectException"/> class.

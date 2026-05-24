@@ -1,4 +1,4 @@
-#region Copyright (c) 2010-2011, Steve Wilkinson (author)
+﻿#region Copyright (c) 2010-2011, Steve Wilkinson (author)
 //
 //   This software is released under the MIT License..
 //
@@ -12,7 +12,7 @@ namespace FixPortal.FixAtdl.Diagnostics.Exceptions;
 /// The exception that is thrown when an item is added to a collection but there is already an item with the same key in the collection.
 /// </summary>
 [Serializable]
-public class DuplicateKeyException : Atdl4netException
+public class DuplicateKeyException : FixAtdlException
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="DuplicateKeyException"/> class with a specified error message.

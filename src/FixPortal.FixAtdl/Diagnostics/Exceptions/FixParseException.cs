@@ -1,4 +1,4 @@
-#region Copyright (c) 2010-2011, Steve Wilkinson (author)
+﻿#region Copyright (c) 2010-2011, Steve Wilkinson (author)
 //
 //   This software is released under the MIT License..
 //
@@ -12,7 +12,7 @@ namespace FixPortal.FixAtdl.Diagnostics.Exceptions;
 /// The exception that is thrown when a FIX message cannot be parsed.
 /// </summary>
 [Serializable]
-public class FixParseException : Atdl4netException
+public class FixParseException : FixAtdlException
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="FixParseException"/> class with a specified error message.
