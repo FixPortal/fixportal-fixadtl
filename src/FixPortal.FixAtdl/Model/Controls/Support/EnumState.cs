@@ -33,7 +33,7 @@ public class EnumState : IComparable
 
     private readonly BitArray _enumStates;
     private readonly string[] _enumIds;
-    private string? _nonEnumValue; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C
+    private string? _nonEnumValue;
 
     /// <summary>
     /// Initializes a new instance of <see cref="EnumState"/> with the supplied set of EnumID values.
@@ -360,7 +360,7 @@ public class EnumState : IComparable
             if (!enumPairs.TryParseWireValue(inputValue, out enumId))
                 throw ThrowHelper.New<ArgumentException>(ExceptionContext, ErrorMessages.UnrecognisedEnumIdValue, inputValue);
 
-            result[enumId!] = true; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            result[enumId!] = true;
         }
 
         _log.LogDebug("Converting EnumState from WireValue; state is {State}", result.ToString());
@@ -417,7 +417,7 @@ public class EnumState : IComparable
             return Equals(enumState) ? 0 : -1;
         }
         else
-            throw ThrowHelper.New<ArgumentException>(this, ErrorMessages.CompareValueFailure, ToString(), obj!.GetType().FullName!); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            throw ThrowHelper.New<ArgumentException>(this, ErrorMessages.CompareValueFailure, ToString(), obj?.GetType().FullName ?? "(null)");
     }
 
     #endregion

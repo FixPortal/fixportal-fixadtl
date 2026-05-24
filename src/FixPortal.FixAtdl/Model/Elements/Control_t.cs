@@ -232,7 +232,7 @@ public abstract class Control_t : IParentable<StrategyPanel_t>, IValueProvider, 
     /// <param name="result">Valid int value if the conversion was possible; zero otherwise.</param>
     /// <returns>True if the value was non-null and of non-zero length and the conversion succeeded; false otherwise.</returns>
     /// <exception cref="InvalidCastException">Thrown if the supplied value was non-null and of non-zero length and the conversion was unsuccessful.</exception>
-    protected bool TryConvertToInt(string value, out int result)
+    protected bool TryConvertToInt(string? value, out int result)
     {
         result = 0;
         bool hasValue = !string.IsNullOrEmpty(value);
@@ -250,7 +250,7 @@ public abstract class Control_t : IParentable<StrategyPanel_t>, IValueProvider, 
     /// <param name="result">Valid uint value if the conversion was possible; zero otherwise.</param>
     /// <returns>True if the value was non-null and of non-zero length and the conversion succeeded; false otherwise.</returns>
     /// <exception cref="InvalidCastException">Thrown if the supplied value was non-null and of non-zero length and the conversion was unsuccessful.</exception>
-    protected bool TryConvertToUint(string value, out uint result)
+    protected bool TryConvertToUint(string? value, out uint result)
     {
         result = 0;
         bool hasValue = !string.IsNullOrEmpty(value);
@@ -268,7 +268,7 @@ public abstract class Control_t : IParentable<StrategyPanel_t>, IValueProvider, 
     /// <param name="result">Valid decimal value if the conversion was possible; zero otherwise.</param>
     /// <returns>True if the value was non-null and of non-zero length and the conversion succeeded; false otherwise.</returns>
     /// <exception cref="InvalidCastException">Thrown if the supplied value was non-null and of non-zero length and the conversion was unsuccessful.</exception>
-    protected bool TryConvertToDecimal(string value, out decimal result)
+    protected bool TryConvertToDecimal(string? value, out decimal result)
     {
         result = 0;
         bool hasValue = !string.IsNullOrEmpty(value);
@@ -286,14 +286,14 @@ public abstract class Control_t : IParentable<StrategyPanel_t>, IValueProvider, 
     /// <param name="result">Valid char value if the conversion was possible; Char.MinValue otherwise.</param>
     /// <returns>True if the value was non-null and of non-zero length and the conversion succeeded; false otherwise.</returns>
     /// <exception cref="InvalidCastException">Thrown if the supplied value was non-null and of non-zero length and the conversion was unsuccessful.</exception>
-    protected bool TryConvertToChar(string value, out char result)
+    protected bool TryConvertToChar(string? value, out char result)
     {
         bool hasValue = !string.IsNullOrEmpty(value);
 
-        if (hasValue && value.Length != 1)
+        if (hasValue && value!.Length != 1)
             throw ThrowHelper.New<InvalidCastException>(this, ErrorMessages.InvalidCharValue, value);
 
-        result = hasValue ? value[0] : char.MinValue;
+        result = hasValue ? value![0] : char.MinValue;
 
         return hasValue;
     }

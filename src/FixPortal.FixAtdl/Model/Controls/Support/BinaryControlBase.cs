@@ -162,9 +162,9 @@ public abstract class BinaryControlBase : InitializableControl<bool?>
             _value = null;
         else
             throw ThrowHelper.New<InternalErrorException>(this, InternalErrors.UnexpectedArgumentType,
-                newValue.GetType().FullName!, "System.String, System.Boolean"); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                newValue.GetType().FullName!, "System.String, System.Boolean");
 
-        _log.LogDebug("Binary control value is now {Value}", _value != null ? _value.ToString()!.ToLower() : "null"); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+        _log.LogDebug("Binary control value is now {Value}", _value != null ? _value.Value.ToString().ToLower() : "null");
     }
 
     /// <summary>
@@ -204,8 +204,7 @@ public abstract class BinaryControlBase : InitializableControl<bool?>
     /// <returns>A nullable 32-bit signed integer equivalent to the value of this instance.</returns>
     public override int? ToInt32(IParameter targetParameter, IFormatProvider provider)
     {
-        // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
-        string wireValue = _value != null ? ToString(targetParameter) : null!;
+        string? wireValue = _value != null ? ToString(targetParameter) : null;
 
         int result = 0;
 
@@ -220,7 +219,7 @@ public abstract class BinaryControlBase : InitializableControl<bool?>
     /// <returns>A nullable 32-bit unsigned integer equivalent to the value of this instance.</returns>
     public override uint? ToUInt32(IParameter targetParameter, IFormatProvider provider)
     {
-        string wireValue = _value != null ? ToString(targetParameter) : null!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+        string? wireValue = _value != null ? ToString(targetParameter) : null;
 
         uint result = 0;
 
@@ -234,7 +233,7 @@ public abstract class BinaryControlBase : InitializableControl<bool?>
     /// <returns>A nullable char value equivalent to the value of this instance.  May be null.</returns>
     public override char? ToChar(IParameter targetParameter)
     {
-        string wireValue = _value != null ? ToString(targetParameter) : null!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+        string? wireValue = _value != null ? ToString(targetParameter) : null;
 
         char result = char.MinValue;
 
@@ -258,7 +257,7 @@ public abstract class BinaryControlBase : InitializableControl<bool?>
             return value != Atdl.NullValue ? value : null;
         }
         else
-            return _value != null ? _value.ToString()!.ToLower() : null; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            return _value != null ? _value.Value.ToString().ToLower() : null;
     }
 
     /// <summary>

@@ -125,7 +125,7 @@ public class EditEvaluatingCollection<T> : Collection<IEdit<T>>, IResolvable<Str
     {
         foreach (IEdit<T> item in Items)
         {
-            (item as IResolvable<Strategy_t, T>)!.Resolve(strategy, sourceCollection); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            (item as IResolvable<Strategy_t, T>)!.Resolve(strategy, sourceCollection);
         }
     }
 

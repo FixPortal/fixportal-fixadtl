@@ -42,7 +42,6 @@ public class ReadOnlyControlCollection : IParentable<Strategy_t>, IEnumerable<Co
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
-                // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
                 foreach (Control_t item in e.NewItems!)
                 {
                     if (_controls.ContainsKey(item.Id))
@@ -58,7 +57,7 @@ public class ReadOnlyControlCollection : IParentable<Strategy_t>, IEnumerable<Co
                 break;
 
             case NotifyCollectionChangedAction.Remove:
-                foreach (Control_t item in e.OldItems!) // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                foreach (Control_t item in e.OldItems!)
                 {
                     if (_controls.ContainsKey(item.Id))
                         _controls.Remove(item.Id);
@@ -66,7 +65,6 @@ public class ReadOnlyControlCollection : IParentable<Strategy_t>, IEnumerable<Co
                 break;
 
             case NotifyCollectionChangedAction.Replace:
-                // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
                 for (int n = 0; n < e.OldItems!.Count; n++)
                 {
                     _controls[((Control_t)e.OldItems[n]!).Id] = (Control_t)e.NewItems![n]!;
@@ -171,7 +169,6 @@ public class ReadOnlyControlCollection : IParentable<Strategy_t>, IEnumerable<Co
         foreach (Control_t control in this)
         {
             bool hasParameterRef = control.ParameterRef != null;
-            // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
             bool isValidParameter = hasParameterRef && parameters.Contains(control.ParameterRef!);
             IParameter parameter = isValidParameter ? parameters[control.ParameterRef!]! : null!;
             object parameterValue = isValidParameter ? parameter.GetCurrentValue() : null!;
@@ -246,7 +243,7 @@ public class ReadOnlyControlCollection : IParentable<Strategy_t>, IEnumerable<Co
                         if (sourceControl is CheckBox_t || !result)
                             sourceControl.SetValue(!result);
                         else
-                            SetCompanionRadioButton((sourceControl as RadioButton_t)!); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                            SetCompanionRadioButton((sourceControl as RadioButton_t)!);
                     }
                 }
             }
@@ -267,11 +264,11 @@ public class ReadOnlyControlCollection : IParentable<Strategy_t>, IEnumerable<Co
         // Approach 1 - use the radio button group name
         if (radioButton.RadioGroup != null)
             radioButtons = (from c in _controls.Values where c.Id != radioButton.Id &&
-                                 c is RadioButton_t && (c as RadioButton_t)!.RadioGroup == radioButton.RadioGroup // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+                                 c is RadioButton_t && (c as RadioButton_t)!.RadioGroup == radioButton.RadioGroup
                                  select c as RadioButton_t);
         else
         // Approach 2 - look for radio buttons on the same panel
-            radioButtons = (from c in radioButton.OwningStrategyPanel!.Controls where c.Id != radioButton.Id && // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            radioButtons = (from c in radioButton.OwningStrategyPanel!.Controls where c.Id != radioButton.Id &&
                                  c is RadioButton_t select c as RadioButton_t);
 
         if (radioButtons.Count() == 1)

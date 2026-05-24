@@ -119,7 +119,7 @@ public abstract class ListControlBase : InitializableControl<string>
         if (newValue == null || newValue as string == Atdl.NullValue)
             _value.ClearAll();
         else
-            _value.UpdateFrom((newValue as EnumState)!); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            _value.UpdateFrom((newValue as EnumState)!);
     }
 
     /// <summary>
