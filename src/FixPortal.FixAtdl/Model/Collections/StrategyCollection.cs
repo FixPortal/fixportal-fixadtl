@@ -4,30 +4,29 @@
 //
 #endregion
 
-using Atdl4net.Model.Elements;
 using System.Collections.ObjectModel;
+using Atdl4net.Model.Elements;
 
-namespace Atdl4net.Model.Collections
+namespace Atdl4net.Model.Collections;
+
+public class StrategyCollection : KeyedCollection<string, Strategy_t>
 {
-    public class StrategyCollection : KeyedCollection<string, Strategy_t>
+    private readonly Strategies_t _owner;
+
+    public StrategyCollection(Strategies_t owner)
     {
-        private readonly Strategies_t _owner;
+        _owner = owner;
+    }
 
-        public StrategyCollection(Strategies_t owner)
-        {
-            _owner = owner;
-        }
+    protected override string GetKeyForItem(Strategy_t strategy)
+    {
+        return strategy.Name;
+    }
 
-        protected override string GetKeyForItem(Strategy_t strategy)
-        {
-            return strategy.Name;
-        }
+    public new void Add(Strategy_t item)
+    {
+        item.Parent = _owner;
 
-        public new void Add(Strategy_t item)
-        {
-            item.Parent = _owner;
-
-            base.Add(item);
-        }
+        base.Add(item);
     }
 }

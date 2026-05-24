@@ -8,60 +8,59 @@ using System.Text;
 using Atdl4net.Utility;
 using Atdl4net.Validation;
 
-namespace Atdl4net.Model.Elements
+namespace Atdl4net.Model.Elements;
+
+// TODO: Implement IDisposable
+public class StateRule_t : EditEvaluator<Control_t>, IParentable<Control_t>
 {
-    // TODO: Implement IDisposable
-    public class StateRule_t : EditEvaluator<Control_t>, IParentable<Control_t>
+    private Control_t _owner;
+
+    /// <summary>
+    /// Enabled state for this state rule.
+    /// </summary>
+    public bool? Enabled { get; set; }
+
+    /// <summary>
+    /// Value attribute for this state rule.
+    /// </summary>
+    public string Value { get; set; }
+
+    /// <summary>
+    /// Visible state for this state rule.
+    /// </summary>
+    public bool? Visible { get; set; }
+
+    /// <summary>
+    /// Provides a string representation of this StateRule_t, primarily for debugging purposes.
+    /// </summary>
+    /// <returns>String representation in the format (control_id, enabled_value_if_set, value_value_if_set, visible_value_if_set).</returns>
+    public override string ToString()
     {
-        private Control_t _owner;
+        StringBuilder sb = new();
 
-        /// <summary>
-        /// Enabled state for this state rule.
-        /// </summary>
-        public bool? Enabled { get; set; }
+        sb.AppendFormat("(Control.ID=\"{0}\"", _owner.Id);
 
-        /// <summary>
-        /// Value attribute for this state rule.
-        /// </summary>
-        public string Value { get; set; }
+        if (Enabled != null)
+            sb.AppendFormat(", enabled=\"{0}\"", Enabled.ToString()!.ToLower()); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
 
-        /// <summary>
-        /// Visible state for this state rule.
-        /// </summary>
-        public bool? Visible { get; set; }
+        if (Value != null)
+            sb.AppendFormat(", value=\"{0}\"", Value);
 
-        /// <summary>
-        /// Provides a string representation of this StateRule_t, primarily for debugging purposes.
-        /// </summary>
-        /// <returns>String representation in the format (control_id, enabled_value_if_set, value_value_if_set, visible_value_if_set).</returns>
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
+        if (Visible != null)
+            sb.AppendFormat(", visible=\"{0}\"", Visible.ToString()!.ToLower()); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
 
-            sb.AppendFormat("(Control.ID=\"{0}\"", _owner.Id);
+        sb.Append(")");
 
-            if (Enabled != null)
-                sb.AppendFormat(", enabled=\"{0}\"", Enabled.ToString()!.ToLower()); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
-
-            if (Value != null)
-                sb.AppendFormat(", value=\"{0}\"", Value);
-
-            if (Visible != null)
-                sb.AppendFormat(", visible=\"{0}\"", Visible.ToString()!.ToLower()); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
-
-            sb.Append(")");
-
-            return sb.ToString();
-        }
-
-        #region IParentable<Control_t> Members
-
-        Control_t IParentable<Control_t>.Parent
-        {
-            get { return _owner; }
-            set { _owner = value; }
-        }
-
-        #endregion IParentable<Control_t> Members
+        return sb.ToString();
     }
+
+    #region IParentable<Control_t> Members
+
+    Control_t IParentable<Control_t>.Parent
+    {
+        get { return _owner; }
+        set { _owner = value; }
+    }
+
+    #endregion IParentable<Control_t> Members
 }

@@ -6,16 +6,15 @@
 
 using Atdl4net.Model.Elements.Support;
 
-namespace Atdl4net.Model.Elements
+namespace Atdl4net.Model.Elements;
+
+/// <summary>
+/// Represents the FIXatdl StrategyLayout element that contains the root StrategyPanel.
+/// </summary>
+public class StrategyLayout_t : IStrategyPanel
 {
     /// <summary>
-    /// Represents the FIXatdl StrategyLayout element that contains the root StrategyPanel.
+    /// Gets/sets the root StrategyPanel.
     /// </summary>
-    public class StrategyLayout_t : IStrategyPanel
-    {
-        /// <summary>
-        /// Gets/sets the root StrategyPanel.
-        /// </summary>
-        public StrategyPanel_t StrategyPanel { get; set; }
-    }
+    public StrategyPanel_t StrategyPanel { get; set; }
 }

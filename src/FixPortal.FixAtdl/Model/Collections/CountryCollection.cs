@@ -4,60 +4,59 @@
 //
 #endregion
 
+using System;
+using System.Collections.Generic;
 using Atdl4net.Diagnostics;
 using Atdl4net.Model.Elements;
 using Atdl4net.Model.Enumerations;
 using Atdl4net.Model.Reference;
 using Atdl4net.Resources;
-using System;
-using System.Collections.Generic;
 
-namespace Atdl4net.Model.Collections
+namespace Atdl4net.Model.Collections;
+
+/// <summary>
+/// Collection for storing instances of Country_t.
+/// </summary>
+public class CountryCollection : HashSet<Country_t>
 {
+    private readonly Region _region;
+
     /// <summary>
-    /// Collection for storing instances of Country_t.
+    /// Initializes a new instance of the <see cref="CountryCollection"/> class.
     /// </summary>
-    public class CountryCollection : HashSet<Country_t>
+    /// <param name="region">The region.</param>
+    public CountryCollection(Region_t region)
     {
-        private readonly Region _region;
+        _region = region.Name;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CountryCollection"/> class.
-        /// </summary>
-        /// <param name="region">The region.</param>
-        public CountryCollection(Region_t region)
+    /// <summary>
+    /// Adds the specified item, validating that it belongs in the region specified when this collection was created.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    public new void Add(Country_t item)
+    {
+        bool countryOkay = false;
+
+        switch (_region)
         {
-            _region = region.Name;
+            case Region.AsiaPacificJapan:
+                countryOkay = Regions.AsiaPacificJapanCountries.Contains(item.CountryCode);
+                break;
+
+            case Region.EuropeMiddleEastAfrica:
+                countryOkay = Regions.EuropeMiddleEastAfricaCountries.Contains(item.CountryCode);
+                break;
+
+            case Region.TheAmericas:
+                countryOkay = Regions.TheAmericasCountries.Contains(item.CountryCode);
+                break;
         }
 
-        /// <summary>
-        /// Adds the specified item, validating that it belongs in the region specified when this collection was created.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        public new void Add(Country_t item)
-        {
-            bool countryOkay = false;
+        if (!countryOkay)
+            throw ThrowHelper.New<ArgumentException>(this, ErrorMessages.InvalidAttemptToAddCountryToRegion,
+                Enum.GetName(typeof(IsoCountryCode), item.CountryCode), Enum.GetName(typeof(Region), _region));
 
-            switch (_region)
-            {
-                case Region.AsiaPacificJapan:
-                    countryOkay = Regions.AsiaPacificJapanCountries.Contains(item.CountryCode);
-                    break;
-
-                case Region.EuropeMiddleEastAfrica:
-                    countryOkay = Regions.EuropeMiddleEastAfricaCountries.Contains(item.CountryCode);
-                    break;
-
-                case Region.TheAmericas:
-                    countryOkay = Regions.TheAmericasCountries.Contains(item.CountryCode);
-                    break;
-            }
-
-            if (!countryOkay)
-                throw ThrowHelper.New<ArgumentException>(this, ErrorMessages.InvalidAttemptToAddCountryToRegion,
-                    Enum.GetName(typeof(IsoCountryCode), item.CountryCode), Enum.GetName(typeof(Region), _region));
-
-            base.Add(item);
-        }
+        base.Add(item);
     }
 }

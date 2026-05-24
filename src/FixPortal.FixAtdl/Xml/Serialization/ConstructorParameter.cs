@@ -6,26 +6,25 @@
 
 using System;
 
-namespace Atdl4net.Xml.Serialization
+namespace Atdl4net.Xml.Serialization;
+
+public enum SourceType
 {
-    public enum SourceType
-    {
-        ElementAttribute,
-        ParentObject,
-        NamedPredecessor
-    }
+    ElementAttribute,
+    ParentObject,
+    NamedPredecessor
+}
 
-    public class ConstructorParameter
-    {
-        public Type Type { get; private set; }
-        public SourceType SourceType { get; private set; }
-        public string Source { get; private set; }
+public class ConstructorParameter
+{
+    public Type Type { get; private set; }
+    public SourceType SourceType { get; private set; }
+    public string Source { get; private set; }
 
-        public ConstructorParameter(Type type, SourceType sourceType, string source)
-        {
-            Type = type;
-            SourceType = sourceType;
-            Source = source;
-        }
+    public ConstructorParameter(Type type, SourceType sourceType, string source)
+    {
+        Type = type;
+        SourceType = sourceType;
+        Source = source;
     }
 }

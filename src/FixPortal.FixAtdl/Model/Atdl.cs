@@ -7,16 +7,15 @@
 using System;
 using System.Linq;
 
-namespace Atdl4net.Model
+namespace Atdl4net.Model;
+
+/// <summary>
+/// Provides access to a set of constants useful throughout the model.
+/// </summary>
+public static class Atdl
 {
     /// <summary>
-    /// Provides access to a set of constants useful throughout the model.
+    /// The FIXatdl 'null' value for controls as used in state rules.
     /// </summary>
-    public static class Atdl
-    {
-        /// <summary>
-        /// The FIXatdl 'null' value for controls as used in state rules.
-        /// </summary>
-        public const string NullValue = "{NULL}";
-    }
+    public const string NullValue = "{NULL}";
 }

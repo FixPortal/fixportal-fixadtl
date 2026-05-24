@@ -4,21 +4,20 @@
 //
 #endregion
 
-namespace Atdl4net.Model.Enumerations
+namespace Atdl4net.Model.Enumerations;
+
+/// <summary>
+/// Fixatdl Use type.
+/// </summary>
+public enum Use_t
 {
     /// <summary>
-    /// Fixatdl Use type.
+    /// Parameter is mandatory.
     /// </summary>
-    public enum Use_t
-    {
-        /// <summary>
-        /// Parameter is mandatory.
-        /// </summary>
-        Required,
+    Required,
 
-        /// <summary>
-        /// Parameter is optional.
-        /// </summary>
-        Optional,
-    }
+    /// <summary>
+    /// Parameter is optional.
+    /// </summary>
+    Optional,
 }

@@ -6,10 +6,9 @@
 
 using Atdl4net.Model.Enumerations;
 
-namespace Atdl4net.Model.Controls.Support
+namespace Atdl4net.Model.Controls.Support;
+
+public interface IOrientableControl
 {
-    public interface IOrientableControl
-    {
-        Orientation_t? Orientation { get; }
-    }
+    Orientation_t? Orientation { get; }
 }

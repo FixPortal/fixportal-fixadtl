@@ -11,46 +11,45 @@ using Atdl4net.Utility;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Atdl4net.Model.Collections
+namespace Atdl4net.Model.Collections;
+
+public class StateRuleCollection : Collection<StateRule_t>
 {
-    public class StateRuleCollection : Collection<StateRule_t>
+    // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+    private readonly ILogger _log = NullLogger.Instance;
+
+    private readonly Control_t _owner;
+
+    public StateRuleCollection(Control_t owner)
     {
-        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
-        private readonly ILogger _log = NullLogger.Instance;
+        _owner = owner;
+    }
 
-        private readonly Control_t _owner;
+    public new void Add(StateRule_t item)
+    {
+        (item as IParentable<Control_t>).Parent = _owner;
 
-        public StateRuleCollection(Control_t owner)
-        {
-            _owner = owner;
-        }
+        base.Add(item);
 
-        public new void Add(StateRule_t item)
-        {
-            (item as IParentable<Control_t>).Parent = _owner;
+        _log.LogDebug("StateRule_t {StateRule} added to StateRules for control Id {ControlId}", item.ToString(), _owner.Id);
+    }
 
-            base.Add(item);
+    public void EvaluateAll()
+    {
+        if (Items.Count > 0)
+            _log.LogDebug("Evaluating all {Count} StateRule_t instances for control Id {ControlId}", Items.Count, _owner.Id);
 
-            _log.LogDebug("StateRule_t {StateRule} added to StateRules for control Id {ControlId}", item.ToString(), _owner.Id);
-        }
+        foreach (StateRule_t rule in Items)
+            rule.Evaluate();
+    }
 
-        public void EvaluateAll()
-        {
-            if (this.Items.Count > 0)
-                _log.LogDebug("Evaluating all {Count} StateRule_t instances for control Id {ControlId}", Items.Count, _owner.Id);
-
-            foreach (StateRule_t rule in this.Items)
-                rule.Evaluate();
-        }
-
-        /// <summary>
-        /// Resolves all edit refs, connects all edits to their controls.
-        /// </summary>
-        /// <param name="strategy"></param>
-        public void ResolveAll(Strategy_t strategy)
-        {
-            foreach (StateRule_t rule in this.Items)
-                (rule as IResolvable<Strategy_t, Control_t>).Resolve(strategy, strategy.Controls);
-        }
+    /// <summary>
+    /// Resolves all edit refs, connects all edits to their controls.
+    /// </summary>
+    /// <param name="strategy"></param>
+    public void ResolveAll(Strategy_t strategy)
+    {
+        foreach (StateRule_t rule in Items)
+            (rule as IResolvable<Strategy_t, Control_t>).Resolve(strategy, strategy.Controls);
     }
 }

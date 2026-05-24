@@ -7,11 +7,11 @@
 
 // NOTE: This code is auto-generated; editing by hand is not recommended.
 
-namespace Atdl4net.Fix
-{
-    /// <summary>
-    /// FIX tag enumeration - used to implement FIXatdl's FIX_ functionality.
-    /// </summary>
+namespace Atdl4net.Fix;
+
+/// <summary>
+/// FIX tag enumeration - used to implement FIXatdl's FIX_ functionality.
+/// </summary>
 	public enum FixField
 	{
 		/// <summary>FIX Account tag (tag 1).</summary>
@@ -4371,4 +4371,3 @@ namespace Atdl4net.Fix
 		FIX_RelSymTransactTime = 1504
 
 	}
-}

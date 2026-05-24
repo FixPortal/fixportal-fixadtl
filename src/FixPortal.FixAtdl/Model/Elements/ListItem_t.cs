@@ -4,29 +4,28 @@
 //
 #endregion
 
+using System;
 using Atdl4net.Diagnostics;
 using Atdl4net.Resources;
-using System;
 
-namespace Atdl4net.Model.Elements
+namespace Atdl4net.Model.Elements;
+
+public class ListItem_t : IComparable
 {
-    public class ListItem_t : IComparable
+    public string EnumId { get; set; }
+    public string UiRep { get; set; }
+    public bool IsSelected { get; set; }
+
+    public int CompareTo(object? obj)
     {
-        public string EnumId { get; set; }
-        public string UiRep { get; set; }
-        public bool IsSelected { get; set; }
+        if (obj is string)
+            return (EnumId).CompareTo(obj as string);
+        else
+            throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.CompareValueFailure, "ListItem_t", obj!.GetType().FullName!); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+    }
 
-        public int CompareTo(object? obj)
-        {
-            if (obj is string)
-                return (this.EnumId).CompareTo(obj as string);
-            else
-                throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.CompareValueFailure, "ListItem_t", obj!.GetType().FullName!); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
-        }
-
-        public override string ToString()
-        {
-            return UiRep;
-        }
+    public override string ToString()
+    {
+        return UiRep;
     }
 }

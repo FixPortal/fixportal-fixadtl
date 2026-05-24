@@ -10,21 +10,20 @@ using System.Linq;
 using Atdl4net.Diagnostics;
 using Atdl4net.Resources;
 
-namespace Atdl4net.Utility
+namespace Atdl4net.Utility;
+
+public static class ProcessExtensions
 {
-    public static class ProcessExtensions
+    private static readonly string ExceptionContext = "Atdl4net.Utility.ProcessExtensions";
+
+    public static bool IsVSDesigner(this Process process)
     {
-        private static readonly string ExceptionContext = "Atdl4net.Utility.ProcessExtensions";
+        if (process == null)
+            throw ThrowHelper.New<NullReferenceException>(ExceptionContext, ErrorMessages.IllegalUseOfNullError);
 
-        public static bool IsVSDesigner(this Process process)
-        {
-            if (process == null)
-                throw ThrowHelper.New<NullReferenceException>(ExceptionContext, ErrorMessages.IllegalUseOfNullError);
+        if (process.MainModule != null)
+            return (process.MainModule.ModuleName.Contains("devenv.exe"));
 
-            if (process.MainModule != null)
-                return (process.MainModule.ModuleName.Contains("devenv.exe"));
-
-            return false;
-        }
+        return false;
     }
 }

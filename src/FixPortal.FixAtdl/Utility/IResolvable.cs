@@ -6,10 +6,9 @@
 
 using Atdl4net.Model.Collections;
 
-namespace Atdl4net.Utility
+namespace Atdl4net.Utility;
+
+public interface IResolvable<Thost, Tvaluesource>
 {
-    public interface IResolvable<Thost, Tvaluesource>
-    {
-        void Resolve(Thost host, ISimpleDictionary<Tvaluesource> sourceCollection);
-    }
+    void Resolve(Thost host, ISimpleDictionary<Tvaluesource> sourceCollection);
 }

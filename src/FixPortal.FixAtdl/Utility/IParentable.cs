@@ -4,10 +4,9 @@
 //
 #endregion
 
-namespace Atdl4net.Utility
+namespace Atdl4net.Utility;
+
+public interface IParentable<T>
 {
-    public interface IParentable<T>
-    {
-        T Parent { get; set; }
-    }
+    T Parent { get; set; }
 }

@@ -7,16 +7,15 @@
 using System;
 using System.Xml.Linq;
 
-namespace Atdl4net.Xml.Serialization
-{
-    public class ContainerElementDefinition : ElementDefinition
-    {
-        public ElementDefinition ChildDefinition { get; private set; }
+namespace Atdl4net.Xml.Serialization;
 
-        public ContainerElementDefinition(XName elementName, ElementDefinition childDefinition)
-            : base(elementName, null, null, null, null, null)
-        {
-            ChildDefinition = childDefinition;
-        }
+public class ContainerElementDefinition : ElementDefinition
+{
+    public ElementDefinition ChildDefinition { get; private set; }
+
+    public ContainerElementDefinition(XName elementName, ElementDefinition childDefinition)
+        : base(elementName, null, null, null, null, null)
+    {
+        ChildDefinition = childDefinition;
     }
 }

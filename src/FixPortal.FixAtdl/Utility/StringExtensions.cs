@@ -4,52 +4,51 @@
 //
 #endregion
 
+using System;
 using Atdl4net.Diagnostics;
 using Atdl4net.Resources;
-using System;
 
-namespace Atdl4net.Utility
+namespace Atdl4net.Utility;
+
+/// <summary>
+/// Provides extension methods for System.String.
+/// </summary>
+public static class StringExtensions
 {
+    private static readonly string ExceptionContext = typeof(StringExtensions).FullName!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+
     /// <summary>
-    /// Provides extension methods for System.String.
+    /// Gets the string representation of this enumerated type value.
     /// </summary>
-    public static class StringExtensions
+    /// <typeparam name="T">Type of enum.</typeparam>
+    /// <param name="value">Value to convert to the supplied enum type.</param>
+    /// <returns>A valid enumerated value if the conversion was possible; an exception is thrown otherwise.</returns>
+    public static T ParseAsEnum<T>(this string value) where T : struct
     {
-        private static readonly string ExceptionContext = typeof(StringExtensions).FullName!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+        if (string.IsNullOrEmpty(value))
+            throw ThrowHelper.New<ArgumentNullException>(ExceptionContext, ErrorMessages.NullOrEmptyStringEnumParseFailure, typeof(T).Name);
 
-        /// <summary>
-        /// Gets the string representation of this enumerated type value.
-        /// </summary>
-        /// <typeparam name="T">Type of enum.</typeparam>
-        /// <param name="value">Value to convert to the supplied enum type.</param>
-        /// <returns>A valid enumerated value if the conversion was possible; an exception is thrown otherwise.</returns>
-        public static T ParseAsEnum<T>(this string value) where T : struct
-        {
-            if (string.IsNullOrEmpty(value))
-                throw ThrowHelper.New<ArgumentNullException>(ExceptionContext, ErrorMessages.NullOrEmptyStringEnumParseFailure, typeof(T).Name);
+        T result;
 
-            T result;
-
-            if (!typeof(T).IsEnum)
-                throw ThrowHelper.New<InvalidOperationException>(ExceptionContext, InternalErrors.InvalidUseOfParseAsEnum);
+        if (!typeof(T).IsEnum)
+            throw ThrowHelper.New<InvalidOperationException>(ExceptionContext, InternalErrors.InvalidUseOfParseAsEnum);
 
 #if NET_40
-            if (!Enum.TryParse<T>(value, true, out result))
-                throw ThrowHelper.New<ArgumentException>(ExceptionContext, ErrorMessages.InvalidValueEnumParseFailure, value, typeof(T).Name);
+        if (!Enum.TryParse<T>(value, true, out result))
+            throw ThrowHelper.New<ArgumentException>(ExceptionContext, ErrorMessages.InvalidValueEnumParseFailure, value, typeof(T).Name);
 #else
-            try
-            {
-                result = (T)Enum.Parse(typeof(T), value, true);
-            }
-            catch (ArgumentException ex)
-            {
-                // We don't Rethrow here as we want the error message (that may be shown to the user) to be consistent between the .NET 3.5 
-                // and .NET 4.0 implementations.
-                throw ThrowHelper.New<ArgumentException>(ExceptionContext, ex, ErrorMessages.InvalidValueEnumParseFailure, value, typeof(T).Name);
-            }
+        try
+        {
+            result = (T)Enum.Parse(typeof(T), value, true);
+        }
+        catch (ArgumentException ex)
+        {
+            // We don't Rethrow here as we want the error message (that may be shown to the user) to be consistent between the .NET 3.5 
+            // and .NET 4.0 implementations.
+            throw ThrowHelper.New<ArgumentException>(ExceptionContext, ex, ErrorMessages.InvalidValueEnumParseFailure, value, typeof(T).Name);
+        }
 #endif
 
-            return result;
-        }
+        return result;
     }
 }

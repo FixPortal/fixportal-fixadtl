@@ -6,12 +6,11 @@
 
 using Atdl4net.Model.Types.Support;
 
-namespace Atdl4net.Model.Types
+namespace Atdl4net.Model.Types;
+
+/// <summary>
+/// 'int field representing the length in bytes. Value must be positive.'
+/// </summary>
+public class Length_t : NonNegativeIntegerTypeBase
 {
-    /// <summary>
-    /// 'int field representing the length in bytes. Value must be positive.'
-    /// </summary>
-    public class Length_t : NonNegativeIntegerTypeBase
-    {
-    }
 }

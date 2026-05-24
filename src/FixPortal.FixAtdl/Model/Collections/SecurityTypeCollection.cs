@@ -4,16 +4,15 @@
 //
 #endregion
 
-using Atdl4net.Model.Elements;
 using System.Collections.ObjectModel;
+using Atdl4net.Model.Elements;
 
-namespace Atdl4net.Model.Collections
+namespace Atdl4net.Model.Collections;
+
+public class SecurityTypeCollection : KeyedCollection<string, SecurityType_t>
 {
-    public class SecurityTypeCollection : KeyedCollection<string, SecurityType_t>
+    protected override string GetKeyForItem(SecurityType_t item)
     {
-        protected override string GetKeyForItem(SecurityType_t item)
-        {
-            return item.Name;
-        }
+        return item.Name;
     }
 }

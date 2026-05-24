@@ -6,17 +6,16 @@
 
 using System;
 
-namespace Atdl4net.Xml.Serialization
-{
-    public class ClassDeserializedEventArgs : EventArgs
-    {
-        public Type ClassType { get; private set; }
-        public object ExtraInfo { get; private set; }
+namespace Atdl4net.Xml.Serialization;
 
-        public ClassDeserializedEventArgs(Type createdType, object extraInfo)
-        {
-            ClassType = createdType;
-            ExtraInfo = extraInfo;
-        }
+public class ClassDeserializedEventArgs : EventArgs
+{
+    public Type ClassType { get; private set; }
+    public object ExtraInfo { get; private set; }
+
+    public ClassDeserializedEventArgs(Type createdType, object extraInfo)
+    {
+        ClassType = createdType;
+        ExtraInfo = extraInfo;
     }
 }

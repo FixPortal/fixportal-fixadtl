@@ -4,23 +4,22 @@
 //
 #endregion
 
-namespace Atdl4net.Model.Enumerations
+namespace Atdl4net.Model.Enumerations;
+
+/// <summary>
+/// FIXatdl LogicOperator type.
+/// </summary>
+public enum LogicOperator_t
 {
-    /// <summary>
-    /// FIXatdl LogicOperator type.
-    /// </summary>
-    public enum LogicOperator_t
-    {
-        /// <summary>AND</summary>
-        And,
+    /// <summary>AND</summary>
+    And,
 
-        /// <summary>OR</summary>
-        Or,
+    /// <summary>OR</summary>
+    Or,
 
-        /// <summary>Exclusive OR</summary>
-        Xor,
+    /// <summary>Exclusive OR</summary>
+    Xor,
 
-        /// <summary>Not</summary>
-        Not
-    }
+    /// <summary>Not</summary>
+    Not
 }

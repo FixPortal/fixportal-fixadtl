@@ -17,118 +17,117 @@ using Atdl4net.Utility;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Atdl4net.Model.Collections
+namespace Atdl4net.Model.Collections;
+
+/// <summary>
+/// Collection used to store typed instances of Edit_t, either for validating parameters via StrategyEdit, or 
+/// for implementing StateRules using control values.  This collection also provides the ability to evaluate the Edits that
+/// it contains.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public class EditEvaluatingCollection<T> : Collection<IEdit<T>>, IResolvable<Strategy_t, T>
 {
+    // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+    private readonly ILogger _log = NullLogger.Instance;
+
+    private bool _currentState;
+    private readonly HashSet<string> _sources = [];
+
     /// <summary>
-    /// Collection used to store typed instances of Edit_t, either for validating parameters via StrategyEdit, or 
-    /// for implementing StateRules using control values.  This collection also provides the ability to evaluate the Edits that
-    /// it contains.
+    /// Logic operator for this collection of Edits.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class EditEvaluatingCollection<T> : Collection<IEdit<T>>, IResolvable<Strategy_t, T>
+    public LogicOperator_t? LogicOperator { get; set; }
+
+    /// <summary>
+    /// Current state of this collection of Edits.
+    /// </summary>
+    public bool CurrentState { get { return _currentState; } }
+
+    /// <summary>
+    /// Gets the set of sources for the data to be evaluated as part of this collection of Edits.
+    /// </summary>
+    public HashSet<string> Sources { get { return _sources; } }
+
+    /// <summary>
+    /// Adds the specified item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    public new void Add(IEdit<T> item)
     {
-        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
-        private readonly ILogger _log = NullLogger.Instance;
+        base.Add(item);
 
-        private bool _currentState;
-        private readonly HashSet<string> _sources = new HashSet<string>();
+        foreach (string source in item.Sources)
+            _sources.Add(source);
 
-        /// <summary>
-        /// Logic operator for this collection of Edits.
-        /// </summary>
-        public LogicOperator_t? LogicOperator { get; set; }
+        _log.LogDebug("Edit_t {Edit} added to EditEvaluatingCollection", item.ToString());
+    }
 
-        /// <summary>
-        /// Current state of this collection of Edits.
-        /// </summary>
-        public bool CurrentState { get { return _currentState; } }
+    /// <summary>
+    /// Evaluates this instance based on current field values and any additional FIX field values that this
+    /// EditEvaluatingCollection references.
+    /// </summary>
+    /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
+    public void Evaluate(FixFieldValueProvider additionalValues)
+    {
+        _log.LogDebug("Evaluating EditEvaluatingCollection with {Count} elements; current state = {CurrentState}", Count, _currentState.ToString().ToLower());
 
-        /// <summary>
-        /// Gets the set of sources for the data to be evaluated as part of this collection of Edits.
-        /// </summary>
-        public HashSet<string> Sources { get { return _sources; } }
+        if (LogicOperator == null)
+            throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.MissingLogicalOperatorOnSetOfEdits);
 
-        /// <summary>
-        /// Adds the specified item.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        public new void Add(IEdit<T> item)
+        bool shortCircuit = false;
+        bool newState = (LogicOperator == LogicOperator_t.And);
+        int xorCount = 0;
+
+        foreach (IEdit<T> item in Items)
         {
-            base.Add(item);
+            if (shortCircuit)
+                break;
 
-            foreach (string source in item.Sources)
-                _sources.Add(source);
+            item.Evaluate(additionalValues);
 
-            _log.LogDebug("Edit_t {Edit} added to EditEvaluatingCollection", item.ToString());
-        }
-
-        /// <summary>
-        /// Evaluates this instance based on current field values and any additional FIX field values that this
-        /// EditEvaluatingCollection references.
-        /// </summary>
-        /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
-        public void Evaluate(FixFieldValueProvider additionalValues)
-        {
-            _log.LogDebug("Evaluating EditEvaluatingCollection with {Count} elements; current state = {CurrentState}", this.Count, _currentState.ToString().ToLower());
-
-            if (LogicOperator == null)
-                throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.MissingLogicalOperatorOnSetOfEdits);
-
-            bool shortCircuit = false;
-            bool newState = (LogicOperator == LogicOperator_t.And) ? true : false;
-            int xorCount = 0;
-
-            foreach (IEdit<T> item in this.Items)
+            switch (LogicOperator)
             {
-                if (shortCircuit)
+                case LogicOperator_t.And:
+                    newState &= item.CurrentState;
+                    if (!newState)
+                        shortCircuit = true;
                     break;
 
-                item.Evaluate(additionalValues);
+                case LogicOperator_t.Or:
+                    newState |= item.CurrentState;
+                    if (newState)
+                        shortCircuit = true;
+                    break;
 
-                switch (LogicOperator)
-                {
-                    case LogicOperator_t.And:
-                        newState &= item.CurrentState;
-                        if (!newState)
-                            shortCircuit = true;
-                        break;
+                case LogicOperator_t.Not:
+                    newState = !item.CurrentState;
+                    break;
 
-                    case LogicOperator_t.Or:
-                        newState |= item.CurrentState;
-                        if (newState)
-                            shortCircuit = true;
-                        break;
-
-                    case LogicOperator_t.Not:
-                        newState = !item.CurrentState;
-                        break;
-
-                    // From the spec: "As a convention we define XOR as 'one and only one', which means it evaluates to true when one
-                    // and only one of its operands is true. If none or more than one of its operands is true then XOR is false."
-                    case LogicOperator_t.Xor:
-                        if (item.CurrentState)
-                            xorCount++;
-                        newState = xorCount == 1;
-                        break;
-                }
-
-                _log.LogDebug("EditEvaluatingCollection state is now {NewState}", newState.ToString().ToLower());
+                // From the spec: "As a convention we define XOR as 'one and only one', which means it evaluates to true when one
+                // and only one of its operands is true. If none or more than one of its operands is true then XOR is false."
+                case LogicOperator_t.Xor:
+                    if (item.CurrentState)
+                        xorCount++;
+                    newState = xorCount == 1;
+                    break;
             }
 
-            _currentState = newState;
+            _log.LogDebug("EditEvaluatingCollection state is now {NewState}", newState.ToString().ToLower());
         }
 
-        #region IResolvable<Strategy_t, T> Members
-
-        // TODO: Unbind needed?
-        void IResolvable<Strategy_t, T>.Resolve(Strategy_t strategy, ISimpleDictionary<T> sourceCollection)
-        {
-            foreach (IEdit<T> item in this.Items)
-            {
-                (item as IResolvable<Strategy_t, T>)!.Resolve(strategy, sourceCollection); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
-            }
-        }
-
-        #endregion IResolvable<Strategy_t> Members
+        _currentState = newState;
     }
+
+    #region IResolvable<Strategy_t, T> Members
+
+    // TODO: Unbind needed?
+    void IResolvable<Strategy_t, T>.Resolve(Strategy_t strategy, ISimpleDictionary<T> sourceCollection)
+    {
+        foreach (IEdit<T> item in Items)
+        {
+            (item as IResolvable<Strategy_t, T>)!.Resolve(strategy, sourceCollection); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+        }
+    }
+
+    #endregion IResolvable<Strategy_t> Members
 }

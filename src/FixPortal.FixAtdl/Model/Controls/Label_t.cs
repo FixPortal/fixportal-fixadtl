@@ -9,34 +9,33 @@ using Atdl4net.Model.Controls.Support;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Atdl4net.Model.Controls
+namespace Atdl4net.Model.Controls;
+
+/// <summary>
+/// Represents the Label_t control element within FIXatdl.
+/// </summary>
+public class Label_t : TextControlBase
 {
+    // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+    private static readonly ILogger _log = NullLogger.Instance;
+
     /// <summary>
-    /// Represents the Label_t control element within FIXatdl.
+    /// Initializes a new instance of <see cref="Label_t"/> using the supplied ID.
     /// </summary>
-    public class Label_t : TextControlBase
+    /// <param name="id">ID for this control.</param>
+    public Label_t(string id)
+        : base(id)
     {
-        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
-        private static readonly ILogger _log = NullLogger.Instance;
+        _log.LogDebug("New Label_t created as control {Arg0}", id);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="Label_t"/> using the supplied ID.
-        /// </summary>
-        /// <param name="id">ID for this control.</param>
-        public Label_t(string id)
-            : base(id)
-        {
-            _log.LogDebug("New Label_t created as control {Arg0}", id);
-        }
-
-        /// <summary>
-        /// Loads this control with any supplied InitValue. If InitValue is not supplied, then control value will
-        /// be set to the Label value, if that is set, or if neither are set to an empty value.
-        /// </summary>
-        protected override void LoadDefaultFromInitValue()
-        {
-            // InitValue takes precedence over Label
-            SetValue(InitValue != null ? InitValue : Label);
-        }
+    /// <summary>
+    /// Loads this control with any supplied InitValue. If InitValue is not supplied, then control value will
+    /// be set to the Label value, if that is set, or if neither are set to an empty value.
+    /// </summary>
+    protected override void LoadDefaultFromInitValue()
+    {
+        // InitValue takes precedence over Label
+        SetValue(InitValue != null ? InitValue : Label);
     }
 }

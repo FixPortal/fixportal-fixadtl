@@ -5,21 +5,20 @@
 #endregion
 
 
-namespace Atdl4net.Model.Enumerations
+namespace Atdl4net.Model.Enumerations;
+
+/// <summary>
+/// Represents the FIXatdl Border type.
+/// </summary>
+public enum Border_t
 {
     /// <summary>
-    /// Represents the FIXatdl Border type.
+    /// No border is to be shown.
     /// </summary>
-    public enum Border_t
-    {
-        /// <summary>
-        /// No border is to be shown.
-        /// </summary>
-        None,
+    None,
 
-        /// <summary>
-        /// A line border is to be shown.
-        /// </summary>
-        Line
-    }
+    /// <summary>
+    /// A line border is to be shown.
+    /// </summary>
+    Line
 }

@@ -13,126 +13,125 @@ using Atdl4net.Model.Types;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Atdl4net.Fix
+namespace Atdl4net.Fix;
+
+/// <summary>
+/// Provides access to initial values for FIXatdl controls based on a set of input FIX fields.
+/// </summary>
+public class FixFieldValueProvider
 {
+    // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+    private readonly ILogger _log = NullLogger.Instance;
+    private static readonly FixFieldValueProvider _emptyProvider = new(null, null);
+
+    private readonly IInitialFixValueProvider? _initialValueProvider; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C
+    private readonly ParameterCollection? _parameters; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C
+
     /// <summary>
-    /// Provides access to initial values for FIXatdl controls based on a set of input FIX fields.
+    /// Initializes a new <see cref="FixFieldValueProvider"/> instance using the supplied set of input 
+    /// values and parameters.
     /// </summary>
-    public class FixFieldValueProvider
+    /// <param name="fixValues">Input FIX fields to use.</param>
+    /// <param name="parameters">Parameters to use.</param>
+    public FixFieldValueProvider(IInitialFixValueProvider? initialValueProvider, ParameterCollection? parameters)
     {
-        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
-        private readonly ILogger _log = NullLogger.Instance;
-        private static readonly FixFieldValueProvider _emptyProvider = new FixFieldValueProvider(null, null);
+        _initialValueProvider = initialValueProvider;
+        _parameters = parameters;
+    }
 
-        private readonly IInitialFixValueProvider? _initialValueProvider; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C
-        private readonly ParameterCollection? _parameters; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C
+    /// <summary>
+    /// Gets a static instance of an empty provider.
+    /// </summary>
+    public static FixFieldValueProvider Empty { get { return _emptyProvider; } }
 
-        /// <summary>
-        /// Initializes a new <see cref="FixFieldValueProvider"/> instance using the supplied set of input 
-        /// values and parameters.
-        /// </summary>
-        /// <param name="fixValues">Input FIX fields to use.</param>
-        /// <param name="parameters">Parameters to use.</param>
-        public FixFieldValueProvider(IInitialFixValueProvider? initialValueProvider, ParameterCollection? parameters)
+    /// <summary>
+    /// Gets the parameters for this value provider.
+    /// </summary>
+    public ParameterCollection Parameters { get { return _parameters; } }
+
+    /// <summary>
+    /// Gets the FIX values collection for this value provider.
+    /// </summary>
+    public FixTagValuesCollection FixValues { get { return _initialValueProvider!.InputFixValues!; } } // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+
+    /// <summary>
+    /// Attempts to get the value of the specified FIX field (in FIX_ format), returning the value as a string.
+    /// In the case of enumerated fields, the output parameter contains the EnumID, assuming a valid lookup was
+    /// possible.
+    /// </summary>
+    /// <param name="fixField">FIX field value to retrieve, in FIX_ format.</param>
+    /// <param name="targetParameterName">Target parameter for this field value.  May be null.</param>
+    /// <param name="value">Contains the value of the FIX field if it could successfully be retrieved.</param>
+    /// <returns>true if the field could be retrieved; false otherwise.</returns>
+    public bool TryGetValue(string fixField, string targetParameterName, out string value)
+    {
+        string result = null;
+
+        bool retrieved = TryGetValue(fixField, out result);
+
+        if (retrieved && !string.IsNullOrEmpty(targetParameterName) && _parameters!.Contains(targetParameterName)) // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
         {
-            _initialValueProvider = initialValueProvider;
-            _parameters = parameters;
+            IParameter parameter = _parameters[targetParameterName];
+
+            if (parameter.HasEnumPairs)
+            {
+                string wireValue = result!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+
+                _log.LogDebug("Attempting to find EnumID for FIX field {FixField} using parameter {ParameterName} with wire value '{WireValue}'",
+                    fixField, targetParameterName, wireValue);
+
+                retrieved = parameter.EnumPairs!.TryParseWireValue(wireValue, out result); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+            }
+            else if (parameter is Parameter_t<Percentage_t>)
+                ProcessPercentageValue((parameter as Parameter_t<Percentage_t>)!, ref result); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+
+            _log.LogDebug("FIX enumerated value lookup for field {FixField} returning {Retrieved}; value = '{Value}'", fixField,
+                retrieved.ToString().ToLower(), retrieved ? result : "N/A");
         }
 
-        /// <summary>
-        /// Gets a static instance of an empty provider.
-        /// </summary>
-        public static FixFieldValueProvider Empty { get { return _emptyProvider; } }
+        value = result!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
 
-        /// <summary>
-        /// Gets the parameters for this value provider.
-        /// </summary>
-        public ParameterCollection Parameters { get { return _parameters; } }
+        return retrieved;
+    }
 
-        /// <summary>
-        /// Gets the FIX values collection for this value provider.
-        /// </summary>
-        public FixTagValuesCollection FixValues { get { return _initialValueProvider!.InputFixValues!; } } // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+    /// <summary>
+    /// Attempts to get the value of the specified FIX field (in FIX_ format), returning the value as a string.
+    /// In the case of enumerated fields, the output parameter contains the EnumID, assuming a valid lookup was
+    /// possible.
+    /// </summary>
+    /// <param name="fixField">FIX field value to retrieve, in FIX_ format.</param>
+    /// <param name="value">Contains the value of the FIX field if it could successfully be retrieved.</param>
+    /// <returns>true if the field could be retrieved; false otherwise.</returns>
+    public bool TryGetValue(string fixField, out string value)
+    {
+        bool retrieved = false;
+        string result = null;
 
-        /// <summary>
-        /// Attempts to get the value of the specified FIX field (in FIX_ format), returning the value as a string.
-        /// In the case of enumerated fields, the output parameter contains the EnumID, assuming a valid lookup was
-        /// possible.
-        /// </summary>
-        /// <param name="fixField">FIX field value to retrieve, in FIX_ format.</param>
-        /// <param name="targetParameterName">Target parameter for this field value.  May be null.</param>
-        /// <param name="value">Contains the value of the FIX field if it could successfully be retrieved.</param>
-        /// <returns>true if the field could be retrieved; false otherwise.</returns>
-        public bool TryGetValue(string fixField, string targetParameterName, out string value)
+        if (_initialValueProvider != null && _initialValueProvider.InputFixValues != null)
         {
-            string result = null;
+            retrieved = _initialValueProvider != null && _initialValueProvider.InputFixValues.TryGetValue(fixField, out result);
 
-            bool retrieved = TryGetValue(fixField, out result);
-
-            if (retrieved && !string.IsNullOrEmpty(targetParameterName) && _parameters!.Contains(targetParameterName)) // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
-            {
-                IParameter parameter = _parameters[targetParameterName];
-
-                if (parameter.HasEnumPairs)
-                {
-                    string wireValue = result!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
-
-                    _log.LogDebug("Attempting to find EnumID for FIX field {FixField} using parameter {ParameterName} with wire value '{WireValue}'",
-                        fixField, targetParameterName, wireValue);
-
-                    retrieved = parameter.EnumPairs!.TryParseWireValue(wireValue, out result); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
-                }
-                else if (parameter is Parameter_t<Percentage_t>)
-                    ProcessPercentageValue((parameter as Parameter_t<Percentage_t>)!, ref result); // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
-
-                _log.LogDebug("FIX enumerated value lookup for field {FixField} returning {Retrieved}; value = '{Value}'", fixField,
-                    retrieved.ToString().ToLower(), retrieved ? result : "N/A");
-            }
-
-            value = result!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
-
-            return retrieved;
+            _log.LogDebug("FIX value lookup for field {FixField} returning {Retrieved}; value = '{Value}'", fixField,
+                retrieved.ToString().ToLower(), retrieved ? result : "N/A");
         }
 
-        /// <summary>
-        /// Attempts to get the value of the specified FIX field (in FIX_ format), returning the value as a string.
-        /// In the case of enumerated fields, the output parameter contains the EnumID, assuming a valid lookup was
-        /// possible.
-        /// </summary>
-        /// <param name="fixField">FIX field value to retrieve, in FIX_ format.</param>
-        /// <param name="value">Contains the value of the FIX field if it could successfully be retrieved.</param>
-        /// <returns>true if the field could be retrieved; false otherwise.</returns>
-        public bool TryGetValue(string fixField, out string value)
+        value = retrieved ? result! : null!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
+
+        return retrieved;
+    }
+
+    private void ProcessPercentageValue(Parameter_t<Percentage_t> parameter, ref string value)
+    {
+        bool adjustmentNeeded = parameter.Value.MultiplyBy100 != true;
+
+        if (adjustmentNeeded)
         {
-            bool retrieved = false;
-            string result = null;
+            decimal decimalValue;
 
-            if (_initialValueProvider != null && _initialValueProvider.InputFixValues != null)
-            {
-                retrieved = _initialValueProvider != null && _initialValueProvider.InputFixValues.TryGetValue(fixField, out result);
-
-                _log.LogDebug("FIX value lookup for field {FixField} returning {Retrieved}; value = '{Value}'", fixField,
-                    retrieved.ToString().ToLower(), retrieved ? result : "N/A");
-            }
-
-            value = retrieved ? result! : null!; // FP Enhancement: 2026-05-23 — nullable cleanup deferred to Phase C.
-
-            return retrieved;
-        }
-
-        private void ProcessPercentageValue(Parameter_t<Percentage_t> parameter, ref string value)
-        {
-            bool adjustmentNeeded = parameter.Value.MultiplyBy100 != true;
-
-            if (adjustmentNeeded)
-            {
-                decimal decimalValue;
-
-                if (decimal.TryParse(value, out decimalValue))
-                    value = (decimalValue * 100).ToString("0.####");
-                else
-                    value = string.Empty;
-            }
+            if (decimal.TryParse(value, out decimalValue))
+                value = (decimalValue * 100).ToString("0.####");
+            else
+                value = string.Empty;
         }
     }
 }

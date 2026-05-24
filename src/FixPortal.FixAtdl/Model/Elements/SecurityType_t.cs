@@ -6,12 +6,11 @@
 
 using Atdl4net.Model.Enumerations;
 
-namespace Atdl4net.Model.Elements
-{
-    public class SecurityType_t
-    {
-        public string Name { get; set; }
+namespace Atdl4net.Model.Elements;
 
-        public Inclusion_t Inclusion { get; set; }
-    }
+public class SecurityType_t
+{
+    public string Name { get; set; }
+
+    public Inclusion_t Inclusion { get; set; }
 }

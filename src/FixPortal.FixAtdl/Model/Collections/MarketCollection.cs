@@ -4,24 +4,23 @@
 //
 #endregion
 
-using Atdl4net.Model.Elements;
 using System.Collections.ObjectModel;
+using Atdl4net.Model.Elements;
 
-namespace Atdl4net.Model.Collections
+namespace Atdl4net.Model.Collections;
+
+/// <summary>
+/// Represents a collection of Markets.
+/// </summary>
+public class MarketCollection : KeyedCollection<string, Market_t>
 {
     /// <summary>
-    /// Represents a collection of Markets.
+    /// Gets the key for items in this collection, i.e., the MIC code.
     /// </summary>
-    public class MarketCollection : KeyedCollection<string, Market_t>
+    /// <param name="item">Market_t instance.</param>
+    /// <returns>MIC code for this Market</returns>
+    protected override string GetKeyForItem(Market_t item)
     {
-        /// <summary>
-        /// Gets the key for items in this collection, i.e., the MIC code.
-        /// </summary>
-        /// <param name="item">Market_t instance.</param>
-        /// <returns>MIC code for this Market</returns>
-        protected override string GetKeyForItem(Market_t item)
-        {
-            return item.MICCode;
-        }
+        return item.MICCode;
     }
 }

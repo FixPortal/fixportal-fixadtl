@@ -4,26 +4,25 @@
 //
 #endregion
 
-namespace Atdl4net.Utility
+namespace Atdl4net.Utility;
+
+/// <summary>
+/// Data entry mode.
+/// </summary>
+public enum DataEntryMode
 {
     /// <summary>
-    /// Data entry mode.
+    /// View only mode - fields cannot be changed.
     /// </summary>
-    public enum DataEntryMode
-    {
-        /// <summary>
-        /// View only mode - fields cannot be changed.
-        /// </summary>
-        View,
+    View,
 
-        /// <summary>
-        /// Create order mode.
-        /// </summary>
-        Create,
+    /// <summary>
+    /// Create order mode.
+    /// </summary>
+    Create,
 
-        /// <summary>
-        /// Amend order mode.
-        /// </summary>
-        Amend
-    }
+    /// <summary>
+    /// Amend order mode.
+    /// </summary>
+    Amend
 }

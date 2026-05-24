@@ -6,10 +6,9 @@
 
 using System;
 
-namespace Atdl4net.Xml.Serialization
+namespace Atdl4net.Xml.Serialization;
+
+public interface INotifyClassDeserialized
 {
-    public interface INotifyClassDeserialized
-    {
-        event EventHandler<ClassDeserializedEventArgs> ClassDeserialized;
-    }
+    event EventHandler<ClassDeserializedEventArgs> ClassDeserialized;
 }

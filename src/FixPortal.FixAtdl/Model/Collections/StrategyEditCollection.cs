@@ -12,57 +12,56 @@ using Atdl4net.Utility;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Atdl4net.Model.Collections
+namespace Atdl4net.Model.Collections;
+
+/// <summary>
+/// Collection class of <see cref="StrategyEdit_t">StrategyEdit</see>s.
+/// </summary>
+public class StrategyEditCollection : Collection<StrategyEdit_t>
 {
+    // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+    private readonly ILogger _log = NullLogger.Instance;
+
     /// <summary>
-    /// Collection class of <see cref="StrategyEdit_t">StrategyEdit</see>s.
+    /// Validates all the <see cref="StrategyEdit_t">StrategyEdit</see>s in this collection.
     /// </summary>
-    public class StrategyEditCollection : Collection<StrategyEdit_t>
+    /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
+    /// <param name="shortCircuit">If true, this method returns as soon as any error is found; if false, all StrategyEdits
+    /// are evaluated before the method returns.</param>
+    public bool EvaluateAll(FixFieldValueProvider additionalValues, bool shortCircuit)
     {
-        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
-        private readonly ILogger _log = NullLogger.Instance;
+        bool valid = true;
 
-        /// <summary>
-        /// Validates all the <see cref="StrategyEdit_t">StrategyEdit</see>s in this collection.
-        /// </summary>
-        /// <param name="additionalValues">Any additional FIX field values that may be required in the Edit evaluation.</param>
-        /// <param name="shortCircuit">If true, this method returns as soon as any error is found; if false, all StrategyEdits
-        /// are evaluated before the method returns.</param>
-        public bool EvaluateAll(FixFieldValueProvider additionalValues, bool shortCircuit)
+        foreach (StrategyEdit_t strategyEdit in Items)
         {
-            bool valid = true;
+            strategyEdit.Evaluate(additionalValues);
 
-            foreach (StrategyEdit_t strategyEdit in Items)
+            if (!strategyEdit.CurrentState)
             {
-                strategyEdit.Evaluate(additionalValues);
+                if (shortCircuit)
+                    return false;
 
-                if (!strategyEdit.CurrentState)
-                {
-                    if (shortCircuit)
-                        return false;
-
-                    valid = false;
-                }
+                valid = false;
             }
-
-            return valid;
         }
 
-        protected override void InsertItem(int index, StrategyEdit_t item)
-        {
-            _log.LogDebug("StrategyEdit added");
+        return valid;
+    }
 
-            base.InsertItem(index, item);
-        }
+    protected override void InsertItem(int index, StrategyEdit_t item)
+    {
+        _log.LogDebug("StrategyEdit added");
 
-        /// <summary>
-        /// Resolves all interdependencies e.g. edits to edit refs, control values to edits, etc.  Called once
-        /// all strategies have been loaded as there may be dependencies on EditRefs at the global level.
-        /// </summary>
-        public void ResolveAll(Strategy_t owningStrategy)
-        {
-            foreach (StrategyEdit_t strategyEdit in this)
-                (strategyEdit as IResolvable<Strategy_t, IParameter>).Resolve(owningStrategy, owningStrategy.Parameters);
-        }
+        base.InsertItem(index, item);
+    }
+
+    /// <summary>
+    /// Resolves all interdependencies e.g. edits to edit refs, control values to edits, etc.  Called once
+    /// all strategies have been loaded as there may be dependencies on EditRefs at the global level.
+    /// </summary>
+    public void ResolveAll(Strategy_t owningStrategy)
+    {
+        foreach (StrategyEdit_t strategyEdit in this)
+            (strategyEdit as IResolvable<Strategy_t, IParameter>).Resolve(owningStrategy, owningStrategy.Parameters);
     }
 }

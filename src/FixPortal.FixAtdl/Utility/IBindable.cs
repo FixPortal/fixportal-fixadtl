@@ -4,10 +4,9 @@
 //
 #endregion
 
-namespace Atdl4net.Utility
+namespace Atdl4net.Utility;
+
+internal interface IBindable<T>
 {
-    internal interface IBindable<T>
-    {
-        void Bind(T target);
-    }
+    void Bind(T target);
 }

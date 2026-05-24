@@ -9,24 +9,23 @@ using Atdl4net.Model.Controls.Support;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Atdl4net.Model.Controls
-{
-    /// <summary>
-    /// Represents the MultiSelectList_t control element within FIXatdl.
-    /// </summary>
-    public class MultiSelectList_t : ListControlBase
-    {
-        // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
-        private static readonly ILogger _log = NullLogger.Instance;
+namespace Atdl4net.Model.Controls;
 
-        /// <summary>
-        /// Initializes a new instance of <see cref="MultiSelectList_t"/> using the supplied ID.
-        /// </summary>
-        /// <param name="id">ID for this control.</param>
-        public MultiSelectList_t(string id)
-            : base(id)
-        {
-            _log.LogDebug("New MultiSelectList_t created as control {Arg0}", id);
-        }
+/// <summary>
+/// Represents the MultiSelectList_t control element within FIXatdl.
+/// </summary>
+public class MultiSelectList_t : ListControlBase
+{
+    // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
+    private static readonly ILogger _log = NullLogger.Instance;
+
+    /// <summary>
+    /// Initializes a new instance of <see cref="MultiSelectList_t"/> using the supplied ID.
+    /// </summary>
+    /// <param name="id">ID for this control.</param>
+    public MultiSelectList_t(string id)
+        : base(id)
+    {
+        _log.LogDebug("New MultiSelectList_t created as control {Arg0}", id);
     }
 }

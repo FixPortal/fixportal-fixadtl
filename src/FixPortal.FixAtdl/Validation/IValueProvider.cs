@@ -7,17 +7,16 @@
 using System;
 using System.Linq;
 
-namespace Atdl4net.Validation
+namespace Atdl4net.Validation;
+
+/// <summary>
+/// Minimal interface that objects can support in order to make available a current value.
+/// </summary>
+public interface IValueProvider
 {
     /// <summary>
-    /// Minimal interface that objects can support in order to make available a current value.
+    /// Gets the current value of this object.
     /// </summary>
-    public interface IValueProvider
-    {
-        /// <summary>
-        /// Gets the current value of this object.
-        /// </summary>
-        /// <returns>Object's current value.</returns>
-        object GetCurrentValue();
-    }
+    /// <returns>Object's current value.</returns>
+    object GetCurrentValue();
 }

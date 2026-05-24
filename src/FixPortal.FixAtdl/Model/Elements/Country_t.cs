@@ -7,12 +7,11 @@
 using Atdl4net.Model.Enumerations;
 using Atdl4net.Model.Reference;
 
-namespace Atdl4net.Model.Elements
-{
-    public class Country_t
-    {
-        public IsoCountryCode CountryCode { get; set; }
+namespace Atdl4net.Model.Elements;
 
-        public Inclusion_t Inclusion { get; set; }
-    }
+public class Country_t
+{
+    public IsoCountryCode CountryCode { get; set; }
+
+    public Inclusion_t Inclusion { get; set; }
 }

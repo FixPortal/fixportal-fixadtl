@@ -4,21 +4,20 @@
 //
 #endregion
 
-namespace Atdl4net.Model.Enumerations
+namespace Atdl4net.Model.Enumerations;
+
+/// <summary>
+/// FIXatdl Inclusion type.
+/// </summary>
+public enum Inclusion_t
 {
     /// <summary>
-    /// FIXatdl Inclusion type.
+    /// Include.
     /// </summary>
-    public enum Inclusion_t
-    {
-        /// <summary>
-        /// Include.
-        /// </summary>
-        Include,
+    Include,
 
-        /// <summary>
-        /// Exclude.
-        /// </summary>
-        Exclude
-    }
+    /// <summary>
+    /// Exclude.
+    /// </summary>
+    Exclude
 }

@@ -434,8 +434,8 @@ dotnet_diagnostic.S6781.severity = none
 # IDE0011: Add braces — deferred to Phase C (C8 dotnet format pass)
 dotnet_diagnostic.IDE0011.severity = none
 
-# IDE0161: Convert to file-scoped namespace — deferred to Phase C (C1)
-dotnet_diagnostic.IDE0161.severity = none
+# IDE0161: Convert to file-scoped namespace — C1 done
+dotnet_diagnostic.IDE0161.severity = error
 
 # IDE0025: Use expression body for property — deferred to Phase C (C8)
 dotnet_diagnostic.IDE0025.severity = none
