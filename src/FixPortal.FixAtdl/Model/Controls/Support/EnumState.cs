@@ -26,7 +26,7 @@ namespace FixPortal.FixAtdl.Model.Controls.Support;
 /// a class because its key function is to represent changing state, and mutable structs are seen to be <i>a bad thing</i>.
 /// As it is a class, the <see cref="CopyTo"/> method is included to provide a means to copy the contents in order to avoid
 /// the scenario that two independent entities share a reference to a given EnumState.</remarks>
-public class EnumState : IComparable
+public class EnumState
 {
     private const string ExceptionContext = "EnumState";
 
@@ -221,6 +221,16 @@ public class EnumState : IComparable
     public bool IsValidEnumId(string enumId)
     {
         return Array.Exists(_enumIds, s => s == enumId);
+    }
+
+    internal bool Matches(string enumId)
+    {
+        if (!IsValidEnumId(enumId))
+        {
+            throw ThrowHelper.New<InvalidFieldValueException>(this, ErrorMessages.UnrecognisedEnumIdValue, enumId);
+        }
+
+        return this[enumId];
     }
 
     /// <summary>
@@ -461,36 +471,4 @@ public class EnumState : IComparable
         return sb.ToString();
     }
 
-    #region IComparable Members
-
-    /// <summary>
-    /// Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance 
-    /// precedes, follows, or occurs in the same position in the sort order as the other object.
-    /// </summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
-    /// <remarks>IComparable is implemented by EnumState to allow its use within Edit_t processing.  Although this interface is
-    /// designed to provide less than/greater than comparison, it is primarily used here for determining equality.</remarks>
-    public int CompareTo(object? obj)
-    {
-        if (obj is string enumId)
-        {
-            if (!IsValidEnumId(enumId))
-            {
-                throw ThrowHelper.New<InvalidFieldValueException>(this, ErrorMessages.UnrecognisedEnumIdValue, enumId);
-            }
-
-            return this[enumId] ? 0 : -1;
-        }
-        else if (obj is EnumState enumState)
-        {
-            return Equals(enumState) ? 0 : -1;
-        }
-        else
-        {
-            throw ThrowHelper.New<ArgumentException>(this, ErrorMessages.CompareValueFailure, ToString(), obj?.GetType().FullName ?? "(null)");
-        }
-    }
-
-    #endregion
 }

@@ -9,8 +9,7 @@ using FixPortal.FixAtdl.Model.Collections;
 
 namespace FixPortal.FixAtdl.Utility;
 
-public interface IResolvable<Thost, Tvaluesource>
+public interface IResolvable<THost, TValueSource>
 {
-    void Resolve(Thost host, ISimpleDictionary<Tvaluesource> sourceCollection);
+    void Resolve(THost host, ISimpleDictionary<TValueSource> sourceCollection);
 }
-
