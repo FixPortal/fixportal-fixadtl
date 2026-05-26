@@ -23,7 +23,7 @@ namespace FixPortal.FixAtdl.Xml.Serialization;
 public class ElementFactory : INotifyClassDeserialized
 {
     // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
-    private static readonly ILogger _log = NullLogger.Instance;
+    private static readonly NullLogger _log = NullLogger.Instance;
 
     private const string ExceptionContext = "ElementFactory";
 
@@ -33,7 +33,10 @@ public class ElementFactory : INotifyClassDeserialized
 
     public ElementFactory(ElementDefinition elementDefinition, Type notifyCreationOfType)
     {
-        _log.LogDebug("ElementFactory created; root ElementName='{ElementName}'.", elementDefinition.ElementName);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("ElementFactory created; root ElementName='{ElementName}'.", elementDefinition.ElementName);
+        }
 
         _elementDefinition = elementDefinition;
         _notifyCreationOfType = notifyCreationOfType;
@@ -41,14 +44,20 @@ public class ElementFactory : INotifyClassDeserialized
 
     public object DeserializeElement(XElement element)
     {
-        _log.LogDebug("DeserializeElement called; first 50 characters of XML='{XmlSnippet}'.", element.ToString()[..50]);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("DeserializeElement called; first 50 characters of XML='{XmlSnippet}'.", element.ToString()[..50]);
+        }
 
         return CreateObject(_elementDefinition, element, null);
     }
 
     private object CreateObject(ElementDefinition definition, XElement sourceElement, object? parentObject)
     {
-        _log.LogDebug("CreateObject(ElementDefinition, XElement) called; ElementName='{ElementName}.'", definition.ElementName);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("CreateObject(ElementDefinition, XElement) called; ElementName='{ElementName}.'", definition.ElementName);
+        }
 
 
         GetConstructorParameters(definition, sourceElement, parentObject, out Type[] constructorParameterTypes, out object[] constructorParameterValues);
@@ -95,7 +104,10 @@ public class ElementFactory : INotifyClassDeserialized
     /// </ul></exception>
     private object CreateObject(GenericTypeElementDefinition genericTypeDefinition, XElement sourceElement, object? parentObject)
     {
-        _log.LogDebug("CreateObject(GenericTypeElementDefinition, XElement) called; ElementName='{ElementName}'.", genericTypeDefinition.ElementName);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("CreateObject(GenericTypeElementDefinition, XElement) called; ElementName='{ElementName}'.", genericTypeDefinition.ElementName);
+        }
 
 
         GetConstructorParameters(genericTypeDefinition, sourceElement, parentObject, out Type[] constructorParameterTypes, out object[] constructorParameterValues);
@@ -145,7 +157,10 @@ public class ElementFactory : INotifyClassDeserialized
 
     private object CreateObject(MultiTypeElementDefinition multiTypeDefinition, XElement sourceElement, object? parentObject)
     {
-        _log.LogDebug("CreateObject(MultiTypeElementDefinition, XElement) called; ElementName='{ElementName}'.", multiTypeDefinition.ElementName);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("CreateObject(MultiTypeElementDefinition, XElement) called; ElementName='{ElementName}'.", multiTypeDefinition.ElementName);
+        }
 
 
         GetConstructorParameters(multiTypeDefinition, sourceElement, parentObject, out Type[] constructorParameterTypes, out object[] constructorParameterValues);
@@ -201,7 +216,10 @@ public class ElementFactory : INotifyClassDeserialized
 
     private static object CreateRawObject(Type outerType, Type[] innerTypes, Type[] argTypes, params object[] args)
     {
-        _log.LogDebug("CreateObject(Type, Type[], Type[], params object[]) called (creating generic type); Outer type={OuterType}.", outerType.FullName);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("CreateObject(Type, Type[], Type[], params object[]) called (creating generic type); Outer type={OuterType}.", outerType.FullName);
+        }
 
         Type specificType = outerType.MakeGenericType(innerTypes);
 
@@ -217,7 +235,10 @@ public class ElementFactory : INotifyClassDeserialized
 
     private static object CreateRawObject(Type targetType, Type[] argTypes, params object[] args)
     {
-        _log.LogDebug("CreateObject(Type, Type[], params object[]) called; Type={TargetType}.", targetType.FullName);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("CreateObject(Type, Type[], params object[]) called; Type={TargetType}.", targetType.FullName);
+        }
 
         ConstructorInfo? classConstructor = targetType.GetConstructor(argTypes);
 
@@ -232,7 +253,10 @@ public class ElementFactory : INotifyClassDeserialized
     private void GetConstructorParameters(ElementDefinition elementDefinition, XElement sourceElement, object? parentObject,
         out Type[] constructorParameterTypes, out object[] constructorParameterValues)
     {
-        _log.LogDebug("GetConstructorParameters called; ElementName='{ElementName}'.", elementDefinition.ElementName);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("GetConstructorParameters called; ElementName='{ElementName}'.", elementDefinition.ElementName);
+        }
 
         if (elementDefinition.ConstructorParameters != null)
         {
@@ -274,7 +298,10 @@ public class ElementFactory : INotifyClassDeserialized
 
     private void ProcessAttributes(Type targetType, ElementAttribute[] attributeDefinitions, IEnumerable<XAttribute> attributes, object target)
     {
-        _log.LogDebug("ProcessAttributes called; Target type={TargetType}.", targetType.FullName);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("ProcessAttributes called; Target type={TargetType}.", targetType.FullName);
+        }
 
         foreach (ElementAttribute attrDefn in attributeDefinitions)
         {
@@ -342,7 +369,10 @@ public class ElementFactory : INotifyClassDeserialized
 
     private void ProcessChildren(ElementDefinition definition, XElement sourceElement, object target)
     {
-        _log.LogDebug("ProcessChildren called; ElementName='{ElementName}'", definition.ElementName);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("ProcessChildren called; ElementName='{ElementName}'", definition.ElementName);
+        }
 
         // We have to reflect the target type as we can't rely on the Definition to contain it (e.g. MultiTypeElementDefinition).
         Type targetType = target.GetType();
@@ -410,7 +440,10 @@ public class ElementFactory : INotifyClassDeserialized
 
     private void ProcessChildProperty(ChildElementDefinition childDefinition, PropertyInfo property, Type targetType, object target, object childObject)
     {
-        _log.LogDebug("ProcessChildProperty called; ElementName='{ElementName}', Property={Property}.", childDefinition.ElementDefinition.ElementName, property.Name);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("ProcessChildProperty called; ElementName='{ElementName}', Property={Property}.", childDefinition.ElementDefinition.ElementName, property.Name);
+        }
 
         string containerMethod;
 
@@ -460,7 +493,10 @@ public class ElementFactory : INotifyClassDeserialized
 
     private static object ReadAttribute(IEnumerable<XAttribute> attributes, XName attributeName, Type type)
     {
-        _log.LogDebug("ReadAttribute(IEnumerable<XAttribute>, XName, Type) called; Attribute name='{AttributeName}'", attributeName);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("ReadAttribute(IEnumerable<XAttribute>, XName, Type) called; Attribute name='{AttributeName}'", attributeName);
+        }
 
         XAttribute? attribute = attributes.FirstOrDefault(a => a.Name == attributeName);
 
@@ -497,7 +533,10 @@ public class ElementFactory : INotifyClassDeserialized
 
     private static object ReadAttribute(IEnumerable<XAttribute> attributes, XName attributeName, Type enumType, Dictionary<string, Enum> enumValues)
     {
-        _log.LogDebug("ReadAttribute(IEnumerable<XAttribute>, XName, Type, Dictionary<string, Enum>) called; Attribute name='{AttributeName}'", attributeName);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("ReadAttribute(IEnumerable<XAttribute>, XName, Type, Dictionary<string, Enum>) called; Attribute name='{AttributeName}'", attributeName);
+        }
 
         XAttribute? attribute = attributes.FirstOrDefault(a => a.Name == attributeName);
 
@@ -516,7 +555,10 @@ public class ElementFactory : INotifyClassDeserialized
 
     private static void SetPropertyValue(PropertyInfo property, object target, object value)
     {
-        _log.LogDebug("SetPropertyValue called; Target object type={TargetType}, property={Property}, value='{Value}'.", target.GetType().FullName, property.Name, value);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("SetPropertyValue called; Target object type={TargetType}, property={Property}, value='{Value}'.", target.GetType().FullName, property.Name, value);
+        }
 
         try
         {
