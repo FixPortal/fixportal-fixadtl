@@ -56,7 +56,7 @@ public class StateRule_t : EditEvaluator<Control_t>, IParentable<Control_t>
             sb.AppendFormat(", visible=\"{0}\"", Visible.Value.ToString().ToLower());
         }
 
-        sb.Append(")");
+        sb.Append(')');
 
         return sb.ToString();
     }

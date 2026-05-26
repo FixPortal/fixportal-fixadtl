@@ -419,7 +419,7 @@ public class EnumState : IComparable
     {
         StringBuilder sb = new();
 
-        sb.Append("(");
+        sb.Append('(');
 
         for (int n = 0; n < _enumStates.Length; n++)
         {
@@ -431,7 +431,7 @@ public class EnumState : IComparable
             sb.AppendFormat(", NonEnumValue='{0}'", _nonEnumValue);
         }
 
-        sb.Append(")");
+        sb.Append(')');
 
         return sb.ToString();
     }
