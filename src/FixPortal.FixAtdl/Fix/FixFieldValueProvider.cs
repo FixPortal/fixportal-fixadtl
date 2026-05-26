@@ -82,7 +82,7 @@ public class FixFieldValueProvider
             }
             else if (parameter is Parameter_t<Percentage_t> t)
             {
-                ProcessPercentageValue(t, ref result);
+                retrieved = ProcessPercentageValue(t, ref result);
             }
 
             if (_log.IsEnabled(LogLevel.Debug))
@@ -126,16 +126,22 @@ public class FixFieldValueProvider
         return retrieved;
     }
 
-    private void ProcessPercentageValue(Parameter_t<Percentage_t> parameter, ref string value)
+    private static bool ProcessPercentageValue(Parameter_t<Percentage_t> parameter, ref string value)
     {
         bool adjustmentNeeded = parameter.Value.MultiplyBy100 != true;
 
-        if (adjustmentNeeded)
+        if (!adjustmentNeeded)
         {
-
-            value = decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal decimalValue)
-                ? (decimalValue * 100).ToString("0.####", CultureInfo.InvariantCulture)
-                : string.Empty;
+            return true;
         }
+
+        if (decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal decimalValue))
+        {
+            value = (decimalValue * 100).ToString("0.####", CultureInfo.InvariantCulture);
+            return true;
+        }
+
+        value = null!;
+        return false;
     }
 }

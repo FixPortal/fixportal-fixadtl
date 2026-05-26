@@ -430,16 +430,7 @@ public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, I
             return GetFixFieldValue(additionalValues, Field);
         }
 
-        object result;
-        object fieldValue = FieldValue;
-
-        // If the field value can be converted into a number, most likely it should be treated as one
-        // for comparison purposes
-        result = fieldValue is string value
-            ? decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal number) ? number : value
-            : fieldValue;
-
-        return result;
+        return NormaliseNumericString(FieldValue);
     }
 
     private object GetRhsValue(FixFieldValueProvider additionalValues, object lhs)
@@ -456,10 +447,20 @@ public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, I
                 return GetFixFieldValue(additionalValues, Field2);
             }
 
-            return Field2Value;
+            return NormaliseNumericString(Field2Value);
         }
 
         return null!;
+    }
+
+    // If the field value is a string that parses as a decimal, surface it as a decimal so that comparisons
+    // between LHS and RHS use compatible runtime types. Without this, a non-FIX_ Field2 returning a string
+    // would hit IComparable.CompareTo(object) against a decimalised LHS and throw ArgumentException.
+    private static object NormaliseNumericString(object fieldValue)
+    {
+        return fieldValue is string value
+            ? decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal number) ? number : value
+            : fieldValue;
     }
 
     private void CheckForUnsupportedComparisons(object lhs, object rhs)
