@@ -146,10 +146,16 @@ public class ElementFactory : INotifyClassDeserialized
 
         IEnumerable<XAttribute> attributes = sourceElement.Attributes();
 
+        if (!genericTypeDefinition.InnerTypeToAttributesMap.TryGetValue(innerType, out ElementAttribute[]? innerTypeAttributes))
+        {
+            throw ThrowHelper.New<InvalidFieldValueException>(this, new ExceptionInfo(sourceElement), ErrorMessages.UnrecognisedTypeError, innerTypeName,
+                genericTypeDefinition.AttributeForInnerType.LocalName, genericTypeDefinition.ElementName!.LocalName);
+        }
+
         try
         {
             ProcessAttributes(newObject.GetType(), genericTypeDefinition.Attributes!, attributes, newObject);
-            ProcessAttributes(newObject.GetType(), genericTypeDefinition.InnerTypeToAttributesMap[innerType], attributes, newObject);
+            ProcessAttributes(newObject.GetType(), innerTypeAttributes, attributes, newObject);
         }
         catch (MissingMandatoryValueException ex)
         {
@@ -205,10 +211,16 @@ public class ElementFactory : INotifyClassDeserialized
 
         IEnumerable<XAttribute> attributes = sourceElement.Attributes();
 
+        if (!multiTypeDefinition.TypeToAttributesMap.TryGetValue(targetType, out ElementAttribute[]? typeAttributes))
+        {
+            throw ThrowHelper.New<InvalidFieldValueException>(this, new ExceptionInfo(sourceElement), ErrorMessages.UnrecognisedTypeError, typeName,
+                multiTypeDefinition.AttributeForType.LocalName, multiTypeDefinition.ElementName!.LocalName);
+        }
+
         try
         {
             ProcessAttributes(newObject.GetType(), multiTypeDefinition.Attributes!, attributes, newObject);
-            ProcessAttributes(newObject.GetType(), multiTypeDefinition.TypeToAttributesMap[targetType], attributes, newObject);
+            ProcessAttributes(newObject.GetType(), typeAttributes, attributes, newObject);
         }
         catch (FixAtdlException ex)
         {

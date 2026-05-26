@@ -69,12 +69,15 @@ public class FixMessage : Dictionary<FixField, string>
 
                 int tag = Convert.ToInt32(tagText, CultureInfo.InvariantCulture);
 
-                Add((FixField)tag, valueText);
+                if (!TryAdd((FixField)tag, valueText))
+                {
+                    throw ThrowHelper.New<FixParseException>(this, ErrorMessages.UnableToParseFixMessageInvalidContent, nameValuePair);
+                }
             }
         }
-        catch (FormatException fe)
+        catch (Exception ex) when (ex is FormatException or OverflowException)
         {
-            throw ThrowHelper.New<FixParseException>(this, fe, ErrorMessages.UnableToParseFixMessageInvalidFormat, tagText, valueText, fe.Message);
+            throw ThrowHelper.New<FixParseException>(this, ex, ErrorMessages.UnableToParseFixMessageInvalidFormat, tagText, valueText, ex.Message);
         }
     }
 
