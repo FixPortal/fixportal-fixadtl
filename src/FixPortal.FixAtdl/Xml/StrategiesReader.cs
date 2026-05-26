@@ -28,26 +28,35 @@ namespace FixPortal.FixAtdl.Xml;
 public class StrategiesReader
 {
     // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
-    private readonly ILogger _log = NullLogger.Instance;
+    private readonly NullLogger _log = NullLogger.Instance;
 
     public event System.EventHandler<StrategyLoadedEventArgs>? StrategyLoaded;
 
     public Strategies_t Load(string path)
     {
-        _log.LogDebug("Attempting to load strategies from file '{Path}'.", path);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("Attempting to load strategies from file '{Path}'.", path);
+        }
 
         XDocument document = XDocument.Load(path, LoadOptions.SetLineInfo | LoadOptions.PreserveWhitespace);
 
         Strategies_t strategies = LoadStrategies(document);
 
-        _log.LogDebug("{Count} strategies loaded from file '{Path}'.", strategies.Count, path);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("{Count} strategies loaded from file '{Path}'.", strategies.Count, path);
+        }
 
         return strategies;
     }
 
     public Strategies_t Load(Stream stream)
     {
-        _log.LogDebug("Attempting to load strategies from stream.");
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("Attempting to load strategies from stream.");
+        }
 
         XDocument document;
 #if NET_40
@@ -60,7 +69,10 @@ public class StrategiesReader
 #endif
         Strategies_t strategies = LoadStrategies(document);
 
-        _log.LogDebug("{Count} strategies loaded from stream.", strategies.Count);
+        if (_log.IsEnabled(LogLevel.Debug))
+        {
+            _log.LogDebug("{Count} strategies loaded from stream.", strategies.Count);
+        }
 
         return strategies;
     }
@@ -95,4 +107,3 @@ public class StrategiesReader
         StrategyLoaded?.Invoke(this, new StrategyLoadedEventArgs(index, total, strategyName));
     }
 }
-

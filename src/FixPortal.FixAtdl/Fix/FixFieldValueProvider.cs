@@ -23,7 +23,7 @@ namespace FixPortal.FixAtdl.Fix;
 public class FixFieldValueProvider
 {
     // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
-    private readonly ILogger _log = NullLogger.Instance;
+    private readonly NullLogger _log = NullLogger.Instance;
     private readonly IInitialFixValueProvider? _initialValueProvider;
 
     /// <summary>
@@ -76,8 +76,11 @@ public class FixFieldValueProvider
             {
                 string wireValue = result!;
 
-                _log.LogDebug("Attempting to find EnumID for FIX field {FixField} using parameter {ParameterName} with wire value '{WireValue}'",
-                    fixField, targetParameterName, wireValue);
+                if (_log.IsEnabled(LogLevel.Debug))
+                {
+                    _log.LogDebug("Attempting to find EnumID for FIX field {FixField} using parameter {ParameterName} with wire value '{WireValue}'",
+                        fixField, targetParameterName, wireValue);
+                }
 
                 retrieved = parameter.EnumPairs!.TryParseWireValue(wireValue, out result);
             }
@@ -86,8 +89,11 @@ public class FixFieldValueProvider
                 ProcessPercentageValue((parameter as Parameter_t<Percentage_t>)!, ref result);
             }
 
-            _log.LogDebug("FIX enumerated value lookup for field {FixField} returning {Retrieved}; value = '{Value}'", fixField,
-                retrieved.ToString().ToLower(), retrieved ? result : "N/A");
+            if (_log.IsEnabled(LogLevel.Debug))
+            {
+                _log.LogDebug("FIX enumerated value lookup for field {FixField} returning {Retrieved}; value = '{Value}'", fixField,
+                    retrieved, retrieved ? result : "N/A");
+            }
         }
 
         value = result!;
@@ -112,8 +118,11 @@ public class FixFieldValueProvider
         {
             retrieved = _initialValueProvider != null && _initialValueProvider.InputFixValues.TryGetValue(fixField, out result);
 
-            _log.LogDebug("FIX value lookup for field {FixField} returning {Retrieved}; value = '{Value}'", fixField,
-                retrieved.ToString().ToLower(), retrieved ? result : "N/A");
+            if (_log.IsEnabled(LogLevel.Debug))
+            {
+                _log.LogDebug("FIX value lookup for field {FixField} returning {Retrieved}; value = '{Value}'", fixField,
+                    retrieved, retrieved ? result : "N/A");
+            }
         }
 
         value = retrieved ? result! : null!;
@@ -134,4 +143,3 @@ public class FixFieldValueProvider
         }
     }
 }
-

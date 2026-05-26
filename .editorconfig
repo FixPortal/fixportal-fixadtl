@@ -324,9 +324,6 @@ dotnet_diagnostic.CA1707.severity = none
 # language features pass).
 # ---------------------------------------------------------------------------
 
-# CA1873: Don't evaluate log arguments — deferred to Phase C (C8)
-dotnet_diagnostic.CA1873.severity = none
-
 # CA1861: Prefer static readonly arrays — deferred to Phase C (C8)
 dotnet_diagnostic.CA1861.severity = none
 
