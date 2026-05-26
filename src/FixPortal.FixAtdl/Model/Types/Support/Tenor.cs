@@ -31,25 +31,13 @@ public struct Tenor : IComparable
     private int Offset;
     private TenorTypeValue TenorType;
 
-    public static bool operator <=(Tenor lhs, Tenor rhs)
-    {
-        if (lhs.TenorType != rhs.TenorType)
-        {
-            throw ThrowHelper.New<NotSupportedException>(ExceptionContext, ErrorMessages.UnsupportedComparisonOperation, lhs, rhs);
-        }
+    public static bool operator <=(Tenor lhs, Tenor rhs) => Compare(lhs, rhs) <= 0;
 
-        return lhs.Offset <= rhs.Offset;
-    }
+    public static bool operator >=(Tenor lhs, Tenor rhs) => Compare(lhs, rhs) >= 0;
 
-    public static bool operator >=(Tenor lhs, Tenor rhs)
-    {
-        if (lhs.TenorType != rhs.TenorType)
-        {
-            throw ThrowHelper.New<NotSupportedException>(ExceptionContext, ErrorMessages.UnsupportedComparisonOperation, lhs, rhs);
-        }
+    public static bool operator <(Tenor lhs, Tenor rhs) => Compare(lhs, rhs) < 0;
 
-        return lhs.Offset >= rhs.Offset;
-    }
+    public static bool operator >(Tenor lhs, Tenor rhs) => Compare(lhs, rhs) > 0;
 
     public static bool operator ==(Tenor lhs, Tenor rhs) => lhs.Offset == rhs.Offset && lhs.TenorType == rhs.TenorType;
 
@@ -165,8 +153,18 @@ public struct Tenor : IComparable
             return 0;
         }
 
-        return rhs <= this ? 1 : -1;
+        return Compare(this, rhs);
     }
 
     #endregion
+
+    private static int Compare(Tenor lhs, Tenor rhs)
+    {
+        if (lhs.TenorType != rhs.TenorType)
+        {
+            throw ThrowHelper.New<NotSupportedException>(ExceptionContext, ErrorMessages.UnsupportedComparisonOperation, lhs, rhs);
+        }
+
+        return lhs.Offset.CompareTo(rhs.Offset);
+    }
 }

@@ -5,29 +5,13 @@
 //
 #endregion
 
-using System;
-using FixPortal.FixAtdl.Diagnostics;
-using FixPortal.FixAtdl.Resources;
-
 namespace FixPortal.FixAtdl.Model.Elements;
 
-public class ListItem_t : IComparable
+public class ListItem_t
 {
     public string EnumId { get; set; } = null!;
     public string UiRep { get; set; } = null!;
     public bool IsSelected { get; set; }
-
-    public int CompareTo(object? obj)
-    {
-        if (obj is string)
-        {
-            return string.Compare(EnumId, obj as string, StringComparison.Ordinal);
-        }
-        else
-        {
-            throw ThrowHelper.New<InvalidOperationException>(this, ErrorMessages.CompareValueFailure, "ListItem_t", obj?.GetType().FullName ?? "(null)");
-        }
-    }
 
     public override string ToString()
     {

@@ -13,6 +13,7 @@ using System.Text;
 using FixPortal.FixAtdl.Diagnostics.Exceptions;
 using FixPortal.FixAtdl.Fix;
 using FixPortal.FixAtdl.Model.Collections;
+using FixPortal.FixAtdl.Model.Controls.Support;
 using FixPortal.FixAtdl.Model.Elements.Support;
 using FixPortal.FixAtdl.Model.Enumerations;
 using FixPortal.FixAtdl.Resources;
@@ -329,11 +330,7 @@ public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, I
 
         CheckForUnsupportedComparisons(lhs, rhs);
 
-        bool equal = lhs == null
-            ? rhs == null || rhs as string == Atdl.NullValue
-            : lhs is IComparable comparableLhs && rhs is IComparable comparableRhs
-                ? comparableLhs.CompareTo(comparableRhs) == 0
-                : lhs.Equals(rhs);
+        bool equal = AreEqual(lhs, rhs);
 
         bool finalResult = Operator == Operator_t.Equal ? equal : !equal;
 
@@ -394,6 +391,33 @@ public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, I
         }
 
         return finalResult;
+    }
+
+    private static bool AreEqual(object? lhs, object? rhs)
+    {
+        if (lhs == null)
+        {
+            return rhs == null || rhs as string == Atdl.NullValue;
+        }
+
+        if (lhs is EnumState lhsEnumState)
+        {
+            return rhs switch
+            {
+                string rhsEnumId => lhsEnumState.Matches(rhsEnumId),
+                EnumState rhsState => lhsEnumState.Equals(rhsState),
+                _ => lhs.Equals(rhs),
+            };
+        }
+
+        if (lhs is string lhsEnumId && rhs is EnumState rhsEnumState)
+        {
+            return rhsEnumState.Matches(lhsEnumId);
+        }
+
+        return lhs is IComparable comparableLhs && rhs is IComparable comparableRhs
+            ? comparableLhs.CompareTo(comparableRhs) == 0
+            : lhs.Equals(rhs);
     }
 
     private object GetLhsValue(FixFieldValueProvider additionalValues)

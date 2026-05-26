@@ -41,7 +41,7 @@ public struct MonthYear : IComparable
     /// <param name="lhs">Left hand side value.</param>
     /// <param name="rhs">Right hand side value.</param>
     /// <returns>True if the day, month and year values of the two operands are the same; false otherwise.</returns>
-    public static bool operator ==(MonthYear lhs, MonthYear rhs) => lhs.Year == rhs.Year && lhs.Month == rhs.Month && lhs.Day == rhs.Day && lhs.Month == rhs.Month;
+    public static bool operator ==(MonthYear lhs, MonthYear rhs) => lhs.Year == rhs.Year && lhs.Month == rhs.Month && lhs.Day == rhs.Day && lhs.Week == rhs.Week;
 
     /// <summary>
     /// Compares two MonthYear values for inequality.
@@ -90,47 +90,7 @@ public struct MonthYear : IComparable
     /// <param name="lhs">Left hand side value.</param>
     /// <param name="rhs">Right hand side value.</param>
     /// <returns>True if the left hand operand occurs before or at the same time as the right hand operand; false otherwise.</returns>
-    public static bool operator <=(MonthYear lhs, MonthYear rhs)
-    {
-        if (lhs.Year > rhs.Year)
-        {
-            return false;
-        }
-
-        if (lhs.Year < rhs.Year)
-        {
-            return true;
-        }
-
-        // Years equal...
-        if (lhs.Month > rhs.Month)
-        {
-            return false;
-        }
-
-        if (lhs.Month < rhs.Month)
-        {
-            return true;
-        }
-
-        // Years and months equal...
-        if (lhs.Day == null && rhs.Day == null && lhs.Week == null && lhs.Week == null)
-        {
-            return true;
-        }
-
-        if (lhs.Day != null && rhs.Day != null)
-        {
-            return lhs.Day <= rhs.Day;
-        }
-
-        if (lhs.Week != null && lhs.Week != null)
-        {
-            return lhs.Week <= rhs.Week;
-        }
-
-        throw ThrowHelper.New<NotSupportedException>(ExceptionContext, ErrorMessages.UnsupportedComparisonOperation, lhs, rhs);
-    }
+    public static bool operator <=(MonthYear lhs, MonthYear rhs) => Compare(lhs, rhs) <= 0;
 
     /// <summary>
     /// Compares one MonthYear value to see whether it is greater than or equal to a second MonthYear value.
@@ -138,47 +98,11 @@ public struct MonthYear : IComparable
     /// <param name="lhs">Left hand side value.</param>
     /// <param name="rhs">Right hand side value.</param>
     /// <returns>True if the left hand operand occurs at the same time or after the right hand operand; false otherwise.</returns>
-    public static bool operator >=(MonthYear lhs, MonthYear rhs)
-    {
-        if (lhs.Year < rhs.Year)
-        {
-            return false;
-        }
+    public static bool operator >=(MonthYear lhs, MonthYear rhs) => Compare(lhs, rhs) >= 0;
 
-        if (lhs.Year > rhs.Year)
-        {
-            return true;
-        }
+    public static bool operator <(MonthYear lhs, MonthYear rhs) => Compare(lhs, rhs) < 0;
 
-        // Years equal...
-        if (lhs.Month < rhs.Month)
-        {
-            return false;
-        }
-
-        if (lhs.Month > rhs.Month)
-        {
-            return true;
-        }
-
-        // Years and months equal...
-        if (lhs.Day == null && rhs.Day == null && lhs.Week == null && lhs.Week == null)
-        {
-            return true;
-        }
-
-        if (lhs.Day != null && rhs.Day != null)
-        {
-            return lhs.Day >= rhs.Day;
-        }
-
-        if (lhs.Week != null && lhs.Week != null)
-        {
-            return lhs.Week >= rhs.Week;
-        }
-
-        throw ThrowHelper.New<NotSupportedException>(ExceptionContext, ErrorMessages.UnsupportedComparisonOperation, lhs, rhs);
-    }
+    public static bool operator >(MonthYear lhs, MonthYear rhs) => Compare(lhs, rhs) > 0;
 
     /// <summary>
     /// Attempts to parse the supplied string into a MonthYear value.
@@ -273,8 +197,41 @@ public struct MonthYear : IComparable
             return 0;
         }
 
-        return rhs <= this ? 1 : -1;
+        return Compare(this, rhs);
     }
 
     #endregion
+
+    private static int Compare(MonthYear lhs, MonthYear rhs)
+    {
+        if (lhs.Year != rhs.Year)
+        {
+            return lhs.Year.CompareTo(rhs.Year);
+        }
+
+        if (lhs.Month != rhs.Month)
+        {
+            return lhs.Month.CompareTo(rhs.Month);
+        }
+
+        bool lhsHasNoSuffix = lhs.Day == null && lhs.Week == null;
+        bool rhsHasNoSuffix = rhs.Day == null && rhs.Week == null;
+
+        if (lhsHasNoSuffix && rhsHasNoSuffix)
+        {
+            return 0;
+        }
+
+        if (lhs.Day != null && rhs.Day != null)
+        {
+            return lhs.Day.Value.CompareTo(rhs.Day.Value);
+        }
+
+        if (lhs.Week != null && rhs.Week != null)
+        {
+            return lhs.Week.Value.CompareTo(rhs.Week.Value);
+        }
+
+        throw ThrowHelper.New<NotSupportedException>(ExceptionContext, ErrorMessages.UnsupportedComparisonOperation, lhs, rhs);
+    }
 }

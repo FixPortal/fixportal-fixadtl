@@ -78,17 +78,16 @@ public class ReadOnlyControlCollection : IParentable<Strategy_t>, IEnumerable<Co
         }
     }
 
-    public bool Contains(string controlId)
+    public bool Contains(string key)
     {
-        return _controls.ContainsKey(controlId);
+        return _controls.ContainsKey(key);
     }
 
-    public Control_t this[string controlId]
+    public Control_t this[string key]
     {
         get
         {
-
-            if (_controls.TryGetValue(controlId, out Control_t? value))
+            if (_controls.TryGetValue(key, out Control_t? value))
             {
                 return value;
             }
