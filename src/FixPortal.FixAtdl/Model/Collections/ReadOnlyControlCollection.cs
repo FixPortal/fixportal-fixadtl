@@ -274,7 +274,7 @@ public class ReadOnlyControlCollection : IParentable<Strategy_t>, IEnumerable<Co
 
     private bool IsValidControlId(string value)
     {
-        return (from c in this where c.Id == value select c).Count() != 0;
+        return this.Any(c => c.Id == value);
     }
 
     // This method looks for all the radio buttons in the same group as the supplied radio button

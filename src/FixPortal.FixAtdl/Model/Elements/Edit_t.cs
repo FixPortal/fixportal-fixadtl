@@ -94,7 +94,7 @@ public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, I
     {
         StringBuilder sb = new();
 
-        sb.Append("(");
+        sb.Append('(');
 
         if (Id != null)
         {

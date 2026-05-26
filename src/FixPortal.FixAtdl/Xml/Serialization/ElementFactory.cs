@@ -266,7 +266,7 @@ public class ElementFactory : INotifyClassDeserialized
         }
         else
         {
-            constructorParameterValues = new ConstructorParameter[] { };
+            constructorParameterValues = [];
             constructorParameterTypes = [];
         }
     }
@@ -293,7 +293,7 @@ public class ElementFactory : INotifyClassDeserialized
             }
 
             // Process indirect properties (only one level of indirect is supported).
-            if (attrDefn.Property.Contains("."))
+            if (attrDefn.Property.Contains('.'))
             {
                 string[] names = attrDefn.Property.Split(['.']);
 
@@ -505,12 +505,12 @@ public class ElementFactory : INotifyClassDeserialized
             return null!;
         }
 
-        if (!enumValues.ContainsKey(attribute.Value))
+        if (!enumValues.TryGetValue(attribute.Value, out Enum? enumValue))
         {
             throw ThrowHelper.New<InvalidFieldValueException>(ExceptionContext, ErrorMessages.InvalidValueEnumParseFailure, attribute.Value, enumType.Name);
         }
 
-        return Enum.ToObject(enumType, enumValues[attribute.Value]);
+        return Enum.ToObject(enumType, enumValue);
     }
 
     private static void SetPropertyValue(PropertyInfo property, object target, object value)
