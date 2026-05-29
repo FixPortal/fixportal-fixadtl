@@ -56,7 +56,7 @@ public class NumericControlBase : InitializableControl<decimal?>
 
             return true;
         }
-        catch (FormatException)
+        catch (Exception ex) when (ex is FormatException or OverflowException)
         {
             _log.LogError("Unable to set control {Arg0} to value '{Arg1}' as the value could not be converted to a valid number", Id, value);
 
@@ -101,10 +101,20 @@ public class NumericControlBase : InitializableControl<decimal?>
         {
             string? value = newValue as string;
 
-            _value = value == Atdl.NullValue
-                ? null
-                : throw ThrowHelper.New<InvalidFieldValueException>(this, ErrorMessages.InitControlValueError,
+            if (value == Atdl.NullValue)
+            {
+                _value = null;
+            }
+            else if (decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal parsed))
+            {
+                // Accept a numeric string (symmetry with TextControlBase) rather than rejecting it.
+                _value = parsed;
+            }
+            else
+            {
+                throw ThrowHelper.New<InvalidFieldValueException>(this, ErrorMessages.InitControlValueError,
                     Id, string.Format(CultureInfo.InvariantCulture, "'{0}' is not a valid value for this control", value));
+            }
         }
         else
         {
@@ -175,7 +185,21 @@ public class NumericControlBase : InitializableControl<decimal?>
     /// <returns>A nullable 32-bit signed integer equivalent to the value of this instance.</returns>
     public override int? ToInt32(IParameter targetParameter, IFormatProvider provider)
     {
-        return _value != null ? decimal.ToInt32((decimal)_value) : null;
+        if (_value == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return decimal.ToInt32((decimal)_value);
+        }
+        catch (OverflowException ex)
+        {
+            // Surface an out-of-range numeric as a domain error rather than a raw late OverflowException.
+            throw ThrowHelper.New<InvalidFieldValueException>(this, ex, ErrorMessages.UnsupportedControlValueConversion,
+                _value, "Int32", Id);
+        }
     }
 
     /// <summary>
@@ -186,7 +210,20 @@ public class NumericControlBase : InitializableControl<decimal?>
     /// <returns>A nullable 32-bit unsigned integer equivalent to the value of this instance.</returns>
     public override uint? ToUInt32(IParameter targetParameter, IFormatProvider provider)
     {
-        return _value != null ? decimal.ToUInt32((decimal)_value) : null;
+        if (_value == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return decimal.ToUInt32((decimal)_value);
+        }
+        catch (OverflowException ex)
+        {
+            throw ThrowHelper.New<InvalidFieldValueException>(this, ex, ErrorMessages.UnsupportedControlValueConversion,
+                _value, "UInt32", Id);
+        }
     }
 
     /// <summary>
