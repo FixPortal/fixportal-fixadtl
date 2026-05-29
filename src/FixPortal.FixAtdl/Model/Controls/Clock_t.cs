@@ -42,9 +42,9 @@ public class Clock_t : InitializableControl<DateTime?>
     }
 
     // TODO: Implement LocalMktTz as a type.
-    /// <summary>The timezone in which initValue is represented in.  Required when initValue is supplied. Applicable when 
-    /// xsi:type is Clock_t.</summary>
-    public string LocalMktTz { get; set; } = null!;
+    /// <summary>The timezone in which initValue is represented in.  Required when initValue is supplied. Applicable when
+    /// xsi:type is Clock_t.  Null when not supplied in the ATDL.</summary>
+    public string? LocalMktTz { get; set; }
 
     /// <summary>Defines the treatment of initValue time. 0: use initValue; 1: use current time if initValue time has passed.
     /// The default value is 0.</summary>
@@ -73,8 +73,42 @@ public class Clock_t : InitializableControl<DateTime?>
     /// </summary>
     protected override void LoadDefaultFromInitValue()
     {
-        _value = InitValue != null ? InitValueMode == 1 ? DateTime.Now > InitValue ? DateTime.Now : InitValue : InitValue : null;
+        // Surface an invalid initValueMode (only null/0/1 are defined) rather than silently treating
+        // anything that is not 1 as 0 (#4).
+        if (InitValueMode is not (null or 0 or 1))
+        {
+            throw ThrowHelper.New<InvalidFieldValueException>(this, ErrorMessages.InitControlValueError,
+                Id, string.Format(CultureInfo.InvariantCulture, "initValueMode '{0}' is invalid; expected 0 or 1", InitValueMode));
+        }
+
+        if (InitValue == null)
+        {
+            _value = null;
+            return;
+        }
+
+        if (InitValueMode == 1)
+        {
+            // initValueMode 1: use the current time if the initValue time has already passed. Snapshot
+            // "now" ONCE (the original read DateTime.Now twice, risking a sub-tick inconsistency).
+            DateTime now = GetCurrentTime();
+
+            _value = now > InitValue.Value ? now : InitValue;
+        }
+        else
+        {
+            _value = InitValue;
+        }
     }
+
+    /// <summary>
+    /// Returns the current time used by initValueMode==1. Exposed as a virtual seam so the time-based
+    /// behaviour is testable without a static DateTime.Now read.
+    /// </summary>
+    /// <remarks>LocalMktTz (the timezone in which initValue is expressed) is not yet applied to this
+    /// comparison: both values are compared in the host's local representation. Full timezone-aware
+    /// comparison requires resolving LocalMktTz against a timezone database and is left as future work.</remarks>
+    protected virtual DateTime GetCurrentTime() => DateTime.Now;
 
     #endregion
 
@@ -111,10 +145,21 @@ public class Clock_t : InitializableControl<DateTime?>
         {
             string? value = newValue as string;
 
-            _value = value == Atdl.NullValue
-                ? null
-                : throw ThrowHelper.New<InvalidFieldValueException>(this, ErrorMessages.InitControlValueError,
+            if (value == Atdl.NullValue)
+            {
+                _value = null;
+            }
+            else if (FixDateTime.TryParse(value, CultureInfo.InvariantCulture, out DateTime parsed))
+            {
+                // Accept a serialized timestamp so the control can round-trip its own ToString output,
+                // not just {NULL} (#3).
+                _value = parsed;
+            }
+            else
+            {
+                throw ThrowHelper.New<InvalidFieldValueException>(this, ErrorMessages.InitControlValueError,
                     Id, string.Format(CultureInfo.InvariantCulture, "'{0}' is not a valid value for this control", value));
+            }
         }
         else
         {
