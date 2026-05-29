@@ -5,7 +5,10 @@
 //
 #endregion
 
+using FixPortal.FixAtdl.Diagnostics.Exceptions;
+using FixPortal.FixAtdl.Resources;
 using FixPortal.FixAtdl.Utility;
+using ThrowHelper = FixPortal.FixAtdl.Diagnostics.ThrowHelper;
 
 namespace FixPortal.FixAtdl.Fix;
 
@@ -43,9 +46,12 @@ public class FixTagValuesCollection : IEnumerable<KeyValuePair<FixField, string>
     }
 
     /// <summary>
-    /// Gets an empty collection instance.
+    /// Gets a fresh empty collection instance.
     /// </summary>
-    public static FixTagValuesCollection Empty { get; } = [];
+    /// <remarks>Returns a new instance on each access rather than a shared singleton: the indexer
+    /// setter and Add mutate the backing message, so a shared Empty could bleed values across
+    /// independent evaluations.</remarks>
+    public static FixTagValuesCollection Empty => new();
 
     /// <summary>
     /// Gets or sets the value for the specified FIX field.
@@ -85,7 +91,13 @@ public class FixTagValuesCollection : IEnumerable<KeyValuePair<FixField, string>
     /// <returns><see langword="true"/> if the field was present; otherwise, <see langword="false"/>.</returns>
     public bool TryGetValue(string fixField, out string value)
     {
-        FixField field = fixField.ParseAsEnum<FixField>();
+        // Honour the Try-pattern: an unknown/extension/symbolic field name returns false rather than
+        // throwing out of ParseAsEnum.
+        if (!Enum.TryParse(fixField, true, out FixField field) || !Enum.IsDefined(field))
+        {
+            value = null!;
+            return false;
+        }
 
         bool result = _message.TryGetValue(field, out string? v);
         value = v!;
@@ -114,7 +126,12 @@ public class FixTagValuesCollection : IEnumerable<KeyValuePair<FixField, string>
     /// <param name="value">The tag value.</param>
     public void Add(FixTag tag, string value)
     {
-        _message.Add(tag, value);
+        // Use TryAdd so a duplicate tag surfaces as a domain FixParseException, consistent with the
+        // FixMessage(string) parse path, rather than a raw Dictionary ArgumentException.
+        if (!_message.TryAdd(tag, value))
+        {
+            throw ThrowHelper.New<FixParseException>(this, ErrorMessages.AttemptToAddDuplicateKey, ((FixField)tag).ToString(), "FixMessage");
+        }
     }
 
     /// <summary>
