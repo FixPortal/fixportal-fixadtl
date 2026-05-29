@@ -19,10 +19,10 @@ namespace FixPortal.FixAtdl.Fix;
 public class FixMessage : Dictionary<FixField, string>
 {
     /// <summary>Field separator.</summary>
-    public static readonly char SOH = '\x01';
+    public const char SOH = '\x01';
 
     /// <summary>Field/value separator.</summary>
-    public static readonly char Separator = '=';
+    public const char Separator = '=';
 
     /// <summary>
     /// Initializes a new instance of <see cref="FixMessage"/>.
@@ -68,6 +68,13 @@ public class FixMessage : Dictionary<FixField, string>
                 valueText = nameValuePair[(separatorIndex + 1)..];
 
                 int tag = Convert.ToInt32(tagText, CultureInfo.InvariantCulture);
+
+                // FIX tags are positive. Reject non-positive tags here so a negative tag cannot be
+                // admitted and then corrupted by the (uint) cast in ToFix (e.g. -1 -> 4294967295).
+                if (tag <= 0)
+                {
+                    throw ThrowHelper.New<FixParseException>(this, ErrorMessages.UnableToParseFixMessageInvalidContent, nameValuePair);
+                }
 
                 if (!TryAdd((FixField)tag, valueText))
                 {

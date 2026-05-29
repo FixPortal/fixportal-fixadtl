@@ -49,7 +49,7 @@ public class FixFieldValueProvider
     /// <summary>
     /// Gets the FIX values collection for this value provider.
     /// </summary>
-    public FixTagValuesCollection FixValues => _initialValueProvider!.InputFixValues;
+    public FixTagValuesCollection FixValues => _initialValueProvider?.InputFixValues ?? FixTagValuesCollection.Empty;
 
     /// <summary>
     /// Attempts to get the value of the specified FIX field (in FIX_ format), returning the value as a string.
@@ -64,7 +64,7 @@ public class FixFieldValueProvider
     {
         bool retrieved = TryGetValue(fixField, out var result);
 
-        if (retrieved && !string.IsNullOrEmpty(targetParameterName) && Parameters!.Contains(targetParameterName))
+        if (retrieved && !string.IsNullOrEmpty(targetParameterName) && Parameters != null && Parameters.Contains(targetParameterName))
         {
             IParameter parameter = Parameters[targetParameterName];
 
