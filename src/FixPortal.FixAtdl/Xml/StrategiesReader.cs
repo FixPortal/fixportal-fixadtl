@@ -10,13 +10,10 @@ using FixPortal.FixAtdl.Diagnostics.Exceptions;
 using FixPortal.FixAtdl.Model.Elements;
 using FixPortal.FixAtdl.Resources;
 using FixPortal.FixAtdl.Xml.Serialization;
+using System.Xml;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-
-#if !NET_40
-using System.Xml;
-#endif
 
 namespace FixPortal.FixAtdl.Xml;
 
@@ -29,8 +26,20 @@ public class StrategiesReader
     // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
     private readonly NullLogger _log = NullLogger.Instance;
 
+    // Hardened reader settings shared by both Load overloads: prohibit DTD processing and use no
+    // external resolver (defence-in-depth against XXE / external-entity expansion).
+    private static readonly XmlReaderSettings _readerSettings = new()
+    {
+        DtdProcessing = DtdProcessing.Prohibit,
+        XmlResolver = null,
+    };
+
+    private int _strategyLoadedCount;
+
     /// <summary>
-    /// Occurs when a strategy has been deserialized.
+    /// Occurs when a strategy has been deserialized. This is a pre-resolution progress signal: it is
+    /// raised as each strategy is deserialized, before cross-reference resolution (ResolveAll), which
+    /// may still fail. Treat it as "deserialized", not "fully loaded and validated".
     /// </summary>
     public event EventHandler<StrategyLoadedEventArgs>? StrategyLoaded;
 
@@ -46,7 +55,12 @@ public class StrategiesReader
             _log.LogDebug("Attempting to load strategies from file '{Path}'.", path);
         }
 
-        XDocument document = XDocument.Load(path, LoadOptions.SetLineInfo | LoadOptions.PreserveWhitespace);
+        XDocument document;
+
+        using (XmlReader reader = XmlReader.Create(path, _readerSettings))
+        {
+            document = XDocument.Load(reader, LoadOptions.SetLineInfo | LoadOptions.PreserveWhitespace);
+        }
 
         Strategies_t strategies = LoadStrategies(document);
 
@@ -71,14 +85,12 @@ public class StrategiesReader
         }
 
         XDocument document;
-#if NET_40
-        document = XDocument.Load(stream, LoadOptions.SetLineInfo | LoadOptions.PreserveWhitespace);
-#else
-        using (XmlReader reader = XmlReader.Create(stream))
+
+        using (XmlReader reader = XmlReader.Create(stream, _readerSettings))
         {
             document = XDocument.Load(reader, LoadOptions.SetLineInfo | LoadOptions.PreserveWhitespace);
         }
-#endif
+
         Strategies_t strategies = LoadStrategies(document);
 
         if (_log.IsEnabled(LogLevel.Debug))
@@ -100,9 +112,21 @@ public class StrategiesReader
 
         ElementFactory factory = new(SchemaDefinitions.Strategies_t, typeof(Strategy_t));
 
+        _strategyLoadedCount = 0;
+
         factory.ClassDeserialized += new EventHandler<ClassDeserializedEventArgs>(OnStrategyDeserialized);
 
-        Strategies_t strategies = (Strategies_t)factory.DeserializeElement(element);
+        Strategies_t strategies;
+
+        try
+        {
+            strategies = (Strategies_t)factory.DeserializeElement(element);
+        }
+        finally
+        {
+            // Unsubscribe so the handler does not linger if the factory is ever retained.
+            factory.ClassDeserialized -= new EventHandler<ClassDeserializedEventArgs>(OnStrategyDeserialized);
+        }
 
         strategies.ResolveAll();
 
@@ -111,7 +135,9 @@ public class StrategiesReader
 
     private void OnStrategyDeserialized(object? sender, ClassDeserializedEventArgs args)
     {
-        NotifyStrategyLoaded(0, 0, (args.ExtraInfo as Strategy_t)!.Name);
+        // Index is a running count of strategies as they deserialize. Total is reported as 0 ("unknown")
+        // because the full count is not known until deserialization completes (this fires mid-parse).
+        NotifyStrategyLoaded(_strategyLoadedCount++, 0, (args.ExtraInfo as Strategy_t)!.Name);
     }
 
     private void NotifyStrategyLoaded(int index, int total, string strategyName)
