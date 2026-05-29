@@ -154,14 +154,29 @@ public abstract class BinaryControlBase : InitializableControl<bool?>
         {
             string? value = newValue as string;
 
-            _value = value == Atdl.NullValue
-                ? null
-                : value == CheckedEnumRef
-                    ? true
-                    : value == UncheckedEnumRef
-                        ? false
-                        : throw ThrowHelper.New<InvalidFieldValueException>(this, ErrorMessages.InitControlValueError,
-                            Id, string.Format(CultureInfo.InvariantCulture, "'{0}' is not a valid value for this control", value));
+            if (value == Atdl.NullValue)
+            {
+                _value = null;
+            }
+            else if (value == CheckedEnumRef)
+            {
+                _value = true;
+            }
+            else if (value == UncheckedEnumRef)
+            {
+                _value = false;
+            }
+            else if (!HasEnumeratedState && TryParseBooleanWireValue(value, out bool boolValue))
+            {
+                // When the bound parameter has no EnumPairs, a raw FIX boolean wire value (Y/N or
+                // true/false) reaches here; accept it instead of silently failing init and falling back.
+                _value = boolValue;
+            }
+            else
+            {
+                throw ThrowHelper.New<InvalidFieldValueException>(this, ErrorMessages.InitControlValueError,
+                    Id, string.Format(CultureInfo.InvariantCulture, "'{0}' is not a valid value for this control", value));
+            }
         }
         else
         {
@@ -185,6 +200,23 @@ public abstract class BinaryControlBase : InitializableControl<bool?>
     public override void Reset()
     {
         _value = null;
+    }
+
+    private static bool TryParseBooleanWireValue(string? value, out bool result)
+    {
+        if (value == "Y")
+        {
+            result = true;
+            return true;
+        }
+
+        if (value == "N")
+        {
+            result = false;
+            return true;
+        }
+
+        return bool.TryParse(value, out result);
     }
 
     /// <summary>

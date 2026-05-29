@@ -43,7 +43,9 @@ public class EnumState
     /// EnumPair elements within the target parameter.</param>
     public EnumState(string[] enumIds)
     {
-        _enumIds = enumIds;
+        // Guard up front: Count, the indexer and ToString all dereference _enumIds unconditionally,
+        // so a null array would surface as an opaque NRE far from here.
+        _enumIds = enumIds ?? throw ThrowHelper.New<ArgumentNullException>(typeof(EnumState), "A valid array of EnumIDs must be supplied.");
         _enumStates = new BitArray(_enumIds.Length);
         _nonEnumValue = null;
     }
@@ -96,26 +98,21 @@ public class EnumState
             _log.LogDebug("Updating EnumState from {Arg0} to {Arg1}", this, source);
         }
 
-        int enumCount = _enumIds.Length;
-
+        // Validate that every EnumID lines up BEFORE mutating any bit, so a mismatch leaves this
+        // instance untouched rather than partially copied (Theme D — no partial mutation before throw).
         for (int n = 0; n < _enumIds.Length; n++)
         {
-            for (int index = 0; index < source._enumIds.Length; index++)
+            if (Array.IndexOf(source._enumIds, _enumIds[n]) < 0)
             {
-                if (source._enumIds[index] == _enumIds[n])
-                {
-                    _enumStates.Set(n, source._enumStates[index]);
-
-                    enumCount--;
-
-                    break;
-                }
+                throw ThrowHelper.New<ArgumentException>(this, "Mismatch between the EnumIDs of the source and target EnumState");
             }
         }
 
-        if (enumCount != 0)
+        for (int n = 0; n < _enumIds.Length; n++)
         {
-            throw ThrowHelper.New<ArgumentException>(this, "Mismatch between the EnumIDs of the source and target EnumState");
+            int index = Array.IndexOf(source._enumIds, _enumIds[n]);
+
+            _enumStates.Set(n, source._enumStates[index]);
         }
 
         _nonEnumValue = source._nonEnumValue;
@@ -134,7 +131,28 @@ public class EnumState
             return false;
         }
 
-        return _enumStates.Equals(state) && _nonEnumValue == state._nonEnumValue;
+        // Compare the bit states element-wise. The previous _enumStates.Equals(state) compared a
+        // BitArray to an EnumState by reference, so it was ALWAYS false for two distinct instances,
+        // breaking equality / HashSet / Dictionary / dirty-checking semantics.
+        return _nonEnumValue == state._nonEnumValue && BitArraysEqual(_enumStates, state._enumStates);
+    }
+
+    private static bool BitArraysEqual(BitArray left, BitArray right)
+    {
+        if (left.Length != right.Length)
+        {
+            return false;
+        }
+
+        for (int n = 0; n < left.Length; n++)
+        {
+            if (left[n] != right[n])
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -146,20 +164,26 @@ public class EnumState
     {
         unchecked // No issue with int overflow
         {
-            // Convert our BitArray to an integer value
-            int[] enumStates = new int[1];
+            // Size the backing int[] for the full bit count: BitArray.CopyTo into new int[1] throws
+            // ArgumentException once there are more than 32 bits (e.g. a long MultiSelectList).
+            int wordCount = Math.Max(1, (_enumStates.Length + 31) / 32);
+            int[] enumStates = new int[wordCount];
             _enumStates.CopyTo(enumStates, 0);
 
-            int hashCode = enumStates[0] * 251;
+            // Hash only the state and the non-enum value — the same fields Equals compares. The old
+            // code mixed in _enumIds.GetHashCode() (a reference/identity hash), which made two equal
+            // states with distinct _enumIds arrays hash differently, violating the Equals/GetHashCode
+            // contract.
+            int hashCode = 17;
 
-            if (_enumIds != null)
+            foreach (int word in enumStates)
             {
-                hashCode += _enumIds.GetHashCode();
+                hashCode = hashCode * 251 + word;
             }
 
             if (_nonEnumValue != null)
             {
-                hashCode = hashCode * 251 + _nonEnumValue.GetHashCode();
+                hashCode = hashCode * 251 + _nonEnumValue.GetHashCode(StringComparison.Ordinal);
             }
 
             return hashCode;
@@ -318,9 +342,7 @@ public class EnumState
             _log.LogDebug("Loading EnumState with InitValue '{InitValue}'", initValues);
         }
 
-        string[] enumIds = initValues.Split([';', ' ', ',']);
-
-        ClearAll();
+        string[] enumIds = initValues.Split([';', ' ', ','], StringSplitOptions.RemoveEmptyEntries);
 
         bool allAreValid = true;
 
@@ -330,13 +352,22 @@ public class EnumState
             allAreValid &= IsValidEnumId(enumId);
         }
 
-        if (!allAreValid && allowNonEnumValue)
+        // Validate before mutating: if some EnumIDs are invalid and a non-enum value is not allowed,
+        // throw before ClearAll so the current state is not left half-cleared / half-set (Theme D).
+        if (!allAreValid && !allowNonEnumValue)
         {
+            throw ThrowHelper.New<ArgumentException>(this, ErrorMessages.UnrecognisedEnumIdValue, initValues);
+        }
+
+        ClearAll();
+
+        if (!allAreValid)
+        {
+            // allowNonEnumValue is necessarily true here.
             _nonEnumValue = initValues;
         }
         else
         {
-            // [] operator will throw if any EnumId is invalid
             foreach (string enumId in enumIds)
             {
                 this[enumId] = true;
@@ -422,7 +453,9 @@ public class EnumState
             _log.LogDebug("Converting WireValue '{WireValue}' to EnumState", multiValueString);
         }
 
-        string[] inputValues = multiValueString.Split([';', ' ', ',']);
+        // Drop empty tokens so a blank, double-delimited or trailing-delimiter input does not yield
+        // a "" token that TryParseWireValue would reject.
+        string[] inputValues = multiValueString.Split([';', ' ', ','], StringSplitOptions.RemoveEmptyEntries);
 
         EnumState result = new(enumPairs.EnumIds);
 

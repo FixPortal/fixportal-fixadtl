@@ -78,7 +78,18 @@ public abstract class ListControlBase : InitializableControl<string>
 
         _value = new EnumState(ListItems.EnumIds);
 
-        _value.LoadInitValue(value, IsNonEnumValueAllowed);
+        try
+        {
+            _value.LoadInitValue(value, IsNonEnumValueAllowed);
+        }
+        catch (Exception ex) when (ex is ArgumentException or FixAtdlException)
+        {
+            // Honour the bool contract: an invalid EnumID falls back to "not initialised" rather than
+            // aborting initialisation by throwing (as BinaryControlBase already does).
+            _log.LogError(ex, "Unable to initialise control {Arg0} from FIX value '{Arg1}'", Id, value);
+
+            return false;
+        }
 
         return true;
     }
@@ -126,9 +137,16 @@ public abstract class ListControlBase : InitializableControl<string>
         {
             _value.ClearAll();
         }
+        else if (newValue is EnumState enumState)
+        {
+            _value.UpdateFrom(enumState);
+        }
         else
         {
-            _value.UpdateFrom((newValue as EnumState)!);
+            // Reject a non-EnumState argument with a clear diagnostic rather than (newValue as
+            // EnumState)! resolving to null and UpdateFrom throwing ArgumentNullException.
+            throw ThrowHelper.New<InternalErrorException>(this, InternalErrors.UnexpectedArgumentType,
+                newValue.GetType().FullName, "FixPortal.FixAtdl.Model.Types.Support.EnumState");
         }
     }
 
