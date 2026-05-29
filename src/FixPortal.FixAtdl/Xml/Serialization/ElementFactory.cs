@@ -29,6 +29,10 @@ public class ElementFactory : INotifyClassDeserialized
 
     private readonly Type _notifyCreationOfType;
     private readonly ElementDefinition _elementDefinition;
+
+    // NamedPredecessor cache for a single deserialization pass. Cleared at the start of each
+    // DeserializeElement call so reuse of a factory cannot leak cached objects across parses.
+    // Not thread-safe: a factory instance must be used by one thread / one parse at a time.
     private readonly Dictionary<string, object> _elementValueCache = [];
 
     /// <summary>
@@ -59,6 +63,10 @@ public class ElementFactory : INotifyClassDeserialized
             string xml = element.ToString();
             _log.LogDebug("DeserializeElement called; first 50 characters of XML='{XmlSnippet}'.", xml[..Math.Min(50, xml.Length)]);
         }
+
+        // Start each pass with an empty NamedPredecessor cache so a reused factory cannot carry
+        // cached objects across parses.
+        _elementValueCache.Clear();
 
         return CreateObject(_elementDefinition, element, null);
     }
@@ -132,11 +140,26 @@ public class ElementFactory : INotifyClassDeserialized
                 genericTypeDefinition.AttributeForInnerType.LocalName, genericTypeDefinition.ElementName!.LocalName);
         }
 
-        Type innerType = string.IsNullOrEmpty(genericTypeDefinition.InnerTypeNamespace)
-            ? Type.GetType(innerTypeName)!
-            : Type.GetType(string.Format(CultureInfo.InvariantCulture, "{0}.{1}", genericTypeDefinition.InnerTypeNamespace, innerTypeName))!;
+        // If the inner-type name is in an XML namespace, remove it (mirrors the MultiType overload).
+        if (innerTypeName.Contains(':') && innerTypeName.IndexOf(':') < innerTypeName.Length - 1)
+        {
+            innerTypeName = innerTypeName[(innerTypeName.IndexOf(':') + 1)..];
+        }
+
+        Type? innerType = string.IsNullOrEmpty(genericTypeDefinition.InnerTypeNamespace)
+            ? Type.GetType(innerTypeName)
+            : Type.GetType(string.Format(CultureInfo.InvariantCulture, "{0}.{1}", genericTypeDefinition.InnerTypeNamespace, innerTypeName));
 
         if (innerType == null)
+        {
+            throw ThrowHelper.New<InvalidFieldValueException>(this, new ExceptionInfo(sourceElement), ErrorMessages.UnrecognisedTypeError, innerTypeName,
+                genericTypeDefinition.AttributeForInnerType.LocalName, genericTypeDefinition.ElementName!.LocalName);
+        }
+
+        // SECURITY: gate on the allow-list (InnerTypeToAttributesMap) BEFORE constructing the type.
+        // Constructing a namespace-pinned, ctor-matching but un-mapped type from untrusted ATDL could
+        // trigger its constructor / type-initializer side effects before rejection.
+        if (!genericTypeDefinition.InnerTypeToAttributesMap.TryGetValue(innerType, out ElementAttribute[]? innerTypeAttributes))
         {
             throw ThrowHelper.New<InvalidFieldValueException>(this, new ExceptionInfo(sourceElement), ErrorMessages.UnrecognisedTypeError, innerTypeName,
                 genericTypeDefinition.AttributeForInnerType.LocalName, genericTypeDefinition.ElementName!.LocalName);
@@ -146,18 +169,12 @@ public class ElementFactory : INotifyClassDeserialized
 
         IEnumerable<XAttribute> attributes = sourceElement.Attributes();
 
-        if (!genericTypeDefinition.InnerTypeToAttributesMap.TryGetValue(innerType, out ElementAttribute[]? innerTypeAttributes))
-        {
-            throw ThrowHelper.New<InvalidFieldValueException>(this, new ExceptionInfo(sourceElement), ErrorMessages.UnrecognisedTypeError, innerTypeName,
-                genericTypeDefinition.AttributeForInnerType.LocalName, genericTypeDefinition.ElementName!.LocalName);
-        }
-
         try
         {
             ProcessAttributes(newObject.GetType(), genericTypeDefinition.Attributes!, attributes, newObject);
             ProcessAttributes(newObject.GetType(), innerTypeAttributes, attributes, newObject);
         }
-        catch (MissingMandatoryValueException ex)
+        catch (FixAtdlException ex)
         {
             throw ThrowHelper.Rethrow(this, ex, new ExceptionInfo(sourceElement), ErrorMessages.GeneralElementProcessingError, string.Empty);
         }
@@ -197,11 +214,20 @@ public class ElementFactory : INotifyClassDeserialized
             typeName = typeName[(typeName.IndexOf(':') + 1)..];
         }
 
-        Type targetType = string.IsNullOrEmpty(multiTypeDefinition.TypeNamespace)
-            ? Type.GetType(typeName)!
-            : Type.GetType(string.Format(CultureInfo.InvariantCulture, "{0}.{1}", multiTypeDefinition.TypeNamespace, typeName))!;
+        Type? targetType = string.IsNullOrEmpty(multiTypeDefinition.TypeNamespace)
+            ? Type.GetType(typeName)
+            : Type.GetType(string.Format(CultureInfo.InvariantCulture, "{0}.{1}", multiTypeDefinition.TypeNamespace, typeName));
 
         if (targetType == null)
+        {
+            throw ThrowHelper.New<InvalidFieldValueException>(this, new ExceptionInfo(sourceElement), ErrorMessages.UnrecognisedTypeError, typeName,
+                multiTypeDefinition.AttributeForType.LocalName, multiTypeDefinition.ElementName!.LocalName);
+        }
+
+        // SECURITY: gate on the allow-list (TypeToAttributesMap) BEFORE constructing the type, so an
+        // un-mapped (but namespace-pinned, ctor-matching) type from untrusted ATDL cannot trigger its
+        // constructor / type-initializer side effects before being rejected.
+        if (!multiTypeDefinition.TypeToAttributesMap.TryGetValue(targetType, out ElementAttribute[]? typeAttributes))
         {
             throw ThrowHelper.New<InvalidFieldValueException>(this, new ExceptionInfo(sourceElement), ErrorMessages.UnrecognisedTypeError, typeName,
                 multiTypeDefinition.AttributeForType.LocalName, multiTypeDefinition.ElementName!.LocalName);
@@ -210,12 +236,6 @@ public class ElementFactory : INotifyClassDeserialized
         object newObject = CreateRawObject(targetType, constructorParameterTypes, constructorParameterValues);
 
         IEnumerable<XAttribute> attributes = sourceElement.Attributes();
-
-        if (!multiTypeDefinition.TypeToAttributesMap.TryGetValue(targetType, out ElementAttribute[]? typeAttributes))
-        {
-            throw ThrowHelper.New<InvalidFieldValueException>(this, new ExceptionInfo(sourceElement), ErrorMessages.UnrecognisedTypeError, typeName,
-                multiTypeDefinition.AttributeForType.LocalName, multiTypeDefinition.ElementName!.LocalName);
-        }
 
         try
         {
@@ -300,10 +320,18 @@ public class ElementFactory : INotifyClassDeserialized
 
                     case SourceType.NamedPredecessor:
                         {
-
                             if (_elementValueCache.TryGetValue(elementDefinition.ConstructorParameters[n].Source, out object? value))
                             {
                                 constructorParameterValues[n] = value;
+                            }
+                            else
+                            {
+                                // A cache miss would otherwise leave a null constructor argument that is
+                                // passed positionally into the ctor (NRE / half-initialised object with no
+                                // schema context). Surface a located error instead — typically triggered by
+                                // malformed or out-of-order XML.
+                                throw ThrowHelper.New<FixAtdlException>(this, new ExceptionInfo(sourceElement),
+                                    $"The named predecessor '{elementDefinition.ConstructorParameters[n].Source}' required by element '{elementDefinition.ElementName}' was not found; the source XML may be malformed or its elements out of order.");
                             }
                         }
                         break;
@@ -484,9 +512,17 @@ public class ElementFactory : INotifyClassDeserialized
                 containerMethod = Enum.GetName(typeof(StandardContainerMethod), childDefinition.ContainerMethod)!;
             }
         }
+        else if (childDefinition.ContainerMethod is string methodName)
+        {
+            containerMethod = methodName;
+        }
         else
         {
-            containerMethod = (childDefinition.ContainerMethod as string)!;
+            // ContainerMethod is object-typed; guard the non-string/non-StandardContainerMethod case
+            // so a misconfigured definition surfaces a clear error rather than GetMethod(null) throwing
+            // a context-less ArgumentNullException.
+            throw ThrowHelper.New<InternalErrorException>(ExceptionContext,
+                $"ContainerMethod for element '{childDefinition.ElementDefinition.ElementName}' is neither a StandardContainerMethod nor a string.");
         }
 
         MethodInfo targetMethod = property.PropertyType.GetMethod(containerMethod, [targetType])!;
@@ -586,7 +622,11 @@ public class ElementFactory : INotifyClassDeserialized
 
         try
         {
-            if (property.PropertyType == value.GetType())
+            // Assign directly when the value is already an instance of the property type (exact or a
+            // derived/assignable type); only fall back to the single-arg converting-ctor path when a
+            // genuine conversion is required. The previous exact-type-only check pushed assignable
+            // values through CreateRawObject, which fails for any property type lacking such a ctor.
+            if (property.PropertyType.IsInstanceOfType(value))
             {
                 property.SetValue(target, value, null);
             }

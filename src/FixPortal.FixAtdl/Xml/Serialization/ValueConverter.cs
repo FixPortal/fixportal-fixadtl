@@ -42,6 +42,11 @@ public class ValueConverter
     /// <returns>The converted value.</returns>
     public static object ConvertTo(string value, Type targetType)
     {
+        // A Nullable<T> target (e.g. int?) has a FullName of "System.Nullable`1[[...]]" that matches
+        // none of the cases below and would fall through to InternalErrorException. Unwrap to the
+        // underlying type so the conversion is driven by T.
+        targetType = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
         switch (targetType.FullName)
         {
             case "System.String":
