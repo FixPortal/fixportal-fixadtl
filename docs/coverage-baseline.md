@@ -43,4 +43,4 @@ The realistic Phase 1 targets, calibrated against what a focused test-hardening 
 
 Rationale: the two best-covered namespaces (`Xml.Serialization` at 70%/64% and `Model.Collections.ParameterCollection` at 100%/94%) demonstrate that focused test coverage can reach 60–70%+ line coverage on complex production code. Extending that effort to `Model.Controls`, `Model.Types`, `Validation`, and `Fix` — which together represent the majority of the uncovered lines — makes 60%/45% a stretch-but-achievable bar that meaningfully improves confidence without requiring exhaustive coverage of every DTO property accessor.
 
-The ≥80%/≥70% bar should be re-evaluated as a Phase 2 target once Phase 1 numbers are in.
+The ≥80%/≥70% bar should be re-evaluated in a future coverage pass after Phase 1 numbers are in.
