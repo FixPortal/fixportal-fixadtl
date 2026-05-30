@@ -8,8 +8,6 @@
 using System.Globalization;
 using System.Reflection;
 using FixPortal.FixAtdl.Diagnostics.Exceptions;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace FixPortal.FixAtdl.Diagnostics;
 
@@ -18,9 +16,6 @@ namespace FixPortal.FixAtdl.Diagnostics;
 /// </summary>
 public static class ThrowHelper
 {
-    // FP Enhancement: 2026-05-23 — TODO wire injected logger when refactoring class to accept ILogger.
-    private static readonly ILogger _log = NullLogger.Instance;
-
     // Format the message only when arguments are supplied. With zero args, string.Format would still
     // parse the format string for placeholders and throw FormatException on literal braces (e.g.
     // "{NULL}", "Nullable{Int32}", XML payloads), corrupting the error-reporting path (F1c).
@@ -38,8 +33,6 @@ public static class ThrowHelper
     {
         T ex = CreateException<T>(source, message, null);
 
-        _log.LogError(ex, "Exception created by ThrowHelper");
-
         return ex;
     }
 
@@ -54,8 +47,6 @@ public static class ThrowHelper
     public static T New<T>(object? source, Exception innerException, string message) where T : Exception
     {
         T ex = CreateException<T>(source, message, innerException, null);
-
-        _log.LogError(ex, "Exception created by ThrowHelper");
 
         return ex;
     }
@@ -73,8 +64,6 @@ public static class ThrowHelper
     {
         T ex = CreateException<T>(source, FormatMessage(format, args), null);
 
-        _log.LogError(ex, "Exception created by ThrowHelper");
-
         return ex;
     }
 
@@ -91,8 +80,6 @@ public static class ThrowHelper
     {
         T ex = CreateException<T>(source, FormatMessage(format, args), innerException, null);
 
-        _log.LogError(ex, "Exception created by ThrowHelper");
-
         return ex;
     }
 
@@ -107,8 +94,6 @@ public static class ThrowHelper
     public static T New<T>(object? source, ExceptionInfo? info, string message) where T : Exception
     {
         T ex = CreateException<T>(source, message, info);
-
-        _log.LogError(ex, "Exception created by ThrowHelper");
 
         return ex;
     }
@@ -126,8 +111,6 @@ public static class ThrowHelper
     {
         T ex = CreateException<T>(source, message, innerException, info);
 
-        _log.LogError(ex, "Exception created by ThrowHelper");
-
         return ex;
     }
 
@@ -143,8 +126,6 @@ public static class ThrowHelper
     public static T New<T>(object? source, ExceptionInfo? info, string format, params object?[] args) where T : Exception
     {
         T ex = CreateException<T>(source, FormatMessage(format, args), info);
-
-        _log.LogError(ex, "Exception created by ThrowHelper");
 
         return ex;
     }
@@ -162,8 +143,6 @@ public static class ThrowHelper
     public static T New<T>(object? source, Exception innerException, ExceptionInfo? info, string format, params object?[] args) where T : Exception
     {
         T ex = CreateException<T>(source, FormatMessage(format, args), innerException, info);
-
-        _log.LogError(ex, "Exception created by ThrowHelper");
 
         return ex;
     }
@@ -188,8 +167,6 @@ public static class ThrowHelper
 
         Exception newException = BuildRethrown(source, ex, null, message);
 
-        _log.LogError(newException, "Exception rethrown by ThrowHelper");
-
         return newException;
     }
 
@@ -205,8 +182,6 @@ public static class ThrowHelper
     public static Exception Rethrow(object? source, Exception ex, string format, object arg)
     {
         Exception newException = Rethrow(source, ex, null, format, arg);
-
-        _log.LogError(newException, "Exception rethrown by ThrowHelper");
 
         return newException;
     }
@@ -228,8 +203,6 @@ public static class ThrowHelper
         string message = string.Format(CultureInfo.InvariantCulture, format, arg, ex.Message);
 
         Exception newException = BuildRethrown(source, ex, info, message);
-
-        _log.LogError(newException, "Exception rethrown by ThrowHelper");
 
         return newException;
     }
