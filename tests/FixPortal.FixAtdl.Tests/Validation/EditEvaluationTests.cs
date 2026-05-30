@@ -167,7 +167,7 @@ public class EditEvaluationTests
     [Theory]
     // OR: param=100; child1 checks ==999 (false), child2 checks ==888 (false) → false
     [InlineData("100", "999", "888", false)]
-    // OR: param=100; child1 checks ==100 (true), child2 checks ==999 (false) → true (short-circuit)
+    // OR: param=100; child1 checks ==100 (true), child2 checks ==999 (false) → true
     [InlineData("100", "100", "999", true)]
     // OR: param=100; child1 checks ==999 (false), child2 checks ==100 (true) → true
     [InlineData("100", "999", "100", true)]
