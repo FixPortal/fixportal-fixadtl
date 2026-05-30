@@ -115,7 +115,7 @@ public class SupplementalCollectionTests
     }
 
     [Fact]
-    public void EditRefCollection_with_evaluating_collection_registers_item_on_add()
+    public void EditRefCollection_ctor_with_evaluating_collection_succeeds()
     {
         // NOTE: EditRef_t.Sources throws InternalErrorException before Resolve is called,
         // so we can only test the no-evaluating-collection path when constructing unresolved items.
@@ -142,21 +142,19 @@ public class SupplementalCollectionTests
     }
 
     [Fact]
-    public void StrategyEditCollection_EvaluateAll_with_resolved_passing_edit_returns_true()
+    public void StrategyEditCollection_EvaluateAll_with_resolved_edits_does_not_throw()
     {
         // Load and resolve from the TWAP fixture so StrategyEdit_t.Evaluate() works.
         var twap = LoadTwap();
         twap.Parameters["Participation"].WireValue = "50";
 
         // ResolveAll wires up the StrategyEdits already present on the loaded strategy.
-        // To exercise EvaluateAll itself, call it directly on the collection.
         twap.StrategyEdits.ResolveAll(twap);
 
-        bool result = twap.StrategyEdits.EvaluateAll(FixFieldValueProvider.Empty, shortCircuit: false);
-
-        // Whether the existing TWAP edits pass or fail is fixture-dependent; just confirm we got a bool
-        // without an exception — the code path is exercised.
-        (result == true || result == false).Should().BeTrue();
+        // The pass/fail outcome is fixture-dependent; the value of this test is that the
+        // EvaluateAll code path runs to completion without throwing on resolved edits.
+        var act = () => twap.StrategyEdits.EvaluateAll(FixFieldValueProvider.Empty, shortCircuit: false);
+        act.Should().NotThrow();
     }
 
     // -----------------------------------------------------------------------
