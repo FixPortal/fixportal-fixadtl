@@ -330,7 +330,7 @@ public class TypeCoverageGapTests
         var cc = (IControlConvertible)p.Value;
         // Enum.GetName returns the member name as declared in the IsoCountryCode enum.
         // We pin the actual behaviour: the return value matches the enum identifier for "US".
-        cc.ToString(null).Should().NotBeNullOrEmpty();
+        cc.ToString(null).Should().Be("US");
     }
 
     // ──────────────────────────────────────────────────────────────────────────
