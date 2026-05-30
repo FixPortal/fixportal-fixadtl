@@ -24,6 +24,8 @@ Aggregated from the per-class JsonSummary report. Line % = covered lines ÷ cove
 | `FixPortal.FixAtdl.Model.Elements.*` | 539 | 209 | 39% | 41 | 165 | 25% |
 | `FixPortal.FixAtdl.Xml.Serialization.*` | 558 | 392 | 70% | 117 | 184 | 64% |
 
+_The table covers the core namespaces only (~4,004 of ~5,072 coverable lines); the remainder is non-core code (marker/DTO/utility types) that is counted in the overall figure but not gated._
+
 **Notable outliers within buckets:**
 - `Model.Reference`: `Regions` is a 263-line static lookup table (0% — never exercised).
 - `Model.Controls`: `EnumState` (209 coverable, 0%) and `BinaryControlBase` (119 coverable, 0%) dominate.
@@ -33,7 +35,9 @@ Aggregated from the per-class JsonSummary report. Line % = covered lines ÷ cove
 ## Mutation testing
 Stryker `mutate` scope is currently `**/ParameterCollection.cs` only. Phase 1 broadens this to the core namespaces.
 
-## Finalized coverage bar (D2)
+## Finalized coverage bar
+
+> Roadmap deliverable **D2** (see `docs/superpowers/plans/2026-05-30-fixatdl-1.0-roadmap.md`).
 
 The provisional ≥80% line / ≥70% branch target is **not achievable** against the current baseline (32% line / 19% branch overall; worst core namespaces are at 0–6% line). Setting that bar as a Phase 1 exit gate would require the entire codebase to be written green from scratch.
 
