@@ -181,6 +181,22 @@ public class ParameterTypeFeatureTests
         p.WireValue.Should().Be("1.23");
     }
 
+    // Pins MidpointRounding.AwayFromZero on Precision output: 2.5 -> 3 (not banker's 2),
+    // -2.5 -> -3, 2.345 @2dp -> 2.35. Characterization for batch 5 M4 / S2325.
+    [Theory]
+    [InlineData("2.5", 0, "3")]
+    [InlineData("-2.5", 0, "-3")]
+    [InlineData("2.345", 2, "2.35")]
+    [InlineData("2.344", 2, "2.34")]
+    public void Float_t_Precision_rounds_away_from_zero(string input, int precision, string expected)
+    {
+        var p = new Parameter_t<Float_t>("X");
+        p.Value.Precision = precision;
+        p.WireValue = input;
+
+        p.WireValue.Should().Be(expected);
+    }
+
     // ──────────────────────────────────────────────────────────────────────────
     // IControlConvertible — Int_t
     // ──────────────────────────────────────────────────────────────────────────
