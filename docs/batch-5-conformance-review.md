@@ -12,7 +12,7 @@ production broker ATDL documents** extracted from
 
 | Source row | BrokerId | Size | Notes |
 |---|---|---|---|
-| Id 7 / Id 8 | 82 / 1038 | 1,395 lines | byte-identical; JPM-style (AQUA/STEALTH/SNIPER/VWAP/POC/IS/SWITCH) |
+| Id 7 / Id 8 | 82 / 1038 | 1,395 lines | byte-identical; multi-region spec — Regions, Char_t enums, deep panels |
 | Id 9 | 431 | 2,090 lines | uses `Clock_t` + `localMktTz="Europe/Berlin"` feeding `UTCTimestamp_t` |
 
 These two documents are being added to the test project as conformance fixtures (see
