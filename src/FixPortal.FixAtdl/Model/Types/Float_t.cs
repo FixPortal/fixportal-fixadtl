@@ -163,7 +163,10 @@ public class Float_t : AtdlValueType<decimal>, IControlConvertible
     /// <param name="value">Value to be rounded. May be null.</param>
     /// <param name="precision">Number of places to round to.</param>
     /// <returns>If the supplied value is non-null, the rounded value is returned; otherwise returns null.</returns>
-    protected decimal? Round(decimal? value, int precision)
+    /// <remarks>FIXatdl does not mandate a rounding mode for the <c>precision</c> attribute. This library
+    /// uses <see cref="MidpointRounding.AwayFromZero"/> by convention (e.g. 2.5 → 3, -2.5 → -3); trailing
+    /// zeros are not padded, which is wire-legal for float fields (batch 5, M4).</remarks>
+    protected static decimal? Round(decimal? value, int precision)
     {
         return value != null ? Math.Round((decimal)value, precision, MidpointRounding.AwayFromZero) : null;
     }
