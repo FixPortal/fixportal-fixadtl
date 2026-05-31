@@ -32,7 +32,8 @@ public class Clock_t : InitializableControl<DateTime?>
     {
     }
 
-    // TODO: Implement LocalMktTz as a type.
+    // LocalMktTz is stored but not yet applied to initValue resolution (timezone modelling deferred as a
+    // feature, not a bug). Tracked in docs/batch-3-findings-disposition.md (the repo has issues disabled).
     /// <summary>The timezone in which initValue is represented in.  Required when initValue is supplied. Applicable when
     /// xsi:type is Clock_t.  Null when not supplied in the ATDL.</summary>
     public string? LocalMktTz { get; set; }
