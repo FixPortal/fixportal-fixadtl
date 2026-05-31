@@ -7,13 +7,13 @@
 ## What was reviewed
 
 `fixportal-fixatdl` (FIXatdl 1.1 parser + model) audited against **two distinct, live
-production broker ATDL documents** extracted from
-`D:\Centerprise\work\tomi-database\Tomi\Data\ems.FixAtdlAlgos_Data.sql`:
+production broker ATDL documents** held in a private internal source (identifying content
+removed; the obfuscated forms are committed as the `Fixtures/RealWorld/` conformance fixtures):
 
-| Source row | BrokerId | Size | Notes |
-|---|---|---|---|
-| Id 7 / Id 8 | 82 / 1038 | 1,395 lines | byte-identical; multi-region spec — Regions, Char_t enums, deep panels |
-| Id 9 | 431 | 2,090 lines | uses `Clock_t` + `localMktTz="Europe/Berlin"` feeding `UTCTimestamp_t` |
+| Spec | Size | Notes |
+|---|---|---|
+| Multi-region | 1,395 lines | Regions, Char_t enums, deep nested panels |
+| Timezone | 2,090 lines | uses `Clock_t` + `localMktTz="Europe/Berlin"` feeding `UTCTimestamp_t` |
 
 These two documents are being added to the test project as conformance fixtures (see
 Finding tracking below).
@@ -43,7 +43,7 @@ silently dropped, and most "suspect" attributes are correctly mapped. The real d
 ### CRITICAL
 
 #### C1 — `localMktTz` never applied → wrong instant on the FIX wire
-- **Construct:** `Clock_t@localMktTz` feeding `UTCTimestamp_t` (broker-431, fixTag 7113/7114).
+- **Construct:** `Clock_t@localMktTz` feeding `UTCTimestamp_t` (the timezone spec, fixTag 7113/7114).
 - **Evidence:** `<Control xsi:type="lay:Clock_t" … initValue="08:00:00" localMktTz="Europe/Berlin">`
   feeding `<Parameter … xsi:type="UTCTimestamp_t" fixTag="7113">`.
 - **Current behavior:** `Clock_t.LocalMktTz` is parsed and stored but explicitly never applied
@@ -59,7 +59,7 @@ silently dropped, and most "suspect" attributes are correctly mapped. The real d
 - **Confidence:** Confirmed (verified `GetAdjustedValue` relabel mechanism directly).
 
 #### C2 — Time-only value parsed with today's date → date-contaminated validation
-- **Construct:** `UTCTimestamp_t@maxValue="23:59:59"` (broker-431 `p_EndTime`); same root affects
+- **Construct:** `UTCTimestamp_t@maxValue="23:59:59"` (the timezone spec `p_EndTime`); same root affects
   `Clock_t@initValue` time-only values.
 - **Evidence:** `<Parameter name="p_EndTime" xsi:type="UTCTimestamp_t" fixTag="7114" maxValue="23:59:59" />`.
 - **Current behavior:** `FixDateTime.TryParse` matches the `HH:mm:ss` format
@@ -89,7 +89,7 @@ silently dropped, and most "suspect" attributes are correctly mapped. The real d
 
 #### H2 — Inequality vs a missing FIX field returns a definite wrong boolean
 - **Construct:** `LT/LE/GE/GT` with `field2="FIX_*"` against an absent inbound FIX field
-  (broker-82 `field2="FIX_Price"`, `field2="FIX_OrderQty"`).
+  (the multi-region spec `field2="FIX_Price"`, `field2="FIX_OrderQty"`).
 - **Current behavior:** a missing RHS field resolves to `null`; the type-guard is skipped and it
   falls through to `lhs.CompareTo(null)` (`Model/Elements/Edit_t.cs:350,355`), which returns +1
   for `decimal`/`DateTime` (value > null) → e.g. `GE`→true, `LT`→false. A definite boolean is
@@ -99,7 +99,7 @@ silently dropped, and most "suspect" attributes are correctly mapped. The real d
 - **Confidence:** Confirmed.
 
 #### H3 — `EnumPair@index` silently dropped
-- **Construct:** `EnumPair@index` (broker-82, 128×): `<EnumPair enumID="o1" index="0" wireValue="0" />`.
+- **Construct:** `EnumPair@index` (the multi-region spec, 128×): `<EnumPair enumID="o1" index="0" wireValue="0" />`.
 - **Current behavior:** not declared in `Xml/SchemaDefinitions.cs` (EnumPairs maps only
   `enumID`/`wireValue`); `Model/Elements/EnumPair_t.cs` has no `Index` property; the reflective
   factory ignores undeclared attributes → silent drop.
@@ -110,7 +110,7 @@ silently dropped, and most "suspect" attributes are correctly mapped. The real d
 - **Confidence:** Confirmed (drop); spec-correctness pending XSD check.
 
 #### H4 — `definedByFIX` parsed but never consumed
-- **Construct:** `Parameter@definedByFIX="true"` (broker-82, e.g. `OrdType` tag 40, `OrderQty` tag 38).
+- **Construct:** `Parameter@definedByFIX="true"` (the multi-region spec, e.g. `OrdType` tag 40, `OrderQty` tag 38).
 - **Current behavior:** mapped to `Parameter_t.DefinedByFix` (`SchemaDefinitions.cs:89`) but no
   reader anywhere — gates nothing.
 - **Correct behavior:** per FIXatdl 1.1, marks a parameter as a redefinition of a standard FIX tag
@@ -138,7 +138,7 @@ silently dropped, and most "suspect" attributes are correctly mapped. The real d
 #### M3 — Unset checkbox vs `EQ "false"` is init-order dependent
 - An uninitialized binary control is `null`; `AreEqual(null, "false")` returns false
   (`Edit_t.cs:369-373`), so a StateRule keyed on `EQ "false"` won't fire until the checkbox is
-  explicitly set (broker-431 `EnableStartTime`/`EnableEndTime` pattern). Outcome depends on whether
+  explicitly set (the timezone spec `EnableStartTime`/`EnableEndTime` pattern). Outcome depends on whether
   binary controls are initialized to a concrete `false` before evaluation.
 - **Confidence:** Suspected (hinges on control init policy).
 
@@ -176,7 +176,7 @@ silently dropped, and most "suspect" attributes are correctly mapped. The real d
 | M3 | Medium | Ensure binary controls initialize to concrete `false` before evaluation |
 | M4 | Medium | Confirm rounding-mode convention; document |
 
-Fixes, fixtures (broker-82 + broker-431), and conformance tests land on this branch; merged to
+Fixes, fixtures (the multi-region spec + the timezone spec), and conformance tests land on this branch; merged to
 `main` via rebase-merge PR.
 
 ---
@@ -206,6 +206,6 @@ preserves sub-second precision. The SonarAnalyzer backlog (24 src findings + the
 CA1859/CS8601/Sonar warnings surfaced once src compiled clean) was cleared, and
 `TreatWarningsAsErrors` is now enforced solution-wide (clean `--no-incremental` build is 0/0).
 
-**Still deferred (not batch 5):** N1/N2 remain by-design (see above); the broker-82/broker-431
+**Still deferred (not batch 5):** N1/N2 remain by-design (see above); the the multi-region spec/the timezone spec
 conformance **fixtures** are deferred to Phase D (real client data — must be obfuscated before
 committing); the adversarial-review panel (Phase 3) remains deferred.
