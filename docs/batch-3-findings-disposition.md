@@ -40,13 +40,17 @@
 - **`ModelUtils` "Move this somewhere better"** — `GetTypeFromName` belongs with the `_types` cache it reads;
   `ModelUtils` is the correct home. TODO removed. Commit `7d5a4a7`.
 
-## Deferred (tracked here — repo issues are disabled)
-- **`Clock_t.LocalMktTz` typing** — `LocalMktTz` is stored but not yet applied to initValue resolution:
-  `LoadDefaultFromInitValue` compares against the injected `TimeProvider` in the host's local representation.
-  Modelling it as a proper timezone type (NodaTime `DateTimeZone` at the boundary, per the house date/time
-  convention) and applying it when resolving `initValueMode == 1` is a **feature, not a bug**, and out of
-  proportion to a TODO-clearance pass. The GitHub repo has issues disabled, so this is tracked here rather
-  than as an issue; the TODO at `Clock_t.cs` was replaced with a comment pointing back to this entry. Commit `8b02621`.
+## Resolved after the fact (was deferred — closed in batch 5)
+- **`Clock_t.LocalMktTz` typing — RESOLVED; no longer deferred.** Originally deferred here (commit
+  `8b02621`): `LocalMktTz` was stored but not applied to initValue resolution, and modelling it as a proper
+  timezone type was judged a feature out of proportion to a TODO-clearance pass. Subsequently **implemented in
+  batch-5 C1 (`7c8517e`)**: `Clock_t` now resolves `localMktTz` to a real IANA zone via NodaTime (`IClock` +
+  TZDB) and emits zone-shifted UTC when resolving `initValueMode == 1` — the BCL `TimeProvider` seam this entry
+  referred to was replaced by `IClock`. The one residual question — injecting `IClock`/zone-provider through
+  the reflective `ElementFactory` rather than the current settable-property pattern — is **deliberately parked**
+  (post-1.0, do-not-reopen): the factory has no `SourceType.Service` channel and DI would break the public
+  ctors, while the dependency is already overridable and test-controllable. **No open items remain in this
+  section.**
 
 ## Already resolved in batch 3 (recorded for completeness)
 - **M4** — `ConvertToComparableType` wraps `FormatException`/`OverflowException` → `InvalidFieldValueException`
