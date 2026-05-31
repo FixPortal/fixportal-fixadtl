@@ -7,6 +7,7 @@
 
 using System.Globalization;
 using FixPortal.FixAtdl.Diagnostics;
+using FixPortal.FixAtdl.Fix;
 using FixPortal.FixAtdl.Model.Collections;
 using FixPortal.FixAtdl.Model.Controls.Support;
 using FixPortal.FixAtdl.Model.Elements.Support;
@@ -29,6 +30,43 @@ public abstract class DateTimeTypeBase : AtdlValueType<DateTime>, IControlConver
     /// Minimum value for this date/time type, i.e., the earliest acceptable date/time.
     /// </summary>
     public DateTime? MinValue { get; set; }
+
+    // C2 — time-only bound capture. A maxValue/minValue written as a bare time-of-day (HH:mm:ss[.fff])
+    // is a time-of-day constraint, not a date+time one. The reflective parser routes the raw bound text
+    // through MaxValueText/MinValueText; a time-only value is stored here (and compared on the time
+    // component only), while a full datetime / date-only value continues to populate MaxValue/MinValue.
+    private TimeOnly? _maxTimeOfDay;
+    private TimeOnly? _minTimeOfDay;
+
+    private static readonly string[] _timeOnlyBoundFormats = ["HH:mm:ss.fff", "HH:mm:ss"];
+
+    /// <summary>Deserialization-only. Receives the raw <c>maxValue</c> attribute text and parses it with
+    /// time-only awareness (C2). Not intended for programmatic use; set <see cref="MaxValue"/> directly
+    /// for a full date+time bound.</summary>
+    public string MaxValueText { set => SetBound(value, isMax: true); }
+
+    /// <summary>Deserialization-only. Receives the raw <c>minValue</c> attribute text and parses it with
+    /// time-only awareness (C2). Not intended for programmatic use; set <see cref="MinValue"/> directly
+    /// for a full date+time bound.</summary>
+    public string MinValueText { set => SetBound(value, isMax: false); }
+
+    private void SetBound(string text, bool isMax)
+    {
+        if (TimeOnly.TryParseExact(text, _timeOnlyBoundFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out TimeOnly timeOfDay))
+        {
+            if (isMax) { _maxTimeOfDay = timeOfDay; } else { _minTimeOfDay = timeOfDay; }
+        }
+        else
+        {
+            // FixDateTime.Parse uses AssumeUniversal (no AdjustToUniversal), so on a non-UTC host the
+            // moment is correct but expressed with Kind=Local — its wall-clock is host-offset-shifted.
+            // Normalise to UTC so a full-datetime bound's wall-clock matches the canonically-UTC value
+            // it is compared against; otherwise the comparison is host-timezone-dependent.
+            DateTime parsed = FixDateTime.Parse(text, CultureInfo.InvariantCulture);
+            DateTime normalised = parsed.Kind == DateTimeKind.Local ? parsed.ToUniversalTime() : parsed;
+            if (isMax) { MaxValue = normalised; } else { MinValue = normalised; }
+        }
+    }
 
     #region AtdlReferenceType<string> Overrides
 
@@ -56,6 +94,18 @@ public abstract class DateTimeTypeBase : AtdlValueType<DateTime>, IControlConver
             if (MinValue != null && (DateTime)value < MinValue)
             {
                 return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.MinValueExceeded, value, MinValue);
+            }
+
+            TimeOnly valueTimeOfDay = TimeOnly.FromDateTime((DateTime)value);
+
+            if (_maxTimeOfDay != null && valueTimeOfDay > _maxTimeOfDay)
+            {
+                return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.MaxValueExceeded, value, _maxTimeOfDay);
+            }
+
+            if (_minTimeOfDay != null && valueTimeOfDay < _minTimeOfDay)
+            {
+                return new ValidationResult(ValidationResult.ResultType.Invalid, ErrorMessages.MinValueExceeded, value, _minTimeOfDay);
             }
         }
         else if (isRequired)
