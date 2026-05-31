@@ -327,7 +327,7 @@ public class TypeCoverageGapTests
         // NOTE: EnumTypeBase<T>.ToString(provider) returns Enum.GetName(typeof(T), value).
         // For Country_t, that is the IsoCountryCode member name (e.g. "US" not "United States").
         var p = new Parameter_t<FixPortal.FixAtdl.Model.Types.Country_t>("X") { WireValue = "US" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         // Enum.GetName returns the member name as declared in the IsoCountryCode enum.
         // We pin the actual behaviour: the return value matches the enum identifier for "US".
         cc.ToString(null).Should().Be("US");
