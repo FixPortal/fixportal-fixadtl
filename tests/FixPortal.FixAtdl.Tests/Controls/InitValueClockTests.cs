@@ -48,6 +48,22 @@ public class InitValueClockTests
         iv.DateTime.Should().Be(new LocalDateTime(2026, 6, 1, 9, 30, 0));
     }
 
+    [Fact]
+    public void Time_only_millisecond_value_keeps_the_exact_time_of_day()
+    {
+        var iv = new InitValueClock("08:00:00.250");
+
+        iv.TimeOfDay.Should().Be(new LocalTime(8, 0, 0, 250));
+    }
+
+    [Fact]
+    public void Full_datetime_millisecond_value_keeps_the_exact_local_datetime()
+    {
+        var iv = new InitValueClock("20260601-09:30:00.500");
+
+        iv.DateTime.Should().Be(new LocalDateTime(2026, 6, 1, 9, 30, 0, 500));
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData("not-a-time")]
