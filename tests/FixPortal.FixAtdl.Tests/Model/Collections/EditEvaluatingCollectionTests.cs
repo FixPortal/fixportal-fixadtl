@@ -136,10 +136,12 @@ public class EditEvaluatingCollectionTests
     // -----------------------------------------------------------------------
 
     [Fact]
-    public void Or_both_true_yields_true()
+    public void Or_one_true_operand_yields_true()
     {
         var twap = LoadTwap();
-        // Participation = 50 → (> 0) = true OR (> 200) = false → OR = true
+        // Participation = 50 → (> 0) = true OR (> 200) = false → OR = true.
+        // Also exercises short-circuit: once the first operand is true the Or breaks early,
+        // and the result is unchanged whether or not the second operand is evaluated.
         twap.Parameters["Participation"].WireValue = "50";
 
         var collection = new EditEvaluatingCollection<IParameter>
@@ -171,25 +173,6 @@ public class EditEvaluatingCollectionTests
         collection.Evaluate(FixFieldValueProvider.Empty);
 
         collection.CurrentState.Should().BeFalse();
-    }
-
-    [Fact]
-    public void Or_short_circuits_on_first_true()
-    {
-        var twap = LoadTwap();
-        // Participation = 50 → (> 0) = true; short-circuit; second edit never evaluated
-        twap.Parameters["Participation"].WireValue = "50";
-
-        var collection = new EditEvaluatingCollection<IParameter>
-        {
-            LogicOperator = LogicOperator_t.Or
-        };
-        collection.Add(MakeEdit(twap, "Participation", Operator_t.GreaterThan, "0"));
-        collection.Add(MakeEdit(twap, "Participation", Operator_t.GreaterThan, "200"));
-
-        collection.Evaluate(FixFieldValueProvider.Empty);
-
-        collection.CurrentState.Should().BeTrue();
     }
 
     // -----------------------------------------------------------------------

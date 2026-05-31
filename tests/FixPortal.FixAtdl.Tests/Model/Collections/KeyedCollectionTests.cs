@@ -71,7 +71,7 @@ public class KeyedCollectionTests
             new EnumPair_t { EnumId = "B", WireValue = "2" },
         };
 
-        pairs.EnumIds.Should().BeEquivalentTo(new[] { "A", "B" });
+        pairs.EnumIds.Should().BeEquivalentTo("A", "B");
     }
 
     // -----------------------------------------------------------------------
