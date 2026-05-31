@@ -205,15 +205,15 @@ public static class SchemaDefinitions
     private static readonly ElementAttribute[] TZTimeOnlyDefinition =
     [
         new ElementAttribute("constValue", "Value.ConstValue", typeof(DateTime), Required.Optional),
-        new ElementAttribute("maxValue", "Value.MaxValue", typeof(DateTime), Required.Optional),
-        new ElementAttribute("minValue", "Value.MinValue", typeof(DateTime), Required.Optional)
+        new ElementAttribute("maxValue", "Value.MaxValueText", typeof(string), Required.Optional),
+        new ElementAttribute("minValue", "Value.MinValueText", typeof(string), Required.Optional)
     ];
 
     private static readonly ElementAttribute[] UTCTimestampDefinition =
     [
         new ElementAttribute("constValue", "Value.ConstValue", typeof(DateTime), Required.Optional),
-        new ElementAttribute("maxValue", "Value.MaxValue", typeof(DateTime), Required.Optional),
-        new ElementAttribute("minValue", "Value.MinValue", typeof(DateTime), Required.Optional),
+        new ElementAttribute("maxValue", "Value.MaxValueText", typeof(string), Required.Optional),
+        new ElementAttribute("minValue", "Value.MinValueText", typeof(string), Required.Optional),
         new ElementAttribute("localMktTz", "Value.LocalMktTz", typeof(string), Required.Optional)
     ];
 
