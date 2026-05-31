@@ -52,6 +52,7 @@ public sealed class InitValueClock
     /// <exception cref="InvalidFieldValueException">The text matches no supported FIX time/date-time format.</exception>
     public InitValueClock(string raw)
     {
+        ArgumentNullException.ThrowIfNull(raw);
         Raw = raw;
 
         foreach (LocalTimePattern pattern in TimePatterns)
