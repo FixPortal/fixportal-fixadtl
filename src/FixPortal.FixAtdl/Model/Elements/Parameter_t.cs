@@ -62,8 +62,17 @@ public class Parameter_t<T> : IParameter where T : IParameterType, new()
         _value.Reset();
     }
 
-    /// <summary>Gets/sets the DefinedByFIX property, which indicates whether the parameter is a redefinition of a 
-    /// standard FIX tag. The default value is false.</summary>
+    /// <summary>
+    /// Indicates whether this parameter is a redefinition of a standard FIX tag (FIXatdl
+    /// <c>definedByFIX</c>). The default value is false.
+    /// </summary>
+    /// <remarks>
+    /// This is a captured, <b>deliberately inert</b> informational flag. Per FIXatdl 1.1 it signals that
+    /// the wire field already carries FIX-defined semantics/enumerations, but it does NOT alter this
+    /// library's wire output and is NOT used as a validation gate: parameter values are validated and
+    /// formatted identically whether or not this flag is set. It is surfaced so consumers that need the
+    /// distinction can read it; the library applies no behaviour to it by design (batch 5, H4).
+    /// </remarks>
     public bool? DefinedByFix { get; set; }
 
     /// <summary>
