@@ -69,9 +69,8 @@ with the FIX formats. **`Clock_t.InitValue` changes type** from `DateTime?` to a
 internal representation (a `LocalTime?`/`LocalDateTime?` discriminated holder, or two
 nullable fields). This is an internal/parse-surface change; document it.
 
-> Open sub-decision for review: keep a public `DateTime? InitValue` shim for source-compat,
-> or change it outright. Recommendation: change it — it is parse-layer state, parked release,
-> and a `DateTime?` cannot faithfully hold "time-only with no date".
+> **Decided:** change the type outright (no `DateTime?` shim) — it is parse-layer state, parked
+> release, and a `DateTime?` cannot faithfully hold "time-only with no date".
 
 ### 1.5 Resolution (`LoadDefaultFromInitValue`)
 
@@ -91,8 +90,8 @@ initInstant = zonedDt.ToInstant()
   else `initInstant`. Comparison is on **instants** — timezone-correct, replacing the broken
   host-local `DateTime` comparison.
 - **`localMktTz` missing while `initValue` present:** the FIXatdl spec says `localMktTz` is
-  required when `initValue` is supplied. Decision: throw a clear validation error (fail fast)
-  rather than silently assuming a zone. (Confirm in review.)
+  required when `initValue` is supplied. **Decided:** throw a clear validation error (fail fast)
+  rather than silently assuming a zone and emitting a wrong UTC instant.
 
 ### 1.6 Wire conversion boundary
 
@@ -136,8 +135,8 @@ comparison operand yields `false` (indeterminate), not a spurious ordering.
 
 Reject "both set" at resolve/parse time with a clear error (they are mutually exclusive forms),
 or — if rejection is too strict for lenient real-world parsing — document and assert the
-`field2`-wins precedence for the two-field form. Recommendation: reject, with a precise message.
-(Confirm in review.)
+`field2`-wins precedence for the two-field form. **Decided:** reject "both set" at parse/resolve
+with a precise message (they are mutually exclusive forms).
 
 ### 2.4 M3 — unset binary control vs `EQ "false"`
 
@@ -152,22 +151,19 @@ deterministically. Verify against `InitializableControl.LoadInitValue` and binar
 
 ### 3.1 H3 — `EnumPair@index`
 
-`index` is treated as an **optional extension attribute** (standard FIXatdl 1.1 `EnumPair` is
-`enumID`+`wireValue`; `index` is a vendor ordering hint). For lossless fidelity and to support
-the conformance fixtures, add `int? Index` to `EnumPair_t` and map `index` in the schema
-definition (optional — absence is fine). Document it as a captured extension; it does not affect
-wire output. (If review prefers, instead document a deliberate ignore — but capturing is cheap
-and aids round-trip fidelity.)
+**Decided:** capture it. `index` is an **optional extension attribute** (standard FIXatdl 1.1
+`EnumPair` is `enumID`+`wireValue`; `index` is a vendor ordering hint). For lossless fidelity and
+to support the conformance fixtures, add `int? Index` to `EnumPair_t` and map `index` in the
+schema definition (optional — absence is fine). Documented as a captured extension; it does not
+affect wire output.
 
 ### 3.2 H4 — `definedByFIX`
 
 `definedByFIX="true"` marks a parameter as a redefinition of a standard FIX tag. It does not
-change the wire value. Decision (default): keep it **informational/inert** but make that a
+change the wire value. **Decided:** keep it **informational/inert** but make that a
 *deliberate, documented* property contract on `Parameter_t.DefinedByFix` (XML-doc the semantics
 and that no validation gate is applied), rather than an accidental dead field. We will NOT invent
 a validation gate that could alter correct wire output without evidence it is required.
-(Confirm in review — if a concrete gate is wanted, e.g. relaxing enum-membership validation for
-FIX-defined values, specify it.)
 
 ### 3.3 M4 — precision rounding mode
 
@@ -209,10 +205,10 @@ path. No behaviour change unless a different mode is mandated.
   the consuming UI applies them; documented, not changed here.
 - Adversarial-review panel (Phase 3) remains deferred.
 
-## 7. Open items for user review
+## 7. Resolved decisions (user-approved 2026-05-31)
 
-1. `Clock_t.InitValue` type change vs a `DateTime?` shim (§1.4).
-2. Throw vs lenient default when `localMktTz` is missing but `initValue` present (§1.5).
-3. M2: reject "both `value` and `field2`" vs document precedence (§2.3).
-4. H4: inert+documented vs a concrete validation gate (§3.2).
-5. H3: capture `Index` vs deliberate ignore (§3.1).
+1. `Clock_t.InitValue` — **change the type** to a NodaTime time-only/datetime holder; no `DateTime?` shim (§1.4).
+2. `localMktTz` missing while `initValue` present — **throw / fail fast** (§1.5).
+3. M2 both `value` and `field2` — **reject with a clear error** (§2.3).
+4. H4 `definedByFIX` — **inert + documented contract**, no validation gate (§3.2).
+5. H3 `EnumPair@index` — **capture** as `int? Index` for fidelity (§3.1).
