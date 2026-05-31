@@ -56,8 +56,9 @@ public class ClockTimeZoneTests
         clock.LoadInitValue(FixFieldValueProvider.Empty);
 
         // Local display is 08:00 Berlin wall-clock (DateTime equality is Kind-insensitive).
+        // GetCurrentValue returns ToDateTimeUnspecified, so match its Kind.
         ((DateTime)clock.GetCurrentValue())
-            .Should().Be(new DateTime(2026, 1, 15, 8, 0, 0));
+            .Should().Be(new DateTime(2026, 1, 15, 8, 0, 0, DateTimeKind.Unspecified));
     }
 
     [Fact]

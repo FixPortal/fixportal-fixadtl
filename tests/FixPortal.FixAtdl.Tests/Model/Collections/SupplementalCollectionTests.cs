@@ -59,7 +59,7 @@ public class SupplementalCollectionTests
         };
 
         items.HasItems.Should().BeTrue();
-        items.EnumIds.Should().BeEquivalentTo(new[] { "A", "B" });
+        items.EnumIds.Should().BeEquivalentTo("A", "B");
     }
 
     [Fact]

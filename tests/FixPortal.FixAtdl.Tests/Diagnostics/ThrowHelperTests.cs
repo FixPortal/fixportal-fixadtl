@@ -11,8 +11,9 @@ public class ThrowHelperTests
     [Fact]
     public void NewWithParamName_threads_supplied_param_name()
     {
-        // The (string, string) ctor of ArgumentException-family types is (paramName, message);
-        // ThrowHelper must be able to surface the real parameter name, not only the hard-coded "Value".
+        // The two-string constructor of ArgumentException-family types takes the parameter name
+        // first and the message second; ThrowHelper must surface the real parameter name here,
+        // not only the historical synthetic placeholder name.
         ArgumentOutOfRangeException ex = ThrowHelper.NewWithParamName<ArgumentOutOfRangeException>(
             source: null, paramName: "tenorOffset", message: "out of range");
 

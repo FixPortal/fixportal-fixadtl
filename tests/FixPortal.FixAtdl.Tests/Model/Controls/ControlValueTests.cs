@@ -779,7 +779,8 @@ public class ClockControlTests
         };
         clock.LoadInitValue(FixFieldValueProvider.Empty);
         // Etc/UTC: local display == 09:00 on the FakeClock's "today" (2026-06-01).
-        ((DateTime)clock.GetCurrentValue()).Should().Be(new DateTime(2026, 6, 1, 9, 0, 0));
+        // GetCurrentValue returns ToDateTimeUnspecified, so match its Kind.
+        ((DateTime)clock.GetCurrentValue()).Should().Be(new DateTime(2026, 6, 1, 9, 0, 0, DateTimeKind.Unspecified));
     }
 
     [Fact]
@@ -793,7 +794,8 @@ public class ClockControlTests
             Clock = new FakeClock(Instant.FromUtc(2026, 6, 1, 0, 0, 0)),
         };
         clock.LoadInitValue(FixFieldValueProvider.Empty);
-        ((DateTime)clock.GetCurrentValue()).Should().Be(new DateTime(2026, 6, 1, 9, 0, 0));
+        // GetCurrentValue returns ToDateTimeUnspecified, so match its Kind.
+        ((DateTime)clock.GetCurrentValue()).Should().Be(new DateTime(2026, 6, 1, 9, 0, 0, DateTimeKind.Unspecified));
     }
 
     [Fact]
