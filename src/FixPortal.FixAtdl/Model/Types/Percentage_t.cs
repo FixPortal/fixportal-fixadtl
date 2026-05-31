@@ -134,7 +134,11 @@ public class Percentage_t : Float_t
     /// <returns>Native parameter value.</returns>
     public override object GetNativeValue(bool applyWireValueFormat)
     {
-        decimal? value = ConstValue != null ? MultiplyBy100 == true ? ConstValue / 100 : ConstValue : _value;
+        decimal? value = ConstValue switch
+        {
+            null => _value,
+            _ => MultiplyBy100 == true ? ConstValue / 100 : ConstValue,
+        };
 
         if (value != null && applyWireValueFormat)
         {

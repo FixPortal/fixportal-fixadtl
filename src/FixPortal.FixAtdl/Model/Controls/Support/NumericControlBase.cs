@@ -88,7 +88,6 @@ public class NumericControlBase : InitializableControl<decimal?>
     public override void SetValue(object newValue)
     {
         bool isString = newValue is string;
-        bool isDecimal = newValue is decimal;
 
         if (isString)
         {
@@ -111,12 +110,13 @@ public class NumericControlBase : InitializableControl<decimal?>
         }
         else
         {
-            _value = isDecimal
-                ? (decimal?)newValue
-                : newValue == null
-            ? null
-            : throw ThrowHelper.New<InternalErrorException>(this, InternalErrors.UnexpectedArgumentType,
-                newValue.GetType().FullName, "System.String, System.Decimal");
+            _value = newValue switch
+            {
+                decimal d => d,
+                null => null,
+                _ => throw ThrowHelper.New<InternalErrorException>(this, InternalErrors.UnexpectedArgumentType,
+                    newValue.GetType().FullName, "System.String, System.Decimal"),
+            };
         }
     }
 
