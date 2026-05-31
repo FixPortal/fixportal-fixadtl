@@ -28,7 +28,7 @@ public class EditElementTests
     private static Edit_t<IParameter> MakeResolvedEdit(
         Strategy_t twap, string field, Operator_t op, string? value = null)
     {
-        var edit = new Edit_t<IParameter> { Field = field, Operator = op, Value = value };
+        var edit = new Edit_t<IParameter> { Field = field, Operator = op, Value = value! };
         ((IResolvable<Strategy_t, IParameter>)edit).Resolve(twap, twap.Parameters);
         return edit;
     }

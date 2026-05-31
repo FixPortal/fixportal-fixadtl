@@ -205,7 +205,7 @@ public class ParameterTypeFeatureTests
     public void Int_t_IControlConvertible_ToDecimal_returns_int_as_decimal()
     {
         var p = new Parameter_t<Int_t>("X") { WireValue = "42" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         cc.ToDecimal().Should().Be(42m);
     }
 
@@ -213,7 +213,7 @@ public class ParameterTypeFeatureTests
     public void Int_t_IControlConvertible_ToString_returns_formatted_int()
     {
         var p = new Parameter_t<Int_t>("X") { WireValue = "42" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         cc.ToString(CultureInfo.InvariantCulture).Should().Be("42");
     }
 
@@ -221,7 +221,7 @@ public class ParameterTypeFeatureTests
     public void Int_t_IControlConvertible_ToBoolean_throws()
     {
         var p = new Parameter_t<Int_t>("X") { WireValue = "1" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToBoolean();
         act.Should().Throw<InvalidCastException>();
     }
@@ -230,7 +230,7 @@ public class ParameterTypeFeatureTests
     public void Int_t_IControlConvertible_ToDateTime_throws()
     {
         var p = new Parameter_t<Int_t>("X") { WireValue = "1" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToDateTime();
         act.Should().Throw<InvalidCastException>();
     }
@@ -243,7 +243,7 @@ public class ParameterTypeFeatureTests
     public void Float_t_IControlConvertible_ToDecimal_returns_decimal()
     {
         var p = new Parameter_t<Float_t>("X") { WireValue = "3.14" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         cc.ToDecimal().Should().Be(3.14m);
     }
 
@@ -251,7 +251,7 @@ public class ParameterTypeFeatureTests
     public void Float_t_IControlConvertible_ToBoolean_throws()
     {
         var p = new Parameter_t<Float_t>("X") { WireValue = "1.0" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToBoolean();
         act.Should().Throw<InvalidCastException>();
     }
@@ -260,7 +260,7 @@ public class ParameterTypeFeatureTests
     public void Float_t_IControlConvertible_ToDateTime_throws()
     {
         var p = new Parameter_t<Float_t>("X") { WireValue = "1.0" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToDateTime();
         act.Should().Throw<InvalidCastException>();
     }
@@ -273,7 +273,7 @@ public class ParameterTypeFeatureTests
     public void Boolean_t_IControlConvertible_ToBoolean_returns_bool()
     {
         var p = new Parameter_t<Boolean_t>("X") { WireValue = "Y" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         cc.ToBoolean().Should().Be(true);
     }
 
@@ -281,7 +281,7 @@ public class ParameterTypeFeatureTests
     public void Boolean_t_IControlConvertible_ToDecimal_throws()
     {
         var p = new Parameter_t<Boolean_t>("X") { WireValue = "Y" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToDecimal();
         act.Should().Throw<InvalidCastException>();
     }
@@ -290,7 +290,7 @@ public class ParameterTypeFeatureTests
     public void Boolean_t_IControlConvertible_ToDateTime_throws()
     {
         var p = new Parameter_t<Boolean_t>("X") { WireValue = "Y" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToDateTime();
         act.Should().Throw<InvalidCastException>();
     }
@@ -299,7 +299,7 @@ public class ParameterTypeFeatureTests
     public void Boolean_t_IControlConvertible_ToString_returns_lower_bool()
     {
         var p = new Parameter_t<Boolean_t>("X") { WireValue = "Y" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         // NOTE: Boolean_t.ToString(provider) returns "true"/"false" (lowercase),
         // not the wire value "Y"/"N".
         cc.ToString(null).Should().Be("true");
@@ -313,7 +313,7 @@ public class ParameterTypeFeatureTests
     public void Char_t_IControlConvertible_ToString_returns_char_string()
     {
         var p = new Parameter_t<Char_t>("X") { WireValue = "A" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         cc.ToString(null).Should().Be("A");
     }
 
@@ -321,7 +321,7 @@ public class ParameterTypeFeatureTests
     public void Char_t_IControlConvertible_ToBoolean_throws()
     {
         var p = new Parameter_t<Char_t>("X") { WireValue = "A" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToBoolean();
         act.Should().Throw<InvalidCastException>();
     }
@@ -330,7 +330,7 @@ public class ParameterTypeFeatureTests
     public void Char_t_IControlConvertible_ToDecimal_throws()
     {
         var p = new Parameter_t<Char_t>("X") { WireValue = "A" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToDecimal();
         act.Should().Throw<InvalidCastException>();
     }
@@ -343,7 +343,7 @@ public class ParameterTypeFeatureTests
     public void String_t_IControlConvertible_ToString_returns_string()
     {
         var p = new Parameter_t<String_t>("X") { WireValue = "hello" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         cc.ToString(null).Should().Be("hello");
     }
 
@@ -351,7 +351,7 @@ public class ParameterTypeFeatureTests
     public void String_t_IControlConvertible_ToBoolean_throws()
     {
         var p = new Parameter_t<String_t>("X") { WireValue = "hello" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToBoolean();
         act.Should().Throw<InvalidCastException>();
     }
@@ -360,7 +360,7 @@ public class ParameterTypeFeatureTests
     public void String_t_IControlConvertible_ToDecimal_throws()
     {
         var p = new Parameter_t<String_t>("X") { WireValue = "hello" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToDecimal();
         act.Should().Throw<InvalidCastException>();
     }
@@ -369,7 +369,7 @@ public class ParameterTypeFeatureTests
     public void String_t_IControlConvertible_ToDateTime_throws()
     {
         var p = new Parameter_t<String_t>("X") { WireValue = "hello" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToDateTime();
         act.Should().Throw<InvalidCastException>();
     }
@@ -382,7 +382,7 @@ public class ParameterTypeFeatureTests
     public void SeqNum_t_IControlConvertible_ToDecimal_returns_uint_as_decimal()
     {
         var p = new Parameter_t<SeqNum_t>("X") { WireValue = "100" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         cc.ToDecimal().Should().Be(100m);
     }
 
@@ -390,7 +390,7 @@ public class ParameterTypeFeatureTests
     public void SeqNum_t_IControlConvertible_ToString_returns_formatted_uint()
     {
         var p = new Parameter_t<SeqNum_t>("X") { WireValue = "100" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         cc.ToString(CultureInfo.InvariantCulture).Should().Be("100");
     }
 
@@ -398,7 +398,7 @@ public class ParameterTypeFeatureTests
     public void SeqNum_t_IControlConvertible_ToBoolean_throws()
     {
         var p = new Parameter_t<SeqNum_t>("X") { WireValue = "1" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToBoolean();
         act.Should().Throw<InvalidCastException>();
     }
@@ -407,7 +407,7 @@ public class ParameterTypeFeatureTests
     public void SeqNum_t_IControlConvertible_ToDateTime_throws()
     {
         var p = new Parameter_t<SeqNum_t>("X") { WireValue = "1" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToDateTime();
         act.Should().Throw<InvalidCastException>();
     }
@@ -420,7 +420,7 @@ public class ParameterTypeFeatureTests
     public void Country_t_IControlConvertible_ToString_returns_code_string()
     {
         var p = new Parameter_t<FixPortal.FixAtdl.Model.Types.Country_t>("X") { WireValue = "US" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         cc.ToString(null).Should().Be("US");
     }
 
@@ -428,7 +428,7 @@ public class ParameterTypeFeatureTests
     public void Country_t_IControlConvertible_ToBoolean_throws()
     {
         var p = new Parameter_t<FixPortal.FixAtdl.Model.Types.Country_t>("X") { WireValue = "US" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToBoolean();
         act.Should().Throw<InvalidCastException>();
     }
@@ -437,7 +437,7 @@ public class ParameterTypeFeatureTests
     public void Country_t_IControlConvertible_ToDecimal_throws()
     {
         var p = new Parameter_t<FixPortal.FixAtdl.Model.Types.Country_t>("X") { WireValue = "US" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToDecimal();
         act.Should().Throw<InvalidCastException>();
     }
@@ -446,7 +446,7 @@ public class ParameterTypeFeatureTests
     public void Country_t_IControlConvertible_ToDateTime_throws()
     {
         var p = new Parameter_t<FixPortal.FixAtdl.Model.Types.Country_t>("X") { WireValue = "US" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToDateTime();
         act.Should().Throw<InvalidCastException>();
     }
@@ -459,7 +459,7 @@ public class ParameterTypeFeatureTests
     public void UTCTimestamp_t_IControlConvertible_ToDateTime_returns_DateTime()
     {
         var p = new Parameter_t<UTCTimestamp_t>("X") { WireValue = "20260101-09:30:00" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         cc.ToDateTime().Should().NotBeNull();
     }
 
@@ -467,7 +467,7 @@ public class ParameterTypeFeatureTests
     public void UTCTimestamp_t_IControlConvertible_ToBoolean_throws()
     {
         var p = new Parameter_t<UTCTimestamp_t>("X") { WireValue = "20260101-09:30:00" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToBoolean();
         act.Should().Throw<InvalidCastException>();
     }
@@ -476,7 +476,7 @@ public class ParameterTypeFeatureTests
     public void UTCTimestamp_t_IControlConvertible_ToDecimal_throws()
     {
         var p = new Parameter_t<UTCTimestamp_t>("X") { WireValue = "20260101-09:30:00" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToDecimal();
         act.Should().Throw<InvalidCastException>();
     }
@@ -489,7 +489,7 @@ public class ParameterTypeFeatureTests
     public void MonthYear_t_IControlConvertible_ToString_returns_wire_form()
     {
         var p = new Parameter_t<MonthYear_t>("X") { WireValue = "202601" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         cc.ToString(null).Should().Be("202601");
     }
 
@@ -497,7 +497,7 @@ public class ParameterTypeFeatureTests
     public void MonthYear_t_IControlConvertible_ToBoolean_throws()
     {
         var p = new Parameter_t<MonthYear_t>("X") { WireValue = "202601" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToBoolean();
         act.Should().Throw<InvalidCastException>();
     }
@@ -506,7 +506,7 @@ public class ParameterTypeFeatureTests
     public void MonthYear_t_IControlConvertible_ToDecimal_throws()
     {
         var p = new Parameter_t<MonthYear_t>("X") { WireValue = "202601" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToDecimal();
         act.Should().Throw<InvalidCastException>();
     }
@@ -515,7 +515,7 @@ public class ParameterTypeFeatureTests
     public void MonthYear_t_IControlConvertible_ToDateTime_throws()
     {
         var p = new Parameter_t<MonthYear_t>("X") { WireValue = "202601" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToDateTime();
         act.Should().Throw<InvalidCastException>();
     }
@@ -528,7 +528,7 @@ public class ParameterTypeFeatureTests
     public void Tenor_t_IControlConvertible_ToString_returns_wire_form()
     {
         var p = new Parameter_t<Tenor_t>("X") { WireValue = "M3" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         cc.ToString(null).Should().Be("M3");
     }
 
@@ -536,7 +536,7 @@ public class ParameterTypeFeatureTests
     public void Tenor_t_IControlConvertible_ToBoolean_throws()
     {
         var p = new Parameter_t<Tenor_t>("X") { WireValue = "M3" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToBoolean();
         act.Should().Throw<InvalidCastException>();
     }
@@ -545,7 +545,7 @@ public class ParameterTypeFeatureTests
     public void Tenor_t_IControlConvertible_ToDecimal_throws()
     {
         var p = new Parameter_t<Tenor_t>("X") { WireValue = "M3" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToDecimal();
         act.Should().Throw<InvalidCastException>();
     }
@@ -558,7 +558,7 @@ public class ParameterTypeFeatureTests
     public void Data_t_IControlConvertible_ToString_returns_data_string()
     {
         var p = new Parameter_t<Data_t>("X") { WireValue = "abc" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         cc.ToString(null).Should().Be("abc");
     }
 
@@ -566,7 +566,7 @@ public class ParameterTypeFeatureTests
     public void Data_t_IControlConvertible_ToBoolean_throws()
     {
         var p = new Parameter_t<Data_t>("X") { WireValue = "abc" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToBoolean();
         act.Should().Throw<InvalidCastException>();
     }
@@ -575,7 +575,7 @@ public class ParameterTypeFeatureTests
     public void Data_t_IControlConvertible_ToDecimal_throws()
     {
         var p = new Parameter_t<Data_t>("X") { WireValue = "abc" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToDecimal();
         act.Should().Throw<InvalidCastException>();
     }
@@ -584,7 +584,7 @@ public class ParameterTypeFeatureTests
     public void Data_t_IControlConvertible_ToDateTime_throws()
     {
         var p = new Parameter_t<Data_t>("X") { WireValue = "abc" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         var act = () => cc.ToDateTime();
         act.Should().Throw<InvalidCastException>();
     }
@@ -621,7 +621,7 @@ public class ParameterTypeFeatureTests
         // NOTE: Percentage_t stores fractional internally (0.75) but ToDecimal
         // scales to whole-percent units (75) for display.
         var p = new Parameter_t<Percentage_t>("X") { WireValue = "0.75" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         cc.ToDecimal().Should().Be(75m);
     }
 
@@ -629,7 +629,7 @@ public class ParameterTypeFeatureTests
     public void Percentage_t_IControlConvertible_ToString_returns_whole_percent()
     {
         var p = new Parameter_t<Percentage_t>("X") { WireValue = "0.75" };
-        var cc = (IControlConvertible)p.Value;
+        var cc = p.Value;
         cc.ToString(CultureInfo.InvariantCulture).Should().Be("75");
     }
 
