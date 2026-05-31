@@ -4,6 +4,14 @@
 **Status:** Approved (design) — pending implementation plan
 **Scope:** `FixPortal.FixAtdl` library
 
+> **Superseded (Clock portion — updated 2026-05-31):** the `Clock_t` time-source decision below
+> (`TimeProvider` settable property; `LocalMktTz` timezone resolution "out of scope / future work")
+> was superseded by batch-5 C1 (`7c8517e`). `TimeProvider` was replaced with a NodaTime `IClock`, and
+> `LocalMktTz` resolution shipped — `Clock_t` now converts the market-local value to a UTC instant via
+> TZDB. The only residual item — injecting `IClock`/zone-provider through the reflective `ElementFactory`
+> rather than the current settable-property pattern — is **deliberately parked** (post-1.0,
+> do-not-reopen). The logger-injection portion of this design is unaffected.
+
 ## Problem
 
 ~34 source files carry placeholder scaffolding left over from the modernisation

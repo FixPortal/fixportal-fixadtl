@@ -10,6 +10,16 @@
 
 **Spec:** `docs/superpowers/specs/2026-05-30-logger-clock-di-design.md`
 
+> **Status (superseded — updated 2026-05-31):** this plan landed as written, but its `Clock_t`
+> portion has since been superseded by batch-5 C1 (`7c8517e`). The `TimeProvider` seam below was
+> replaced with a NodaTime `IClock`, and the "LocalMktTz timezone resolution is not yet applied"
+> note in the Task-2 doc-comment is no longer accurate: `Clock_t` now resolves `localMktTz` to a
+> real IANA zone and emits zone-shifted UTC. The only item that remains open — injecting
+> `IClock`/zone-provider through the reflective `ElementFactory` instead of the current
+> settable-property pattern — is **deliberately parked** (post-1.0, do-not-reopen): the factory has
+> no service channel and DI would break the public ctors, while the dependency is already
+> overridable and test-controllable. The logger-injection portion of this plan is unaffected.
+
 ---
 
 ## File Structure
