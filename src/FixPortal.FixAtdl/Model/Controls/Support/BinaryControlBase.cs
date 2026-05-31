@@ -112,7 +112,12 @@ public abstract class BinaryControlBase : InitializableControl<bool?>
             {
                 EnumState state = value.ToEnumState(parameter.EnumPairs);
 
-                _value = state[CheckedEnumRef] ? true : state[UncheckedEnumRef] ? false : null;
+                _value = (state[CheckedEnumRef], state[UncheckedEnumRef]) switch
+                {
+                    (true, _) => true,
+                    (false, true) => false,
+                    _ => null,
+                };
             }
             else
             {
@@ -134,7 +139,6 @@ public abstract class BinaryControlBase : InitializableControl<bool?>
     public override void SetValue(object newValue)
     {
         bool isString = newValue is string;
-        bool isBool = newValue is bool;
 
         // Strictly this is a bit of a hack as the right thing to do when implementing CheckBoxes and RadioButtons is
         // to enforce the use of boolean inputs.  However as atdl4j supports setting of these controls' state via
@@ -169,12 +173,13 @@ public abstract class BinaryControlBase : InitializableControl<bool?>
         }
         else
         {
-            _value = isBool
-                ? (bool?)newValue
-                : newValue == null
-            ? null
-            : throw ThrowHelper.New<InternalErrorException>(this, InternalErrors.UnexpectedArgumentType,
-                newValue.GetType().FullName!, "System.String, System.Boolean");
+            _value = newValue switch
+            {
+                bool b => b,
+                null => null,
+                _ => throw ThrowHelper.New<InternalErrorException>(this, InternalErrors.UnexpectedArgumentType,
+                    newValue.GetType().FullName!, "System.String, System.Boolean"),
+            };
         }
     }
 

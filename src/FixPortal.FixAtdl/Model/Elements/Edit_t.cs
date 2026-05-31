@@ -440,9 +440,12 @@ public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, I
     // would hit IComparable.CompareTo(object) against a decimalised LHS and throw ArgumentException.
     private static object NormaliseNumericString(object fieldValue)
     {
-        return fieldValue is string value
-            ? decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal number) ? number : value
-            : fieldValue;
+        if (fieldValue is not string value)
+        {
+            return fieldValue;
+        }
+
+        return decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal number) ? number : value;
     }
 
     private void CheckForUnsupportedComparisons(object lhs, object rhs)
@@ -467,9 +470,11 @@ public class Edit_t<T> : IEdit<T>, IResolvable<Strategy_t, T> where T : class, I
 
         // If the FIX value can be converted into a number, most likely it should be treated as one
         // for comparison purposes
-        result = gotValue
-            ? decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal number) ? number : value
-            : null;
+        result = gotValue switch
+        {
+            false => null,
+            _ => decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal number) ? number : value,
+        };
 
         return result!;
     }

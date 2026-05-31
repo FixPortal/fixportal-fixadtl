@@ -29,7 +29,12 @@ public struct MonthYear : IComparable
     /// <returns>MonthYear as a string.</returns>
     public override readonly string ToString()
     {
-        string suffix = Week != null ? string.Format(CultureInfo.InvariantCulture, "w{0}", Week) : Day != null ? string.Format(CultureInfo.InvariantCulture, "{0:00}", Day) : string.Empty;
+        string suffix = (Week, Day) switch
+        {
+            (not null, _) => string.Format(CultureInfo.InvariantCulture, "w{0}", Week),
+            (null, not null) => string.Format(CultureInfo.InvariantCulture, "{0:00}", Day),
+            _ => string.Empty,
+        };
 
         return string.Format(CultureInfo.InvariantCulture, "{0:0000}{1:00}{2}", Year, Month, suffix);
     }

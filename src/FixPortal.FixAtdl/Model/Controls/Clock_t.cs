@@ -163,7 +163,6 @@ public class Clock_t : InitializableControl<InitValueClock?>
     public override void SetValue(object newValue)
     {
         bool isString = newValue is string;
-        bool isDateTime = newValue is DateTime;
 
         if (isString)
         {
@@ -187,12 +186,13 @@ public class Clock_t : InitializableControl<InitValueClock?>
         }
         else
         {
-            _value = isDateTime
-                ? ToInstant((DateTime)newValue)
-                : newValue == null
-                    ? null
-                    : throw ThrowHelper.New<InternalErrorException>(this, InternalErrors.UnexpectedArgumentType,
-                        newValue.GetType().FullName, "System.String, System.DateTime");
+            _value = newValue switch
+            {
+                DateTime dateTime => ToInstant(dateTime),
+                null => null,
+                _ => throw ThrowHelper.New<InternalErrorException>(this, InternalErrors.UnexpectedArgumentType,
+                    newValue.GetType().FullName, "System.String, System.DateTime"),
+            };
         }
     }
 
